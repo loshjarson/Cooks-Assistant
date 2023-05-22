@@ -9,7 +9,7 @@ function Landing() {
         <div style={{width:"100vw", height:"100vh", position:"relative"}}>  
             <Paper elevation={12} style={{
                     width: "35vw",
-                    height: "50vh",
+                    height: "auto",
                     position: "absolute",
                     top: "50%",
                     left: "50%",
