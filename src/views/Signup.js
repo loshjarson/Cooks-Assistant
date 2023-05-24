@@ -3,7 +3,7 @@ import { Col, Row } from "antd";
 import { useState } from "react";
 
 function Signup() {
-    const [user, setUser] = useState({username:"",password:"",email:""})
+    const [user, setUser] = useState({username:"",password:"",confirmPassword:""})
     return (
         <div style={{textAlign:"center"}}>
             <header style={{textAlign:"center", borderBottom:"1px solid grey", margin:"0 10px"}}><h1>Signup</h1></header>
@@ -19,18 +19,7 @@ function Signup() {
                                 onChange={(e)=>setUser({...user,username:e.target.value})}
                             />
                         </FormControl>
-                    </Col>
-                    <Col span={23} justify="center">
-                        <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
-                            <InputLabel htmlFor="email">Email</InputLabel>
-                            <OutlinedInput
-                                required
-                                id="email"
-                                label="Email"
-                                onChange={(e)=>setUser({...user,email:e.target.value})}
-                            />
-                        </FormControl>
-                    </Col>
+                    </Col>                    
                     <Col span={23} justify="center">
                         <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
                             <InputLabel htmlFor="password">Password</InputLabel>
@@ -40,6 +29,17 @@ function Signup() {
                                 id="password"
                                 label="Password"
                                 onChange={(e)=>setUser({...user,password:e.target.value})}
+                            />
+                        </FormControl>
+                    </Col>
+                    <Col span={23} justify="center">
+                        <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
+                            <InputLabel htmlFor="confirm-password">Confirm Password</InputLabel>
+                            <OutlinedInput
+                                required
+                                id="confirm-password"
+                                label="Confirm Password"
+                                onChange={(e)=>setUser({...user,confirmPassword:e.target.value})}
                             />
                         </FormControl>
                     </Col>
