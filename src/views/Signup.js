@@ -1,5 +1,6 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Button, Input   } from "antd";
+import axios from 'axios';
 import { useState } from "react";
 
 function Signup() {
@@ -12,12 +13,22 @@ function Signup() {
         setUser({...user, [id]:value})
     }
 
+    const handleSubmit = () => {
+          axios.post("http://localhost:8000/auth/register", user)
+            .then(res => {
+                console.log(res.data.message)
+                sessionStorage.setItem("token",res.data.token)
+                sessionStorage.setItem("userId", res.data.id)
+            })
+    }
+
     return (
         <div style={{textAlign:"center"}}>
             <header style={{textAlign:"center", borderBottom:"1px solid grey", margin:"0 10px"}}><h1>Signup</h1></header>
             <Form
                 form={form}
                 style={{margin:"25px"}}
+                onFinish={handleSubmit}
             >
                 <Form.Item
                     name={"username"}
