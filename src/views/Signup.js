@@ -2,6 +2,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Button, Input   } from "antd";
 import axios from 'axios';
 import { useState } from "react";
+import history from '../history';
 
 function Signup() {
     const [user, setUser] = useState({username:"",password:""})
@@ -19,6 +20,7 @@ function Signup() {
                 console.log(res.data.message)
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.id)
+                history.push("/home")
             })
     }
 
