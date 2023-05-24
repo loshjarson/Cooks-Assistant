@@ -22,6 +22,9 @@ function Login() {
                 sessionStorage.setItem("userId", res.data.id)
                 history.push("/home")
             })
+            .catch(e => {
+                console.log(e)
+            })
     }
 
     return (
