@@ -1,5 +1,5 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Form, Button, Input   } from "antd";
+import { Form, Button, Input } from "antd";
 import axios from 'axios';
 import { useState } from "react";
 import history from '../history';
@@ -21,6 +21,9 @@ function Signup() {
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.id)
                 history.push("/home")
+            })
+            .catch(e => {
+                console.log(e)
             })
     }
 
