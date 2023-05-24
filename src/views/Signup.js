@@ -3,8 +3,14 @@ import { Form, Button, Input   } from "antd";
 import { useState } from "react";
 
 function Signup() {
-    const [user, setUser] = useState({username:"",password:"",confirmPassword:""})
+    const [user, setUser] = useState({username:"",password:""})
     const [form] = Form.useForm();
+
+    const handleChange = (e) => {
+        const {id, value} = e.target
+        console.log(id,value)
+        setUser({...user, [id]:value})
+    }
 
     return (
         <div style={{textAlign:"center"}}>
@@ -20,7 +26,7 @@ function Signup() {
                         message: 'A username is required'
                     }]}
                 >
-                    <Input prefix={<UserOutlined/>} placeholder='username'/>
+                    <Input prefix={<UserOutlined/>} placeholder='username' onChange={handleChange}/>
                 </Form.Item>
                 <Form.Item
                     name={"password"}
@@ -29,7 +35,7 @@ function Signup() {
                         message: 'A password is required'
                     }]}
                 >
-                    <Input.Password prefix={<LockOutlined/>} placeholder='password'/>
+                    <Input.Password prefix={<LockOutlined/>} placeholder='password' onChange={handleChange}/>
                 </Form.Item>
                 <Form.Item
                     name={"confirmPassword"}
