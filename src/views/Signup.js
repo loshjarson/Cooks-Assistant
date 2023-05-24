@@ -1,51 +1,59 @@
-import { Box, InputLabel, OutlinedInput, FormControl, Button } from "@mui/material";
-import { Col, Row } from "antd";
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Form, Button, Input   } from "antd";
 import { useState } from "react";
 
 function Signup() {
     const [user, setUser] = useState({username:"",password:"",confirmPassword:""})
+    const [form] = Form.useForm();
+
     return (
         <div style={{textAlign:"center"}}>
             <header style={{textAlign:"center", borderBottom:"1px solid grey", margin:"0 10px"}}><h1>Signup</h1></header>
-            <Box component="form" noValidate margin="25px">
-                <Row gutter={[16,16]}>
-                    <Col span={23} justify="center">
-                        <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
-                            <InputLabel htmlFor="username">Username</InputLabel>
-                            <OutlinedInput
-                                required
-                                id="username"
-                                label="Username"
-                                onChange={(e)=>setUser({...user,username:e.target.value})}
-                            />
-                        </FormControl>
-                    </Col>                    
-                    <Col span={23} justify="center">
-                        <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
-                            <InputLabel htmlFor="password">Password</InputLabel>
-                            <OutlinedInput
-                                required
-                                type="password"
-                                id="password"
-                                label="Password"
-                                onChange={(e)=>setUser({...user,password:e.target.value})}
-                            />
-                        </FormControl>
-                    </Col>
-                    <Col span={23} justify="center">
-                        <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
-                            <InputLabel htmlFor="confirm-password">Confirm Password</InputLabel>
-                            <OutlinedInput
-                                required
-                                id="confirm-password"
-                                label="Confirm Password"
-                                onChange={(e)=>setUser({...user,confirmPassword:e.target.value})}
-                            />
-                        </FormControl>
-                    </Col>
-                </Row>
-            </Box>
-            <Button variant="outlined">Login</Button>
+            <Form
+                form={form}
+                style={{margin:"25px"}}
+            >
+                <Form.Item
+                    name={"username"}
+                    rules={[{
+                        required: true,
+                        message: 'A username is required'
+                    }]}
+                >
+                    <Input prefix={<UserOutlined/>} placeholder='username'/>
+                </Form.Item>
+                <Form.Item
+                    name={"password"}
+                    rules={[{
+                        required: true,
+                        message: 'A password is required'
+                    }]}
+                >
+                    <Input.Password prefix={<LockOutlined/>} placeholder='password'/>
+                </Form.Item>
+                <Form.Item
+                    name={"confirmPassword"}
+                    rules={[
+                        {
+                            required: true,
+                            message: 'Please confirm your password'
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                            if (!value || getFieldValue('password') === value) {
+                                return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                            },
+                        }),
+                    ]}
+                    dependencies={['password']}
+                    hasFeedback
+                >
+                    <Input.Password prefix={<LockOutlined/>} placeholder='confirm password'/>
+                </Form.Item>
+            </Form>
+            <Button variant="outlined">Submit</Button>
         </div>
     );
 }
