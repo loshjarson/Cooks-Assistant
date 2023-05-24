@@ -1,7 +1,8 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Button, Input } from "antd";
+import axios from 'axios';
 import { useState } from "react";
-
+import history from '../history';
 
 function Login() {
     const [user, setUser] = useState({username:"",password:""})
@@ -13,7 +14,15 @@ function Login() {
         setUser({...user, [id]:value})
     }
 
-
+    const handleSubmit = () => {
+          axios.post("http://localhost:8000/auth/login", user)
+            .then(res => {
+                console.log(res.data.message)
+                sessionStorage.setItem("token",res.data.token)
+                sessionStorage.setItem("userId", res.data.id)
+                history.push("/home")
+            })
+    }
 
     return (
         <div style={{textAlign:"center"}}>
@@ -21,7 +30,7 @@ function Login() {
             <Form
                 form={form}
                 style={{margin:"25px"}}
-                
+                onFinish={handleSubmit}
             >
                 <Form.Item
                     name={"username"}
