@@ -3,10 +3,11 @@ import Login from "./Login";
 import Signup from "./Signup";
 import { Paper, Button } from "@mui/material";
 
+
 function Landing() {
     const [isNew, setIsNew ] = useState(false)
     return (
-        <div style={{width:"100vw", height:"100vh", position:"relative"}}>  
+        <div className="landing" style={{width:"100vw", height:"100vh", position:"relative"}}>  
             <Paper elevation={12} style={{
                     width: "35vw",
                     height: "auto",
