@@ -30,7 +30,7 @@ function Login() {
 
     return (
         <div style={{textAlign:"center"}}>
-            <header style={{textAlign:"center", borderBottom:"1px solid grey", margin:"0 10px"}}><h1>Signup</h1></header>
+            <header style={{textAlign:"center", borderBottom:"1px solid grey", margin:"0 10px"}}><h1>Login</h1></header>
             <Form
                 form={form}
                 style={{margin:"25px"}}
