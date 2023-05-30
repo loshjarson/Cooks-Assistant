@@ -1,6 +1,12 @@
+import { Paper } from "@mui/material";
+
 function Navbar() {
     return (
-        <div></div>
+        <Paper elevation={12} style={{
+            width: "100vw",
+            height: "10vh",
+            }}>
+        </Paper>
     );
 }
 

@@ -1,11 +1,13 @@
 import { Routes, Route } from "react-router-dom";
 import Recipes from "./Recipes";
+import Navbar from "./Navbar";
 
 function Home() {
     return (
         <div>
+            <Navbar/>
             <Routes>
-                <Route path="/recipes" Component={Recipes}/>
+                <Route exact path="/" Component={Recipes}/>
             </Routes>
         </div>
             
