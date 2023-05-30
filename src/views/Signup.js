@@ -74,8 +74,11 @@ function Signup() {
                 >
                     <Input.Password prefix={<LockOutlined/>} placeholder='confirm password'/>
                 </Form.Item>
+                <Form.Item>
+                   <Button variant="outlined" htmlType='submit'>Submit</Button> 
+                </Form.Item>
             </Form>
-            <Button variant="outlined">Submit</Button>
+            
         </div>
     );
 }
