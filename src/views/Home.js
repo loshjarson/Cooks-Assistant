@@ -1,7 +1,14 @@
+import { Routes, Route } from "react-router-dom";
+import Recipes from "./Recipes";
 
 function Home() {
     return (
-        <div></div>
+        <div>
+            <Routes>
+                <Route path="/recipes" Component={Recipes}/>
+            </Routes>
+        </div>
+            
     );
 }
 
