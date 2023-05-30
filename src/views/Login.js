@@ -21,6 +21,7 @@ function Login() {
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.id)
                 history.push("/home")
+                history.go("/home")
             })
             .catch(e => {
                 console.log(e)
@@ -53,8 +54,11 @@ function Login() {
                 >
                     <Input.Password prefix={<LockOutlined/>} placeholder='password' onChange={handleChange}/>
                 </Form.Item>
+                <Form.Item>
+                  <Button variant="outlined" htmlType='submit'>Submit</Button>  
+                </Form.Item>
             </Form>
-            <Button variant="outlined">Submit</Button>
+            
         </div>
     );
 }

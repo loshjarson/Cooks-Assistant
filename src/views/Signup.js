@@ -21,6 +21,7 @@ function Signup() {
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.id)
                 history.push("/home")
+                history.go("/home")
             })
             .catch(e => {
                 console.log(e)
