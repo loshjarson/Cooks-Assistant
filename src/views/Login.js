@@ -19,7 +19,7 @@ function Login() {
             .then(res => {
                 console.log(res.data.message)
                 sessionStorage.setItem("token",res.data.token)
-                sessionStorage.setItem("userId", res.data.id)
+                sessionStorage.setItem("userId", res.data.userID)
                 history.push("/home")
                 history.go("/home")
             })
