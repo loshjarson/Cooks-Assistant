@@ -1,8 +1,9 @@
-import { CardHeader, CardMedia, Paper, } from "@mui/material";
+import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, } from "@mui/material";
 import { FilterOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Tag } from "antd";
+import { Button, Card, Input, Modal, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import NewRecipe from "./Components/NewRecipe";
 
 
 function Recipes() {
@@ -67,7 +68,7 @@ function Recipes() {
     
                 //Count the consonants
                 for(i in letters){
-                    if(vowels.indexOf(letters[i]) == -1){
+                    if(vowels.indexOf(letters[i]) === -1){
                         count_cons++;
                     }
                 }
@@ -83,9 +84,9 @@ function Recipes() {
                 var increment = 1/letters.length*50;
     
                 for(i in letters){
-                    if(ascenders.indexOf(letters[i]) != -1){
+                    if(ascenders.indexOf(letters[i]) !== -1){
                         luminosity += increment;
-                    }else if(descenders.indexOf(letters[i]) != -1){
+                    }else if(descenders.indexOf(letters[i]) !== -1){
                         luminosity -= increment*2;
                     }
                 }
@@ -107,30 +108,47 @@ function Recipes() {
     // },[])
 
     return (
-        <Paper elevation={12} style={{
-            width: "80vw",
-            height: "85vh",
-            margin: "auto",
-            transform: "translate(0,5%)",
+        <div>
+            <Paper 
+            className="recipe-book-container"
+            elevation={12} 
+            style={{
+                width: "80vw",
+                height: "85vh",
+                margin: "auto",
+                transform: "translate(0,5%)",
             }}>
-                <div>
+                <div style={{display:"flex", justifyContent:"space-around"}}>
+                    <div className="filter-container" style={{display:"flex", justifyContent:"space-around", width:"30rem"}}>
+                        <TextField id="outlined-basic" label="Search" variant="outlined" style={{width:"20rem", margin:"1rem"}}/>
+                        <IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton>  
+                    </div>
                     
+                    <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
+                        <Button onClick={()=>setAdding(true)}><PlusOutlined/>New Recipe</Button>
+                    </div>
                 </div>
-                {recipes.map(recipe => {
-                    return(
-                        <Card>
-                            <CardHeader
-                                title= {recipe.name}
-                                subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
-                            />
-                            <CardMedia>
+                <Divider/>
+                <div>
+                    {recipes.map(recipe => {
+                        return(
+                            <Card style={{ maxWidth: 345 }}>
+                                <CardHeader
+                                    title= {recipe.name}
+                                    subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
+                                />
+                                <CardMedia>
 
-                            </CardMedia>
-                        </Card>
-                    )
-                })}
-                 
-        </Paper>
+                                </CardMedia>
+                            </Card>
+                        )
+                    })}  
+                </div>
+            </Paper>
+            <Modal open={adding} onCancel={()=>setAdding(false)} style={{minWidth:"80vw"}}>
+                <NewRecipe/>
+            </Modal>
+        </div>
     );
 }
 
