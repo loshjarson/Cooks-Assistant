@@ -155,7 +155,7 @@ function NewRecipe() {
                 </div>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Instructions" style={{width:"100%"}}>
-                        <List>
+                        <List style={{border:"1px dashed grey"}}>
                             <VirtualList
                                 id="instructions-list" 
                                 name="instructions" 
