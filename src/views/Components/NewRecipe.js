@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Input, Form, List, InputNumber, Upload } from "antd";
+import { Button, Input, Form, List, InputNumber, Upload, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
@@ -7,7 +7,7 @@ import VirtualList from "rc-virtual-list"
 const initialFormState = {
     name: "",
     description: "",
-    ingredients: [{}],
+    ingredients: [],
     instructions: {},
     prepTime: 0,
     cookTime: 0,
@@ -17,11 +17,42 @@ const initialFormState = {
     tags: [],
 }
 
+const unitsOfMeasurement = [
+    {
+        value:"tsp",
+        label:"Teaspoon"
+    },
+    {
+        value:"tbsp",
+        label:"Tablespoon"
+    },
+    {
+        value:"fl oz",
+        label:"Fluid Ounce"
+    },
+    {
+        value:"c",
+        label:"Cup"
+    },
+    {
+        value:"pt",
+        label:"Pint"
+    },
+    {
+        value:"qt",
+        label:"Quart"
+    },
+    {
+        value:"g",
+        label:"Gallon"
+    },
+]
+
 
 function NewRecipe() {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
-    const [newIngredient, setNewIngredient] = useState()
+    const [newIngredient, setNewIngredient] = useState({unit:"",amount:"",name:""})
     const [newStep, setNewStep] = useState()
 
     const handleChange = (e,j) => {
@@ -42,7 +73,14 @@ function NewRecipe() {
     }
 
     const addIngredient = () => {
+        const foundIngredient = recipeForm.ingredients.find(obj => obj.name === newIngredient.name);
+        if(!foundIngredient){
+            setRecipeForm({...recipeForm, ingredients:[...recipeForm.ingredients, newIngredient]})
+            setNewIngredient({unit:"",amount:"",name:""})
+        } else {
 
+        }
+        
     }
 
     const addStep = () => {
@@ -53,6 +91,11 @@ function NewRecipe() {
             console.log(recipeForm)
         }
     }
+
+    const handleNewIngredient = (v,n) => {
+        setNewIngredient({...newIngredient, [n]:v}) 
+    }
+
     
     return (
         <Form style={{margin:"2rem", minWidth:"80%", fontSize:"50px"}} layout="vertical" >
@@ -72,20 +115,36 @@ function NewRecipe() {
             <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Ingredients" style={{width:"100%"}}>
-                        <List id="ingredients-input" name="ingredients" onChange={handleChange}>
-
+                        <List>
+                            <VirtualList
+                                id="ingredients-list" 
+                                name="ingredients" 
+                                data={recipeForm.ingredients}
+                                height={200}
+                            >
+                                {(ingredient) => (
+                                    <List.Item key={ingredient.name}>
+                                        <List.Item.Meta
+                                            avatar={ingredient.amount + " " + ingredient.unit}
+                                            title={ingredient.name}
+                                            />
+                                    </List.Item>
+                                )}
+                            </VirtualList>
                         </List>
                     </Form.Item>
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <Input placeholder="New Ingredient" value={newIngredient} onChange={(e) => setNewIngredient(e.target.value)}/>
-                        <Button>Add</Button>
+                        <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} />
+                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} />
+                        <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")} />
+                        <Button onClick={()=>addIngredient()}>Add</Button>
                     </div>
                 </div>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Instructions" style={{width:"100%"}}>
                         <List>
                             <VirtualList
-                                id="instructions-input" 
+                                id="instructions-list" 
                                 name="instructions" 
                                 data={Object.keys(recipeForm.instructions)}
                                 height={200}
