@@ -2,9 +2,24 @@ import React, { useState } from "react";
 import { Button, Input, Form, List, InputNumber, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
+import VirtualList from "rc-virtual-list"
+
+const initialFormState = {
+    name: "",
+    description: "",
+    ingredients: [{}],
+    instructions: {},
+    prepTime: 0,
+    cookTime: 0,
+    totalTime: 0,
+    servings: 0,
+    owner: "",
+    tags: [],
+}
+
 
 function NewRecipe() {
-    const [recipeForm, setRecipeForm] = useState({})
+    const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
     const [newIngredient, setNewIngredient] = useState()
     const [newStep, setNewStep] = useState()
@@ -26,12 +41,17 @@ function NewRecipe() {
         }
     }
 
-    const addIngredient = (i) => {
+    const addIngredient = () => {
 
     }
 
-    const addStep = (s) => {
-
+    const addStep = () => {
+        if(newStep.length > 0){
+            const stepNumber = Object.keys(recipeForm.instructions).length + 1
+            setRecipeForm({...recipeForm, instructions:{...recipeForm.instructions, [stepNumber]:newStep}})
+            setNewStep("")
+            console.log(recipeForm)
+        }
     }
     
     return (
@@ -57,23 +77,36 @@ function NewRecipe() {
                         </List>
                     </Form.Item>
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <Input placeholder="New Ingredient"/>
+                        <Input placeholder="New Ingredient" value={newIngredient} onChange={(e) => setNewIngredient(e.target.value)}/>
                         <Button>Add</Button>
                     </div>
                 </div>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Instructions" style={{width:"100%"}}>
-                        <List id="instructions-input" name="instructions" onChange={handleChange}>
-
+                        <List>
+                            <VirtualList
+                                id="instructions-input" 
+                                name="instructions" 
+                                data={Object.keys(recipeForm.instructions)}
+                                height={200}
+                            >
+                                {(stepNumber) => (
+                                    <List.Item key={stepNumber}>
+                                        <List.Item.Meta
+                                            avatar={stepNumber}
+                                            title={recipeForm.instructions[stepNumber]}
+                                            />
+                                    </List.Item>
+                                )}
+                            </VirtualList>
                         </List>
                     </Form.Item>
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <Input placeholder="New Step"/>
-                        <Button>Add</Button>
+                        <Input placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)}/>
+                        <Button onClick={()=>addStep()}>Add</Button>
                     </div>
                 </div>
             </div>
-            
             <Form.Item label="Prep Time">
                 <InputNumber id="prep-time-input" name="prepTime" onChange={(e) => handleChange(e,"prepTime")} value={recipeForm.prepTime}/>
             </Form.Item>
@@ -100,28 +133,3 @@ function NewRecipe() {
 
 export default NewRecipe;
 
-// {
-//     name: "strawberry pudding",
-//     description: "a delicious treat to bring to a party",
-//     ingredients: [
-//         {
-//         name: "milk",
-//         amount: 1,
-//         unit: "cup"
-//         },
-//         {
-//         name: "sugar",
-//         amount: 1,
-//         unit: "tsp"
-//         },
-//     ],
-//     instructions: ["put the milk in a bowl","wow", "holy shit"],
-//     prepTime: 35,
-//     cookTime: 55,
-//     totalTime: 90,
-//     servings: 8,
-//     owner: "Joshua",
-//     tags: ["dessert", "family", "cast-iron", "meal", "delicious"],
-//     createdAt: { type: Date, default: () => Date.now(), immutable:true },
-//     updatedAt: { type: Date, default: () => Date.now() }
-// }
