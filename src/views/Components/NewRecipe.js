@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button, Input, Form, List, InputNumber, Upload, Select } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Input, Form, List, InputNumber, Upload, Select, Alert } from "antd";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
 
@@ -52,8 +52,9 @@ const unitsOfMeasurement = [
 function NewRecipe() {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
-    const [newIngredient, setNewIngredient] = useState({unit:"",amount:"",name:""})
+    const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
     const [newStep, setNewStep] = useState()
+    const [ingredientError, setIngredientError] = useState(false)
 
     const handleChange = (e,j) => {
         if(e.file){
@@ -76,11 +77,16 @@ function NewRecipe() {
         const foundIngredient = recipeForm.ingredients.find(obj => obj.name === newIngredient.name);
         if(!foundIngredient){
             setRecipeForm({...recipeForm, ingredients:[...recipeForm.ingredients, newIngredient]})
-            setNewIngredient({unit:"",amount:"",name:""})
+            setNewIngredient({unit:undefined,amount:undefined,name:undefined})
         } else {
-
+            setIngredientError(true)
+            setNewIngredient({unit:undefined,amount:undefined,name:undefined})
         }
         
+    }
+
+    const handleClose = () => {
+        setIngredientError(false)
     }
 
     const addStep = () => {
@@ -96,7 +102,13 @@ function NewRecipe() {
         setNewIngredient({...newIngredient, [n]:v}) 
     }
 
+    const handleRemoveIngredient = (i) => {
+        const updatedArray = recipeForm.ingredients.filter(ingredient => ingredient.name !== i)
+        setRecipeForm({...recipeForm, ingredients:updatedArray})
+    }
     
+
+
     return (
         <Form style={{margin:"2rem", minWidth:"80%", fontSize:"50px"}} layout="vertical" >
             <Form.Item style={{width:"25rem", margin:"2rem auto"}} label="Title">
@@ -104,7 +116,7 @@ function NewRecipe() {
             </Form.Item>
             <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
                 <Form.Item style={{width:"60%"}} label="Description">
-                    <TextArea id="description-input" name="description" onChange={handleChange} value={recipeForm.description} style={{ height: "20rem", resize: 'none' }}/>
+                    <TextArea id="description-input" name="description" onChange={handleChange} value={recipeForm.description} style={{ height: "23.5rem", resize: 'none' }}/>
                 </Form.Item>
                 <Form.Item label="Recipe Image" style={{width:"30%"}}>
                     <Upload.Dragger id="image-input" name="image" listType="picture-card" customRequest={handleChange} showUploadList={false} style={{width:"100%"}}>
@@ -115,7 +127,7 @@ function NewRecipe() {
             <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Ingredients" style={{width:"100%"}}>
-                        <List>
+                        <List style={{border:"1px dashed grey"}}>
                             <VirtualList
                                 id="ingredients-list" 
                                 name="ingredients" 
@@ -123,7 +135,7 @@ function NewRecipe() {
                                 height={200}
                             >
                                 {(ingredient) => (
-                                    <List.Item key={ingredient.name}>
+                                    <List.Item key={ingredient.name} actions={[<DeleteOutlined onClick={()=>{handleRemoveIngredient(ingredient.name)}}/>]}>
                                         <List.Item.Meta
                                             avatar={ingredient.amount + " " + ingredient.unit}
                                             title={ingredient.name}
@@ -133,10 +145,11 @@ function NewRecipe() {
                             </VirtualList>
                         </List>
                     </Form.Item>
+                    {ingredientError && (<Alert message="Ingredient is already in list" type="error" closable afterClose={handleClose} />)}
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} />
-                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} />
-                        <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")} />
+                        <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} value={newIngredient.amount} min={0} style={{width: 150}}/>
+                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
+                        <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")}/>
                         <Button onClick={()=>addIngredient()}>Add</Button>
                     </div>
                 </div>
@@ -160,6 +173,7 @@ function NewRecipe() {
                             </VirtualList>
                         </List>
                     </Form.Item>
+                    
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
                         <Input placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)}/>
                         <Button onClick={()=>addStep()}>Add</Button>
