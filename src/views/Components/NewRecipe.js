@@ -129,8 +129,8 @@ function NewRecipe() {
                 <Input id="name-input" name="name" onChange={handleChange} value={recipeForm.name} />
             </Form.Item>
             <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
-                <Form.Item style={{width:"60%"}} label="Description">
-                    <TextArea id="description-input" name="description" onChange={handleChange} value={recipeForm.description} style={{ height: "23.5rem", resize: 'none' }}/>
+                <Form.Item style={{width:"60%", margin:"auto 0"}} label="Description">
+                    <TextArea id="description-input" name="description" onChange={handleChange} value={recipeForm.description} style={{resize: 'none' }} rows={10}/>
                 </Form.Item>
                 <Form.Item label="Recipe Image" style={{width:"30%"}}>
                     <Upload.Dragger id="image-input" name="image" listType="picture-card" customRequest={handleChange} showUploadList={false} style={{width:"100%"}}>
