@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Input, Form, List, InputNumber, Upload, Select, Alert } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
 
@@ -55,6 +55,7 @@ function NewRecipe() {
     const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
     const [newStep, setNewStep] = useState()
     const [ingredientError, setIngredientError] = useState(false)
+    const [editingStep, setEditingStep] = useState({step:0,instruction:""})
 
     const handleChange = (e,j) => {
         if(e.file){
@@ -65,7 +66,6 @@ function NewRecipe() {
                 setRecipePreview(e.target.result)
             }
             imageReader.readAsDataURL(e.file)
-            console.log(e.file)
         } else if(e.target) {
             setRecipeForm({...recipeForm, [e.target.name]:e.target.value})
         } else {
@@ -99,7 +99,15 @@ function NewRecipe() {
         setRecipeForm({...recipeForm, ingredients:updatedArray})
     }
 
-    const handleEditStep=()=>{}
+    const handleEditStep=(stepNumber)=>{
+        setEditingStep({step:stepNumber, instruction:recipeForm.instructions[stepNumber]})
+    }
+
+    const saveEdit = () => {
+        const {step,instruction} = editingStep
+        setRecipeForm({...recipeForm, instructions:{...recipeForm.instructions, [step]:instruction}})
+        setEditingStep({step:0,instruction:""})
+    }
 
     const handleDeleteStep=(s)=>{
         const {[s]:value, ...remaining} = recipeForm.instructions
@@ -111,7 +119,6 @@ function NewRecipe() {
             const stepNumber = Object.keys(recipeForm.instructions).length + 1
             setRecipeForm({...recipeForm, instructions:{...recipeForm.instructions, [stepNumber]:newStep}})
             setNewStep("")
-            console.log(recipeForm)
         }
     }
 
@@ -145,7 +152,7 @@ function NewRecipe() {
                                     <List.Item key={ingredient.name} actions={[<DeleteOutlined onClick={()=>{handleRemoveIngredient(ingredient.name)}}/>]}>
                                         <List.Item.Meta
                                             avatar={ingredient.amount + " " + ingredient.unit}
-                                            description={ingredient.name}
+                                            title={ingredient.name}
                                             />
                                     </List.Item>
                                 )}
@@ -170,12 +177,11 @@ function NewRecipe() {
                                 height={200}
                             >
                                 {(stepNumber) => (
-                                    <List.Item key={stepNumber} actions={[<EditOutlined onClick={()=>{}}/>,parseInt(stepNumber) === Object.keys(recipeForm.instructions).length && <DeleteOutlined onClick={()=>{handleDeleteStep(stepNumber)}}/>]}>
+                                    <List.Item key={stepNumber} actions={[editingStep.step == parseInt(stepNumber) ? <CheckOutlined onClick={()=>{saveEdit()}}/> : <EditOutlined onClick={()=>{handleEditStep(stepNumber)}}/>,parseInt(stepNumber) === Object.keys(recipeForm.instructions).length && <DeleteOutlined onClick={()=>{handleDeleteStep(stepNumber)}}/>]}>
                                         <List.Item.Meta
                                             avatar={stepNumber}
-                                            title={recipeForm.instructions[stepNumber]}
+                                            description={editingStep.step == parseInt(stepNumber) ? <TextArea value={editingStep.instruction} onChange={e=>setEditingStep({...editingStep, instruction:e.target.value})}/> : recipeForm.instructions[stepNumber]}
                                             />
-                                            
                                     </List.Item>
                                 )}
                             </VirtualList>
