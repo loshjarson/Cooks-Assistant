@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Input, Form, List, InputNumber, Upload, Select, Alert } from "antd";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
 
@@ -85,17 +85,9 @@ function NewRecipe() {
         
     }
 
+
     const handleClose = () => {
         setIngredientError(false)
-    }
-
-    const addStep = () => {
-        if(newStep.length > 0){
-            const stepNumber = Object.keys(recipeForm.instructions).length + 1
-            setRecipeForm({...recipeForm, instructions:{...recipeForm.instructions, [stepNumber]:newStep}})
-            setNewStep("")
-            console.log(recipeForm)
-        }
     }
 
     const handleNewIngredient = (v,n) => {
@@ -106,7 +98,22 @@ function NewRecipe() {
         const updatedArray = recipeForm.ingredients.filter(ingredient => ingredient.name !== i)
         setRecipeForm({...recipeForm, ingredients:updatedArray})
     }
-    
+
+    const handleEditStep=()=>{}
+
+    const handleDeleteStep=(s)=>{
+        const {[s]:value, ...remaining} = recipeForm.instructions
+        setRecipeForm({...recipeForm, instructions:remaining})
+    }
+
+    const addStep = () => {
+        if(newStep.length > 0){
+            const stepNumber = Object.keys(recipeForm.instructions).length + 1
+            setRecipeForm({...recipeForm, instructions:{...recipeForm.instructions, [stepNumber]:newStep}})
+            setNewStep("")
+            console.log(recipeForm)
+        }
+    }
 
 
     return (
@@ -138,7 +145,7 @@ function NewRecipe() {
                                     <List.Item key={ingredient.name} actions={[<DeleteOutlined onClick={()=>{handleRemoveIngredient(ingredient.name)}}/>]}>
                                         <List.Item.Meta
                                             avatar={ingredient.amount + " " + ingredient.unit}
-                                            title={ingredient.name}
+                                            description={ingredient.name}
                                             />
                                     </List.Item>
                                 )}
@@ -163,11 +170,12 @@ function NewRecipe() {
                                 height={200}
                             >
                                 {(stepNumber) => (
-                                    <List.Item key={stepNumber}>
+                                    <List.Item key={stepNumber} actions={[<EditOutlined onClick={()=>{}}/>,parseInt(stepNumber) === Object.keys(recipeForm.instructions).length && <DeleteOutlined onClick={()=>{handleDeleteStep(stepNumber)}}/>]}>
                                         <List.Item.Meta
                                             avatar={stepNumber}
                                             title={recipeForm.instructions[stepNumber]}
                                             />
+                                            
                                     </List.Item>
                                 )}
                             </VirtualList>
@@ -175,7 +183,7 @@ function NewRecipe() {
                     </Form.Item>
                     
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <Input placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)}/>
+                        <TextArea placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)}/>
                         <Button onClick={()=>addStep()}>Add</Button>
                     </div>
                 </div>
