@@ -141,7 +141,7 @@ function NewRecipe() {
             <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Ingredients" style={{width:"100%"}}>
-                        <List style={{border:"1px dashed grey"}}>
+                        <List style={{border:"1px dashed grey", padding:"0 1rem"}}>
                             <VirtualList
                                 id="ingredients-list" 
                                 name="ingredients" 
@@ -169,7 +169,7 @@ function NewRecipe() {
                 </div>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Instructions" style={{width:"100%"}}>
-                        <List style={{border:"1px dashed grey"}}>
+                        <List style={{border:"1px dashed grey", padding:"0 1rem"}}>
                             <VirtualList
                                 id="instructions-list" 
                                 name="instructions" 
@@ -189,7 +189,7 @@ function NewRecipe() {
                     </Form.Item>
                     
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <TextArea placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)}/>
+                        <TextArea placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)} autoSize/>
                         <Button onClick={()=>addStep()}>Add</Button>
                     </div>
                 </div>
