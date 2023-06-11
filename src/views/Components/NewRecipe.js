@@ -60,6 +60,7 @@ function NewRecipe() {
     const [newTag, setNewTag] = useState("")
 
     const handleChange = (e,j) => {
+        console.log(e)
         if(e.file){
             setRecipeForm({...recipeForm, image:e.file})
 
@@ -71,10 +72,15 @@ function NewRecipe() {
             imageReader.readAsDataURL(e.file)
         } else if(e.target) {
             setRecipeForm({...recipeForm, [e.target.name]:e.target.value})
+        } else if(j.includes("prep")){
+            setRecipeForm({...recipeForm, [j]:e, totalTime:e+recipeForm.cookTime})
+        } else if(j.includes("cook")){
+            setRecipeForm({...recipeForm, [j]:e, totalTime:e+recipeForm.prepTime})
         } else {
             setRecipeForm({...recipeForm, [j]:e})
         }
     }
+
 
     const addIngredient = () => {
         const foundIngredient = recipeForm.ingredients.find(obj => obj.name === newIngredient.name);
@@ -232,10 +238,10 @@ function NewRecipe() {
             </div>
             <div style={{display:"flex", flexDirection:"row", justifyContent:"space-evenly", width:"70%", margin:"1rem auto"}}>
                 <Form.Item label="Prep Time" style={{width:"6.7rem"}}>
-                    <InputNumber id="prep-time-input" name="prepTime" onChange={(e) => handleChange(e,"prepTime")} value={recipeForm.prepTime} min={0} addonAfter="min"/>
+                    <InputNumber id="prep-time-input" name="prepTime" onChange={(e) => {handleChange(e,"prepTime")}} value={recipeForm.prepTime} min={0} addonAfter="min"/>
                 </Form.Item>
                 <Form.Item label="Cook Time" style={{width:"6.7rem"}}>
-                    <InputNumber id="cook-time-input" name="cookTime" onChange={(e) => handleChange(e,"cookTime")} value={recipeForm.cookTime} min={0} addonAfter="min"/>
+                    <InputNumber id="cook-time-input" name="cookTime" onChange={(e) => {handleChange(e,"cookTime")}} value={recipeForm.cookTime} min={0} addonAfter="min"/>
                 </Form.Item>
                 <Form.Item label="Total Time" style={{width:"6.7rem"}}>
                     <InputNumber id="total-time-input" name="totalTime" onChange={(e) => handleChange(e,"totalTime")} value={recipeForm.totalTime} min={0} addonAfter="min"/>
