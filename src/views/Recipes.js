@@ -5,8 +5,21 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
 
+const initialFormState = {
+    name: "",
+    description: "",
+    ingredients: [],
+    instructions: {},
+    prepTime: 0,
+    cookTime: 0,
+    totalTime: 0,
+    servings: 0,
+    owner: "",
+    tags: [],
+}
 
 function Recipes() {
+    const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipes, setRecipes] = useState([
         {
             name: "strawberry pudding",
@@ -146,7 +159,7 @@ function Recipes() {
                 </div>
             </Paper>
             <Modal open={adding} onCancel={()=>setAdding(false)} style={{minWidth:"80vw"}}>
-                <NewRecipe/>
+                <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm}/>
             </Modal>
         </div>
     );

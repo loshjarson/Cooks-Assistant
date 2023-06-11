@@ -4,19 +4,6 @@ import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
 
-const initialFormState = {
-    name: "",
-    description: "",
-    ingredients: [],
-    instructions: {},
-    prepTime: 0,
-    cookTime: 0,
-    totalTime: 0,
-    servings: 0,
-    owner: "",
-    tags: [],
-}
-
 const unitsOfMeasurement = [
     {
         value:"tsp",
@@ -49,8 +36,7 @@ const unitsOfMeasurement = [
 ]
 
 
-function NewRecipe() {
-    const [recipeForm, setRecipeForm] = useState(initialFormState)
+function NewRecipe({recipeForm, setRecipeForm}) {
     const [recipePreview, setRecipePreview] = useState()
     const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
     const [newStep, setNewStep] = useState()
