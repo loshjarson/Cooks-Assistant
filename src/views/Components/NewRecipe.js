@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Input, Form, List, InputNumber, Upload, Select, Alert } from "antd";
+import { Button, Input, Form, List, InputNumber, Upload, Select, Alert, Tag } from "antd";
 import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
@@ -56,12 +56,15 @@ function NewRecipe() {
     const [newStep, setNewStep] = useState()
     const [ingredientError, setIngredientError] = useState(false)
     const [editingStep, setEditingStep] = useState({step:0,instruction:""})
+    const [tagInputVisible, setTagInputVisible] = useState(false)
+    const [newTag, setNewTag] = useState("")
 
     const handleChange = (e,j) => {
         if(e.file){
             setRecipeForm({...recipeForm, image:e.file})
 
-            const imageReader = new FileReader()
+            //reads file as url to display in form
+            const imageReader = new FileReader() 
             imageReader.onload = function(e) {
                 setRecipePreview(e.target.result)
             }
@@ -122,12 +125,45 @@ function NewRecipe() {
         }
     }
 
+    const handleNewTagChange = (e) => {
+        setNewTag(e.target.value)
+    }
+    
+    const handleNewTag = () => {
+        console.log("addomng")
+        if(newTag && recipeForm.tags.indexOf(newTag) === -1){
+            setRecipeForm({...recipeForm, tags:[...recipeForm.tags, newTag]})
+        }
+        setTagInputVisible(false)
+        setNewTag("")
+    }
+
+    const handleCloseTag = (t) => {
+        const updatedTags = recipeForm.tags.filter(tag => tag !== t)
+        setRecipeForm({...recipeForm, tags:updatedTags})
+    }
 
     return (
-        <Form style={{margin:"2rem", minWidth:"80%", fontSize:"50px"}} layout="vertical" >
-            <Form.Item style={{width:"25rem", margin:"2rem auto"}} label="Title">
+        <Form style={{margin:"2rem auto", minWidth:"80%", fontSize:"50px"}} layout="vertical" >
+            <Form.Item style={{width:"25rem", margin:"2rem auto 0"}} label="Title">
                 <Input id="name-input" name="name" onChange={handleChange} value={recipeForm.name} />
             </Form.Item>
+            <div style={{width:"40rem", margin:"0 auto"}}>
+                {recipeForm.tags.map((tag,index) => {
+                    return(
+                    <Tag closable={true} onClose={() => handleCloseTag()} key={tag}>
+                        {tag}
+                    </Tag>
+                    )
+                })}
+                {tagInputVisible ? 
+                    <Input size="small" style={{width:78}} onPressEnter={() => handleNewTag()} onChange={(e) => handleNewTagChange(e)} value={newTag} onBlur={() => handleNewTag()}/>
+                    : 
+                    <Tag onClick={() => {setTagInputVisible(true)}}>
+                        <PlusOutlined /> New Tag
+                    </Tag>
+                }
+            </div>
             <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
                 <Form.Item style={{width:"60%", margin:"auto 0"}} label="Description">
                     <TextArea id="description-input" name="description" onChange={handleChange} value={recipeForm.description} style={{resize: 'none' }} rows={10}/>
@@ -138,7 +174,7 @@ function NewRecipe() {
                     </Upload.Dragger>
                 </Form.Item>
             </div>
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
+            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around", marginTop:"1rem"}}>
                 <div style={{width:"45%"}}>
                     <Form.Item label="Ingredients" style={{width:"100%"}}>
                         <List style={{border:"1px dashed grey", padding:"0 1rem"}}>
@@ -194,23 +230,20 @@ function NewRecipe() {
                     </div>
                 </div>
             </div>
-            <Form.Item label="Prep Time">
-                <InputNumber id="prep-time-input" name="prepTime" onChange={(e) => handleChange(e,"prepTime")} value={recipeForm.prepTime}/>
-            </Form.Item>
-            <Form.Item label="Cook Time">
-                <InputNumber id="cook-time-input" name="cookTime" onChange={(e) => handleChange(e,"cookTime")} value={recipeForm.cookTime}/>
-            </Form.Item>
-            <Form.Item label="Total Time">
-                <InputNumber id="total-time-input" name="totalTime" onChange={(e) => handleChange(e,"totalTime")} value={recipeForm.totalTime}/>
-            </Form.Item>
-            <Form.Item label="Servings">
-                <InputNumber id="servings-input" name="servings" onChange={(e) => handleChange(e,"servings")} value={recipeForm.servings}/>
-            </Form.Item>
-            <Form.Item>
-                <List id="tags-input" name="tags" onChange={handleChange}>
-
-                </List>
-            </Form.Item>
+            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-evenly", width:"70%", margin:"1rem auto"}}>
+                <Form.Item label="Prep Time" style={{width:"6.7rem"}}>
+                    <InputNumber id="prep-time-input" name="prepTime" onChange={(e) => handleChange(e,"prepTime")} value={recipeForm.prepTime} min={0} addonAfter="min"/>
+                </Form.Item>
+                <Form.Item label="Cook Time" style={{width:"6.7rem"}}>
+                    <InputNumber id="cook-time-input" name="cookTime" onChange={(e) => handleChange(e,"cookTime")} value={recipeForm.cookTime} min={0} addonAfter="min"/>
+                </Form.Item>
+                <Form.Item label="Total Time" style={{width:"6.7rem"}}>
+                    <InputNumber id="total-time-input" name="totalTime" onChange={(e) => handleChange(e,"totalTime")} value={recipeForm.totalTime} min={0} addonAfter="min"/>
+                </Form.Item>
+                <Form.Item label="Servings">
+                    <InputNumber id="servings-input" name="servings" onChange={(e) => handleChange(e,"servings")} value={recipeForm.servings} min={0}/>
+                </Form.Item>  
+            </div>
             <Form.Item>
             <Button onClick={() => console.log(recipeForm)}/>
             </Form.Item>
