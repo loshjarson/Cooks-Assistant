@@ -158,7 +158,7 @@ function Recipes() {
                     })}  
                 </div>
             </Paper>
-            <Modal open={adding} onCancel={()=>setAdding(false)} style={{minWidth:"80vw"}}>
+            <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} style={{minWidth:"80vw"}}>
                 <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm}/>
             </Modal>
         </div>
