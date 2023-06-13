@@ -122,7 +122,6 @@ function NewRecipe({recipeForm, setRecipeForm}) {
     }
     
     const handleNewTag = () => {
-        console.log("addomng")
         if(newTag && recipeForm.tags.indexOf(newTag) === -1){
             setRecipeForm({...recipeForm, tags:[...recipeForm.tags, newTag]})
         }

@@ -110,15 +110,43 @@ function Recipes() {
     }
 
 
-    // useEffect(()=>{
-    //     axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{authorization:`bearer ${sessionStorage.getItem("token")}`}})
-    //         .then(res => {
-    //             setRecipes(res.data.recipes)
-    //         })
-    //         .catch(e => {
-    //             console.log(e)
-    //         })
-    // },[])
+    useEffect(()=>{
+        axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
+            .then(res => {
+                console.log(res.data)
+                res.data.recipes.map((recipe,i) => {
+                    res.data.recipes[i] = {...recipe._doc, image:recipe.image}
+                })
+                setRecipes(res.data.recipes)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+    },[])
+
+    const handleRecipeSubmission = () => {
+        const recipeFormData = new FormData()
+        Object.entries(recipeForm).forEach(([key, value]) => {
+            if(key === "instructions" || key === "ingredients"){
+                recipeFormData.append(key, JSON.stringify(value))
+            } else {
+                recipeFormData.append(key, value);
+            }
+            
+          });
+        console.log(recipeFormData)
+        axios({
+            method:"post",
+            url:`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`,
+            data: recipeFormData,
+            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`, 'Content-Type':'multipart/form-data'},
+        }).then(res => {
+                console.log(res)
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+    }
 
     return (
         <div>
@@ -158,7 +186,7 @@ function Recipes() {
                     })}  
                 </div>
             </Paper>
-            <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} style={{minWidth:"80vw"}}>
+            <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} onOk={()=>{handleRecipeSubmission()}} style={{minWidth:"80vw"}}>
                 <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm}/>
             </Modal>
         </div>
