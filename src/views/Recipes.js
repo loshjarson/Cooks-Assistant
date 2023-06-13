@@ -160,6 +160,8 @@ function Recipes() {
                 height: "85vh",
                 margin: "auto",
                 transform: "translate(0,5%)",
+                display: "flex",
+                flexDirection: "column"
             }}>
                 <div style={{display:"flex", justifyContent:"space-around"}}>
                     <div className="filter-container" style={{display:"flex", justifyContent:"space-around", width:"30rem"}}>
@@ -172,10 +174,10 @@ function Recipes() {
                     </div>
                 </div>
                 <Divider/>
-                <div>
+                <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"center"}}>
                     {recipes.map(recipe => {
                         return(
-                            <Card style={{ maxWidth: 345 }}>
+                            <Card style={{ maxWidth: 345, margin:"1rem" }}>
                                 <CardHeader
                                     title= {recipe.name}
                                     subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
@@ -187,7 +189,22 @@ function Recipes() {
 
                             </Card>
                         )
-                    })}  
+                    })}
+                    {recipes.map(recipe => {
+                        return(
+                            <Card style={{ maxWidth: 345, margin:"1rem" }}>
+                                <CardHeader
+                                    title= {recipe.name}
+                                    subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
+                                />
+                                <CardMedia 
+                                component="img"
+                                height="194"
+                                image={`data:image/png;base64,${recipe.image}`}/>
+
+                            </Card>
+                        )
+                    })}    
                 </div>
             </Paper>
             <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} onOk={()=>{handleRecipeSubmission()}} style={{minWidth:"80vw"}}>
