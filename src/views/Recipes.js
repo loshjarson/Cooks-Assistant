@@ -1,9 +1,10 @@
-import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, } from "@mui/material";
+import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card,} from "@mui/material";
 import { FilterOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Input, Modal, Tag } from "antd";
+import { Button,  Input, Modal, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
+import {Buffer} from 'buffer'
 
 const initialFormState = {
     name: "",
@@ -115,7 +116,8 @@ function Recipes() {
             .then(res => {
                 console.log(res.data)
                 res.data.recipes.map((recipe,i) => {
-                    res.data.recipes[i] = {...recipe._doc, image:recipe.image}
+                    const base64String = Buffer.from(recipe.image).toString('base64');
+                    res.data.recipes[i] = {...recipe._doc, image:base64String}
                 })
                 setRecipes(res.data.recipes)
             })
@@ -178,9 +180,11 @@ function Recipes() {
                                     title= {recipe.name}
                                     subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
                                 />
-                                <CardMedia>
+                                <CardMedia 
+                                component="img"
+                                height="194"
+                                image={`data:image/png;base64,${recipe.image}`}/>
 
-                                </CardMedia>
                             </Card>
                         )
                     })}  
