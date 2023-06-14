@@ -116,8 +116,11 @@ function Recipes() {
             .then(res => {
                 console.log(res.data)
                 res.data.recipes.map((recipe,i) => {
-                    const base64String = Buffer.from(recipe.image).toString('base64');
-                    res.data.recipes[i] = {...recipe._doc, image:base64String}
+                    if(recipe.image){
+                        const base64String = Buffer.from(recipe.image).toString('base64');
+                        res.data.recipes[i] = {...recipe._doc, image:base64String} 
+                    }
+                    
                 })
                 setRecipes(res.data.recipes)
             })
@@ -143,7 +146,15 @@ function Recipes() {
             data: recipeFormData,
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`, 'Content-Type':'multipart/form-data'},
         }).then(res => {
-                console.log(res)
+                let recipe = res.data.recipe
+                setAdding(false)
+                setRecipeForm(initialFormState)
+                if(recipe.image){
+                    const base64String = Buffer.from(recipe.image).toString('base64');
+                    recipe = {...recipe._doc, image:base64String}
+                }
+                
+                setRecipes([...recipes, recipe])
             })
             .catch(err=>{
                 console.log(err)
@@ -186,7 +197,6 @@ function Recipes() {
                                 component="img"
                                 height="194"
                                 image={`data:image/png;base64,${recipe.image}`}/>
-
                             </Card>
                         )
                     })}
