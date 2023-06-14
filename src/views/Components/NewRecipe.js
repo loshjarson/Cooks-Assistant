@@ -14,8 +14,8 @@ const unitsOfMeasurement = [
         label:"Tablespoon"
     },
     {
-        value:"fl oz",
-        label:"Fluid Ounce"
+        value:"oz",
+        label:"Ounce"
     },
     {
         value:"c",
@@ -36,7 +36,7 @@ const unitsOfMeasurement = [
 ]
 
 
-function NewRecipe({recipeForm, setRecipeForm}) {
+function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
     const [recipePreview, setRecipePreview] = useState()
     const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
     const [newStep, setNewStep] = useState()
@@ -216,7 +216,7 @@ function NewRecipe({recipeForm, setRecipeForm}) {
                     </Form.Item>
                     
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <TextArea placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)} autoSize/>
+                        <TextArea placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)} onPressEnter={()=>addStep()} autoSize/>
                         <Button onClick={()=>addStep()}>Add</Button>
                     </div>
                 </div>
