@@ -21,33 +21,7 @@ const initialFormState = {
 
 function Recipes() {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
-    const [recipes, setRecipes] = useState([
-        {
-            name: "strawberry pudding",
-            description: "a delicious treat to bring to a party",
-            ingredients: [
-                {
-                name: "milk",
-                amount: 1,
-                unit: "cup"
-                },
-                {
-                name: "sugar",
-                amount: 1,
-                unit: "tsp"
-                },
-            ],
-            instructions: ["put the milk in a bowl","wow", "holy shit"],
-            prepTime: 35,
-            cookTime: 55,
-            totalTime: 90,
-            servings: 8,
-            owner: "Joshua",
-            tags: ["dessert", "family", "cast-iron", "meal", "delicious"],
-            createdAt: { type: Date, default: () => Date.now(), immutable:true },
-            updatedAt: { type: Date, default: () => Date.now() }
-        }
-    ]);
+    const [recipes, setRecipes] = useState([]);
 
     //controls whether or no to show new recipe module
     const [ adding, setAdding ] = useState(false)
@@ -167,6 +141,7 @@ function Recipes() {
     const handleRecipeSubmission = () => {
         const recipeFormData = new FormData()
         Object.entries(recipeForm).forEach(([key, value]) => {
+            //stringify objects and arrays to store in database
             if(key === "instructions" || key === "ingredients" || key === "tags"){
                 recipeFormData.append(key, JSON.stringify(value))
             } else {
@@ -181,6 +156,7 @@ function Recipes() {
             data: recipeFormData,
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`, 'Content-Type':'multipart/form-data'},
         }).then(res => {
+                // reset recipe form and add recipe to state
                 let recipe = res.data.recipe
                 setAdding(false)
                 setRecipeForm(initialFormState)
