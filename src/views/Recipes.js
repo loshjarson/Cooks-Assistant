@@ -1,6 +1,6 @@
-import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card,} from "@mui/material";
-import { FilterOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button,  Input, Modal, Tag } from "antd";
+import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography,} from "@mui/material";
+import { FilterOutlined, PlusOutlined} from "@ant-design/icons";
+import { Button, Modal, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
@@ -21,33 +21,7 @@ const initialFormState = {
 
 function Recipes() {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
-    const [recipes, setRecipes] = useState([
-        {
-            name: "strawberry pudding",
-            description: "a delicious treat to bring to a party",
-            ingredients: [
-                {
-                name: "milk",
-                amount: 1,
-                unit: "cup"
-                },
-                {
-                name: "sugar",
-                amount: 1,
-                unit: "tsp"
-                },
-            ],
-            instructions: ["put the milk in a bowl","wow", "holy shit"],
-            prepTime: 35,
-            cookTime: 55,
-            totalTime: 90,
-            servings: 8,
-            owner: "Joshua",
-            tags: ["dessert", "family", "cast-iron", "meal", "delicious"],
-            createdAt: { type: Date, default: () => Date.now(), immutable:true },
-            updatedAt: { type: Date, default: () => Date.now() }
-        }
-    ]);
+    const [recipes, setRecipes] = useState([]);
 
     //controls whether or no to show new recipe module
     const [ adding, setAdding ] = useState(false)
@@ -106,7 +80,43 @@ function Recipes() {
                 }
                 if(luminosity > 100) luminosity = 100;
     
-            return "hsl("+hue+", "+saturation+"%, "+luminosity+"%)";
+
+                // Convert HSL to RGB
+                var hslToRgb = (h, s, l) => {
+                    h /= 360;
+                    s /= 100;
+                    l /= 100;
+
+                    var r, g, b;
+
+                    if (s === 0) {
+                        r = g = b = l; // achromatic
+                    } else {
+                        var hue2rgb = (p, q, t) => {
+                            if (t < 0) t += 1;
+                            if (t > 1) t -= 1;
+                            if (t < 1 / 6) return p + (q - p) * 6 * t;
+                            if (t < 1 / 2) return q;
+                            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                            return p;
+                        };
+
+                        var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                        var p = 2 * l - q;
+                        r = hue2rgb(p, q, h + 1 / 3);
+                        g = hue2rgb(p, q, h);
+                        b = hue2rgb(p, q, h - 1 / 3);
+                    }
+
+                    var toHex = (c) => {
+                        var hex = Math.round(c * 255).toString(16);
+                        return hex.length === 1 ? "0" + hex : hex;
+                    };
+
+                    return "#" + toHex(r) + toHex(g) + toHex(b);
+                };
+
+                return hslToRgb(hue, saturation, luminosity);
         }
     }
 
@@ -120,7 +130,6 @@ function Recipes() {
                         const base64String = Buffer.from(recipe.image).toString('base64');
                         res.data.recipes[i] = {...recipe._doc, image:base64String} 
                     }
-                    
                 })
                 setRecipes(res.data.recipes)
             })
@@ -132,7 +141,8 @@ function Recipes() {
     const handleRecipeSubmission = () => {
         const recipeFormData = new FormData()
         Object.entries(recipeForm).forEach(([key, value]) => {
-            if(key === "instructions" || key === "ingredients"){
+            //stringify objects and arrays to store in database
+            if(key === "instructions" || key === "ingredients" || key === "tags"){
                 recipeFormData.append(key, JSON.stringify(value))
             } else {
                 recipeFormData.append(key, value);
@@ -146,6 +156,7 @@ function Recipes() {
             data: recipeFormData,
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`, 'Content-Type':'multipart/form-data'},
         }).then(res => {
+                // reset recipe form and add recipe to state
                 let recipe = res.data.recipe
                 setAdding(false)
                 setRecipeForm(initialFormState)
@@ -197,24 +208,26 @@ function Recipes() {
                                 component="img"
                                 height="194"
                                 image={`data:image/png;base64,${recipe.image}`}/>
+                                <CardContent>
+                                    <Typography>
+                                        {recipe.description}
+                                    </Typography>
+                                    <Typography>
+                                        {console.log(recipe)}
+                                        {recipe.tags.map(tag => {
+                                            return(
+                                                <Tag color={colorTag(tag)}>
+                                                {tag}
+                                                </Tag>
+                                            )
+                                            
+                                        })}
+                                        <Tag></Tag>
+                                    </Typography>
+                                </CardContent>
                             </Card>
                         )
-                    })}
-                    {recipes.map(recipe => {
-                        return(
-                            <Card style={{ maxWidth: 345, margin:"1rem" }}>
-                                <CardHeader
-                                    title= {recipe.name}
-                                    subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
-                                />
-                                <CardMedia 
-                                component="img"
-                                height="194"
-                                image={`data:image/png;base64,${recipe.image}`}/>
-
-                            </Card>
-                        )
-                    })}    
+                    })}  
                 </div>
             </Paper>
             <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} onOk={()=>{handleRecipeSubmission()}} style={{minWidth:"80vw"}}>
