@@ -167,7 +167,7 @@ function Recipes() {
     const handleRecipeSubmission = () => {
         const recipeFormData = new FormData()
         Object.entries(recipeForm).forEach(([key, value]) => {
-            if(key === "instructions" || key === "ingredients"){
+            if(key === "instructions" || key === "ingredients" || key === "tags"){
                 recipeFormData.append(key, JSON.stringify(value))
             } else {
                 recipeFormData.append(key, value);
