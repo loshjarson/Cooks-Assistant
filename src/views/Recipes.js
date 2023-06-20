@@ -1,6 +1,6 @@
 import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography,} from "@mui/material";
 import { FilterOutlined, PlusOutlined} from "@ant-design/icons";
-import { Button, Modal, Tag } from "antd";
+import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
@@ -196,13 +196,15 @@ function Recipes() {
                     </div>
                 </div>
                 <Divider/>
-                <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"center"}}>
+                <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"flex-start"}}>
                     {recipes.map(recipe => {
+                        //sets popover content
+                        const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
                         return(
-                            <Card style={{ maxWidth: 345, margin:"1rem" }}>
+                            <Card style={{ width: 345, margin:"1rem" }}>
                                 <CardHeader
                                     title= {recipe.name}
-                                    subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
+                                    subheader={`prep: ${recipe.prepTime}min | cook: ${recipe.cookTime}min | total: ${recipe.totalTime}min`}
                                 />
                                 <CardMedia 
                                 component="img"
@@ -210,10 +212,10 @@ function Recipes() {
                                 image={`data:image/png;base64,${recipe.image}`}/>
                                 <CardContent>
                                     <Typography>
-                                        {recipe.description}
+                                        {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
+                                        {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}><Tag>...</Tag></Popover> : null}
                                     </Typography>
                                     <Typography>
-                                        {console.log(recipe)}
                                         {recipe.tags.map(tag => {
                                             return(
                                                 <Tag color={colorTag(tag)}>
@@ -222,7 +224,6 @@ function Recipes() {
                                             )
                                             
                                         })}
-                                        <Tag></Tag>
                                     </Typography>
                                 </CardContent>
                             </Card>
