@@ -215,16 +215,15 @@ function Recipes() {
                                         {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
                                         {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}><Tag>...</Tag></Popover> : null}
                                     </Typography>
-                                    <Typography>
+                                    <div style={{height:"25px", display:"flex", width:"100%", overflow:"auto", margin:".5rem auto auto auto", whiteSpace:"nowrap", paddingBottom:"15px"}}>
                                         {recipe.tags.map(tag => {
                                             return(
                                                 <Tag color={colorTag(tag)}>
-                                                {tag}
+                                                    {tag}
                                                 </Tag>
                                             )
-                                            
                                         })}
-                                    </Typography>
+                                    </div>
                                 </CardContent>
                             </Card>
                         )
