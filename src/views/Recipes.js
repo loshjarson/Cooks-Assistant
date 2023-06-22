@@ -1,10 +1,11 @@
-import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography,} from "@mui/material";
-import { FilterOutlined, PlusOutlined} from "@ant-design/icons";
-import { Button, Modal, Tag } from "antd";
+import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon,} from "@mui/material";
+import { FilterOutlined, PlusOutlined, InfoCircleTwoTone} from "@ant-design/icons";
+import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
 import {Buffer} from 'buffer'
+
 
 const initialFormState = {
     name: "",
@@ -33,11 +34,13 @@ function Recipes() {
         //alert(string.length);
     
         if(string.length === 0){
-            return "hsl(0, 0, 100%)"
+            return "#3c7ee8"
         }else{
             var sanitized = string.replace(/[^A-Za-z]/, '');
             var letters = sanitized.split('');
-    
+            if(letters.length < 1){
+                return '#3c7ee8'
+            }
             //Determine the hue
                 var hue = Math.floor((letters[0].toLowerCase().charCodeAt()-96)/26*360);
                 var ord = '';
@@ -69,7 +72,7 @@ function Recipes() {
                 var ascenders = ['t','d','b','l','f','h','k'];
                 var descenders = ['q','y','p','g','j'];
                 var luminosity = 50;
-                var increment = 1/letters.length*50;
+                var increment = 1/letters.length*40;
     
                 for(i in letters){
                     if(ascenders.indexOf(letters[i]) !== -1){
@@ -120,6 +123,29 @@ function Recipes() {
         }
     }
 
+    function getReadableFontColor(backgroundHexColor) {
+        // Remove the '#' symbol from the background color string
+        backgroundHexColor = backgroundHexColor.replace('#', '');
+      
+        // Convert the hex color to its RGB representation
+        var r = parseInt(backgroundHexColor.substr(0, 2), 16);
+        var g = parseInt(backgroundHexColor.substr(2, 2), 16);
+        var b = parseInt(backgroundHexColor.substr(4, 2), 16);
+      
+        // Calculate the relative luminance of the background color
+        var relativeLuminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+      
+        // Calculate the contrast ratio with black (0, 0, 0)
+        var contrastWithBlack = (relativeLuminance + 0.05) / .45;
+      
+        // Calculate the contrast ratio with white (255, 255, 255)
+        var contrastWithWhite = (1.05) / (relativeLuminance + 0.05);
+      
+        // Determine the recommended font color based on the contrast ratios
+        var fontColor = (contrastWithBlack > contrastWithWhite) ? '#000000' : '#ffffff';
+      
+        return fontColor;
+      }
 
     useEffect(()=>{
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
@@ -196,13 +222,27 @@ function Recipes() {
                     </div>
                 </div>
                 <Divider/>
-                <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"center"}}>
+                <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"flex-start"}}>
                     {recipes.map(recipe => {
+                        //sets popover content
+                        const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
+                        const ingredientContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >
+                                {recipe.ingredients.map(ingredient => 
+                                    <p>{ingredient.amount}{ingredient.unit} {ingredient.name}</p>
+                                )}
+                            </div>)
                         return(
-                            <Card style={{ maxWidth: 345, margin:"1rem" }}>
+                            <Card style={{ width: 345, margin:"1rem" }}>
                                 <CardHeader
                                     title= {recipe.name}
-                                    subheader={`prep: ${recipe.prepTime}min, cook: ${recipe.cookTime}min, total: ${recipe.totalTime}min`}
+                                    subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
+                                    action={
+                                        <IconButton>
+                                            <Popover content={ingredientContent}>
+                                                <InfoCircleTwoTone/>
+                                            </Popover>
+                                        </IconButton>
+                                    }
                                 />
                                 <CardMedia 
                                 component="img"
@@ -210,20 +250,18 @@ function Recipes() {
                                 image={`data:image/png;base64,${recipe.image}`}/>
                                 <CardContent>
                                     <Typography>
-                                        {recipe.description}
+                                        {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
+                                        {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}><Tag>...</Tag></Popover> : null}
                                     </Typography>
-                                    <Typography>
-                                        {console.log(recipe)}
+                                    <div style={{height:"25px", display:"flex", width:"100%", overflow:"auto", margin:".5rem auto auto auto", whiteSpace:"nowrap", paddingBottom:"15px"}}>
                                         {recipe.tags.map(tag => {
                                             return(
-                                                <Tag color={colorTag(tag)}>
-                                                {tag}
+                                                <Tag color={colorTag(tag)} style={{color:getReadableFontColor(colorTag(tag))}}>
+                                                    {tag}
                                                 </Tag>
                                             )
-                                            
                                         })}
-                                        <Tag></Tag>
-                                    </Typography>
+                                    </div>
                                 </CardContent>
                             </Card>
                         )
