@@ -1,5 +1,5 @@
 import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon,} from "@mui/material";
-import { FilterOutlined, PlusOutlined} from "@ant-design/icons";
+import { FilterOutlined, PlusOutlined, InfoCircleTwoTone} from "@ant-design/icons";
 import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -231,7 +231,11 @@ function Recipes() {
                                 <CardHeader
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
-
+                                    action={
+                                        <IconButton>
+                                            <InfoCircleTwoTone/>
+                                        </IconButton>
+                                    }
                                 />
                                 <CardMedia 
                                 component="img"
