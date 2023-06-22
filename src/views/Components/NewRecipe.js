@@ -5,6 +5,10 @@ import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
 
 const unitsOfMeasurement = [
+    { 
+        value: "",
+        label:"N/A"
+    },
     {
         value:"tsp",
         label:"Teaspoon"
@@ -86,6 +90,7 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
     }
 
     const handleNewIngredient = (v,n) => {
+        console.log(v,n)
         setNewIngredient({...newIngredient, [n]:v}) 
     }
 
@@ -189,7 +194,7 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
                     {ingredientError && (<Alert message="Ingredient is already in list" type="error" closable afterClose={handleClose} />)}
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
                         <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} value={newIngredient.amount} min={0} style={{width: 150}}/>
-                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
+                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
                         <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")}/>
                         <Button onClick={()=>addIngredient()}>Add</Button>
                     </div>
