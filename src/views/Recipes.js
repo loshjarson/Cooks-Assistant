@@ -226,6 +226,11 @@ function Recipes() {
                     {recipes.map(recipe => {
                         //sets popover content
                         const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
+                        const ingredientContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >
+                                {recipe.ingredients.map(ingredient => 
+                                    <p>{ingredient.amount}{ingredient.unit} {ingredient.name}</p>
+                                )}
+                            </div>)
                         return(
                             <Card style={{ width: 345, margin:"1rem" }}>
                                 <CardHeader
@@ -233,7 +238,9 @@ function Recipes() {
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
                                         <IconButton>
-                                            <InfoCircleTwoTone/>
+                                            <Popover content={ingredientContent}>
+                                                <InfoCircleTwoTone/>
+                                            </Popover>
                                         </IconButton>
                                     }
                                 />
