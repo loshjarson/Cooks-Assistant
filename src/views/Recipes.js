@@ -1,10 +1,11 @@
-import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography,} from "@mui/material";
+import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon,} from "@mui/material";
 import { FilterOutlined, PlusOutlined} from "@ant-design/icons";
 import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
 import {Buffer} from 'buffer'
+
 
 const initialFormState = {
     name: "",
@@ -229,7 +230,8 @@ function Recipes() {
                             <Card style={{ width: 345, margin:"1rem" }}>
                                 <CardHeader
                                     title= {recipe.name}
-                                    subheader={`prep: ${recipe.prepTime}min | cook: ${recipe.cookTime}min | total: ${recipe.totalTime}min`}
+                                    subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
+
                                 />
                                 <CardMedia 
                                 component="img"
