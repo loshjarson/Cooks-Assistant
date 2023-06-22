@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Input, Form, List, InputNumber, Upload, Select, Alert, Tag } from "antd";
 import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
 
+//units used in type of measurement dropdown
 const unitsOfMeasurement = [
+    { 
+        value: "",
+        label:"N/A"
+    },
     {
         value:"tsp",
         label:"Teaspoon"
@@ -36,7 +41,7 @@ const unitsOfMeasurement = [
 ]
 
 
-function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
+function NewRecipe({recipeForm, setRecipeForm}) {
     const [recipePreview, setRecipePreview] = useState()
     const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
     const [newStep, setNewStep] = useState()
@@ -44,71 +49,78 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
     const [editingStep, setEditingStep] = useState({step:0,instruction:""})
     const [tagInputVisible, setTagInputVisible] = useState(false)
     const [newTag, setNewTag] = useState("")
+    const tagInputRef = useRef(null)
 
+    //handles changing form values
     const handleChange = (e,j) => {
-        console.log(e)
         if(e.file){
             setRecipeForm({...recipeForm, image:e.file})
 
-            //reads file as url to display in form
+            //reads image as url to display as preview
             const imageReader = new FileReader() 
             imageReader.onload = function(e) {
                 setRecipePreview(e.target.result)
             }
             imageReader.readAsDataURL(e.file)
         } else if(e.target) {
-            setRecipeForm({...recipeForm, [e.target.name]:e.target.value})
+            setRecipeForm({...recipeForm, [e.target.name]:e.target.value}) 
         } else if(j.includes("prep")){
-            setRecipeForm({...recipeForm, [j]:e, totalTime:e+recipeForm.cookTime})
+            setRecipeForm({...recipeForm, [j]:e, totalTime:e+recipeForm.cookTime}) //set prep time and calc new total time
         } else if(j.includes("cook")){
-            setRecipeForm({...recipeForm, [j]:e, totalTime:e+recipeForm.prepTime})
+            setRecipeForm({...recipeForm, [j]:e, totalTime:e+recipeForm.prepTime}) //set cook time and calc new total time
         } else {
-            setRecipeForm({...recipeForm, [j]:e})
+            setRecipeForm({...recipeForm, [j]:e}) 
         }
     }
 
-
+    //handles adding a new ingredient
     const addIngredient = () => {
         const foundIngredient = recipeForm.ingredients.find(obj => obj.name === newIngredient.name);
-        if(!foundIngredient){
-            setRecipeForm({...recipeForm, ingredients:[...recipeForm.ingredients, newIngredient]})
+        if(!foundIngredient){ //adds new ingredient to array
+            setRecipeForm({...recipeForm, ingredients:[...recipeForm.ingredients, newIngredient]})  
             setNewIngredient({unit:undefined,amount:undefined,name:undefined})
-        } else {
+        } else {   //if ingredient is already added, alert is raised
             setIngredientError(true)
             setNewIngredient({unit:undefined,amount:undefined,name:undefined})
         }
         
     }
 
-
+    //closes ingredient already existing alert
     const handleClose = () => {
         setIngredientError(false)
     }
 
+    //holds new ingredient before it is added
     const handleNewIngredient = (v,n) => {
         setNewIngredient({...newIngredient, [n]:v}) 
     }
 
+    //removes selected ingredient
     const handleRemoveIngredient = (i) => {
         const updatedArray = recipeForm.ingredients.filter(ingredient => ingredient.name !== i)
         setRecipeForm({...recipeForm, ingredients:updatedArray})
     }
 
+    //holds edits to target step
     const handleEditStep=(stepNumber)=>{
         setEditingStep({step:stepNumber, instruction:recipeForm.instructions[stepNumber]})
     }
 
+    //saves the stored edit
     const saveEdit = () => {
         const {step,instruction} = editingStep
         setRecipeForm({...recipeForm, instructions:{...recipeForm.instructions, [step]:instruction}})
         setEditingStep({step:0,instruction:""})
     }
 
+    //delete existing step, currently only works on last step
     const handleDeleteStep=(s)=>{
         const {[s]:value, ...remaining} = recipeForm.instructions
         setRecipeForm({...recipeForm, instructions:remaining})
     }
 
+    //add new step
     const addStep = () => {
         if(newStep.length > 0){
             const stepNumber = Object.keys(recipeForm.instructions).length + 1
@@ -117,10 +129,12 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
         }
     }
 
+    //stores new tag
     const handleNewTagChange = (e) => {
         setNewTag(e.target.value)
     }
     
+    //adds new tag to array
     const handleNewTag = () => {
         if(newTag && recipeForm.tags.indexOf(newTag) === -1){
             setRecipeForm({...recipeForm, tags:[...recipeForm.tags, newTag]})
@@ -129,10 +143,14 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
         setNewTag("")
     }
 
+    //closes the new tag input
     const handleCloseTag = (t) => {
         const updatedTags = recipeForm.tags.filter(tag => tag !== t)
         setRecipeForm({...recipeForm, tags:updatedTags})
     }
+
+    //auto focus new tag input
+    useEffect(()=>{tagInputRef.current?.focus()},[tagInputVisible])
 
     return (
         <Form style={{margin:"2rem auto", minWidth:"80%", fontSize:"50px"}} layout="vertical" >
@@ -148,7 +166,7 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
                     )
                 })}
                 {tagInputVisible ? 
-                    <Input size="small" style={{width:78}} onPressEnter={() => handleNewTag()} onChange={(e) => handleNewTagChange(e)} value={newTag} onBlur={() => handleNewTag()}/>
+                    <Input ref={tagInputRef} size="small" style={{width:78}} onPressEnter={() => handleNewTag()} onChange={(e) => handleNewTagChange(e)} value={newTag} onBlur={() => handleNewTag()}/>
                     : 
                     <Tag onClick={() => {setTagInputVisible(true)}}>
                         <PlusOutlined /> New Tag
@@ -189,7 +207,7 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
                     {ingredientError && (<Alert message="Ingredient is already in list" type="error" closable afterClose={handleClose} />)}
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
                         <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} value={newIngredient.amount} min={0} style={{width: 150}}/>
-                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
+                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
                         <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")}/>
                         <Button onClick={()=>addIngredient()}>Add</Button>
                     </div>
@@ -235,9 +253,6 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
                     <InputNumber id="servings-input" name="servings" onChange={(e) => handleChange(e,"servings")} value={recipeForm.servings} min={0}/>
                 </Form.Item>  
             </div>
-            <Form.Item>
-            <Button onClick={() => console.log(recipeForm)}/>
-            </Form.Item>
         </Form>
     );
 }
