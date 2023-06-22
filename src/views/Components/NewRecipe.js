@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Input, Form, List, InputNumber, Upload, Select, Alert, Tag } from "antd";
 import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
@@ -48,6 +48,7 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
     const [editingStep, setEditingStep] = useState({step:0,instruction:""})
     const [tagInputVisible, setTagInputVisible] = useState(false)
     const [newTag, setNewTag] = useState("")
+    const tagInputRef = useRef(null)
 
     const handleChange = (e,j) => {
         console.log(e)
@@ -139,6 +140,8 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
         setRecipeForm({...recipeForm, tags:updatedTags})
     }
 
+    useEffect(()=>{tagInputRef.current?.focus()},[tagInputVisible])
+
     return (
         <Form style={{margin:"2rem auto", minWidth:"80%", fontSize:"50px"}} layout="vertical" >
             <Form.Item style={{width:"25rem", margin:"2rem auto 0"}} label="Title">
@@ -153,7 +156,7 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
                     )
                 })}
                 {tagInputVisible ? 
-                    <Input size="small" style={{width:78}} onPressEnter={() => handleNewTag()} onChange={(e) => handleNewTagChange(e)} value={newTag} onBlur={() => handleNewTag()}/>
+                    <Input ref={tagInputRef} size="small" style={{width:78}} onPressEnter={() => handleNewTag()} onChange={(e) => handleNewTagChange(e)} value={newTag} onBlur={() => handleNewTag()}/>
                     : 
                     <Tag onClick={() => {setTagInputVisible(true)}}>
                         <PlusOutlined /> New Tag
