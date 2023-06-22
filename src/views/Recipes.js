@@ -33,11 +33,13 @@ function Recipes() {
         //alert(string.length);
     
         if(string.length === 0){
-            return "hsl(0, 0, 100%)"
+            return "#3c7ee8"
         }else{
             var sanitized = string.replace(/[^A-Za-z]/, '');
             var letters = sanitized.split('');
-    
+            if(letters.length < 1){
+                return '#3c7ee8'
+            }
             //Determine the hue
                 var hue = Math.floor((letters[0].toLowerCase().charCodeAt()-96)/26*360);
                 var ord = '';
@@ -69,7 +71,7 @@ function Recipes() {
                 var ascenders = ['t','d','b','l','f','h','k'];
                 var descenders = ['q','y','p','g','j'];
                 var luminosity = 50;
-                var increment = 1/letters.length*50;
+                var increment = 1/letters.length*40;
     
                 for(i in letters){
                     if(ascenders.indexOf(letters[i]) !== -1){
@@ -120,6 +122,29 @@ function Recipes() {
         }
     }
 
+    function getReadableFontColor(backgroundHexColor) {
+        // Remove the '#' symbol from the background color string
+        backgroundHexColor = backgroundHexColor.replace('#', '');
+      
+        // Convert the hex color to its RGB representation
+        var r = parseInt(backgroundHexColor.substr(0, 2), 16);
+        var g = parseInt(backgroundHexColor.substr(2, 2), 16);
+        var b = parseInt(backgroundHexColor.substr(4, 2), 16);
+      
+        // Calculate the relative luminance of the background color
+        var relativeLuminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+      
+        // Calculate the contrast ratio with black (0, 0, 0)
+        var contrastWithBlack = (relativeLuminance + 0.05) / .45;
+      
+        // Calculate the contrast ratio with white (255, 255, 255)
+        var contrastWithWhite = (1.05) / (relativeLuminance + 0.05);
+      
+        // Determine the recommended font color based on the contrast ratios
+        var fontColor = (contrastWithBlack > contrastWithWhite) ? '#000000' : '#ffffff';
+      
+        return fontColor;
+      }
 
     useEffect(()=>{
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
@@ -218,7 +243,7 @@ function Recipes() {
                                     <div style={{height:"25px", display:"flex", width:"100%", overflow:"auto", margin:".5rem auto auto auto", whiteSpace:"nowrap", paddingBottom:"15px"}}>
                                         {recipe.tags.map(tag => {
                                             return(
-                                                <Tag color={colorTag(tag)}>
+                                                <Tag color={colorTag(tag)} style={{color:getReadableFontColor(colorTag(tag))}}>
                                                     {tag}
                                                 </Tag>
                                             )
