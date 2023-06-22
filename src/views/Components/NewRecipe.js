@@ -51,7 +51,6 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
     const tagInputRef = useRef(null)
 
     const handleChange = (e,j) => {
-        console.log(e)
         if(e.file){
             setRecipeForm({...recipeForm, image:e.file})
 
@@ -91,7 +90,6 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
     }
 
     const handleNewIngredient = (v,n) => {
-        console.log(v,n)
         setNewIngredient({...newIngredient, [n]:v}) 
     }
 
@@ -243,9 +241,6 @@ function NewRecipe({recipeForm, setRecipeForm, recipes, setRecipes}) {
                     <InputNumber id="servings-input" name="servings" onChange={(e) => handleChange(e,"servings")} value={recipeForm.servings} min={0}/>
                 </Form.Item>  
             </div>
-            <Form.Item>
-            <Button onClick={() => console.log(recipeForm)}/>
-            </Form.Item>
         </Form>
     );
 }
