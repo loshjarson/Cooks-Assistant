@@ -1,5 +1,5 @@
-import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon,} from "@mui/material";
-import { FilterOutlined, PlusOutlined, InfoCircleTwoTone} from "@ant-design/icons";
+import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon, CardActions,} from "@mui/material";
+import { FilterOutlined, PlusOutlined, InfoCircleTwoTone, DeleteOutlined} from "@ant-design/icons";
 import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -249,7 +249,7 @@ function Recipes() {
                                 height="194"
                                 image={`data:image/png;base64,${recipe.image}`}/>
                                 <CardContent>
-                                    <Typography>
+                                    <Typography style={{height:"80px"}}>
                                         {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
                                         {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}><Tag>...</Tag></Popover> : null}
                                     </Typography>
@@ -262,7 +262,12 @@ function Recipes() {
                                             )
                                         })}
                                     </div>
-                                </CardContent>
+                                    </CardContent>
+                                    <CardActions disableSpacing>
+                                        <IconButton>
+                                            <DeleteOutlined/>
+                                        </IconButton>
+                                    </CardActions>
                             </Card>
                         )
                     })}  
