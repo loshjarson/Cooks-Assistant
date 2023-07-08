@@ -13,8 +13,11 @@ function Home() {
             history.push("/")
             history.go("/")
         } else {
-            axios.post("http://localhost:8000/auth/authenticate", {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
-            .then(res => {
+            axios({
+                method:"post",
+                url:"http://localhost:8000/auth/authenticate",
+                headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
+            }).then(res => {
                 setAuthenticated(true)
             })
             .catch(function(e){
