@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
 import {Buffer} from 'buffer'
-
+import RecipeOptions from "./Components/RecipeOptions";
 
 const initialFormState = {
     name: "",
@@ -258,9 +258,12 @@ function Recipes() {
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
-                                        <IconButton>
-                                            <MoreOutlined/>
-                                        </IconButton>
+                                        <Popover content={<RecipeOptions/>} placement="rightTop">
+                                            <IconButton>                                                
+                                                    <MoreOutlined/>
+                                            </IconButton> 
+                                        </Popover>
+                                        
                                     }
                                 />
                                 <CardMedia 
