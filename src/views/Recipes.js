@@ -1,6 +1,5 @@
 import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon, CardActions,} from "@mui/material";
 import { FilterOutlined, PlusOutlined, InfoCircleTwoTone, DeleteOutlined, MoreOutlined } from "@ant-design/icons";
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -199,6 +198,25 @@ function Recipes() {
             })
     }
 
+    const handleDeleteRecipe = (recipeId) => {
+        console.log(recipeId)
+        axios({
+            method:"post",
+            url:"http://localhost:8000/recipes/delete",
+            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
+            data:{recipeId},
+        }).then(res => {
+            const deletedRecipe = res.data.recipe
+            const filteredArray = recipes.filter(recipe => recipe._id !== deletedRecipe._id)
+            setRecipes([...filteredArray])
+        })
+        .catch(function(e){
+            if(e.response.status === 403){
+
+            }
+        })
+    }
+
     return (
         <div>
             <Paper 
@@ -268,7 +286,7 @@ function Recipes() {
                                                 <InfoCircleTwoTone/>
                                             </Popover>
                                         </IconButton>
-                                        <IconButton style={{marginLeft:"auto"}}>
+                                        <IconButton style={{marginLeft:"auto"}} onClick={()=>handleDeleteRecipe(recipe._id)}>
                                             <DeleteOutlined/>
                                         </IconButton>
                                     </CardActions>
