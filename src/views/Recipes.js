@@ -211,9 +211,7 @@ function Recipes() {
             setRecipes([...filteredArray])
         })
         .catch(function(e){
-            if(e.response.status === 403){
-
-            }
+            console.log(e)
         })
     }
 
