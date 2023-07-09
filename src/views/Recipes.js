@@ -27,6 +27,9 @@ function Recipes() {
     //controls whether or no to show new recipe module
     const [ adding, setAdding ] = useState(false)
 
+    //controls whether or not to show delete confirmation
+    const [deleting, setDeleting] = useState(false)
+
     //sets unique color for every word to have good looking tags
     const colorTag = (string) => {
 
@@ -198,8 +201,8 @@ function Recipes() {
             })
     }
 
-    const handleDeleteRecipe = (recipeId) => {
-        console.log(recipeId)
+    const handleDeleteRecipe = () => {
+        const recipeId = deleting._id
         axios({
             method:"post",
             url:"http://localhost:8000/recipes/delete",
@@ -209,6 +212,7 @@ function Recipes() {
             const deletedRecipe = res.data.recipe
             const filteredArray = recipes.filter(recipe => recipe._id !== deletedRecipe._id)
             setRecipes([...filteredArray])
+            setDeleting(false)
         })
         .catch(function(e){
             console.log(e)
@@ -284,7 +288,7 @@ function Recipes() {
                                                 <InfoCircleTwoTone/>
                                             </Popover>
                                         </IconButton>
-                                        <IconButton style={{marginLeft:"auto"}} onClick={()=>handleDeleteRecipe(recipe._id)}>
+                                        <IconButton style={{marginLeft:"auto"}} onClick={()=>setDeleting(recipe)}>
                                             <DeleteOutlined/>
                                         </IconButton>
                                     </CardActions>
@@ -296,6 +300,7 @@ function Recipes() {
             <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} onOk={()=>{handleRecipeSubmission()}} style={{minWidth:"80vw"}}>
                 <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm}/>
             </Modal>
+            <Modal open={deleting !== false} onCancel={()=>{setDeleting(false)}} title="Delete Recipe?" okText="Delete" cancelText="Cancel" onOk={()=>handleDeleteRecipe()}><p>Are you sure you want to delete {deleting.name}?</p></Modal>
         </div>
     );
 }
