@@ -1,5 +1,6 @@
 import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon, CardActions,} from "@mui/material";
-import { FilterOutlined, PlusOutlined, InfoCircleTwoTone, DeleteOutlined} from "@ant-design/icons";
+import { FilterOutlined, PlusOutlined, InfoCircleTwoTone, DeleteOutlined, MoreOutlined } from "@ant-design/icons";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -238,9 +239,7 @@ function Recipes() {
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
                                         <IconButton>
-                                            <Popover content={ingredientContent}>
-                                                <InfoCircleTwoTone/>
-                                            </Popover>
+                                            <MoreOutlined/>
                                         </IconButton>
                                     }
                                 />
@@ -251,7 +250,7 @@ function Recipes() {
                                 <CardContent>
                                     <Typography style={{height:"80px"}}>
                                         {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
-                                        {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}><Tag>...</Tag></Popover> : null}
+                                        {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}>...</Popover> : null}
                                     </Typography>
                                     <div style={{height:"25px", display:"flex", width:"100%", overflow:"auto", margin:".5rem auto auto auto", whiteSpace:"nowrap", paddingBottom:"15px"}}>
                                         {recipe.tags.map(tag => {
@@ -265,6 +264,11 @@ function Recipes() {
                                     </CardContent>
                                     <CardActions disableSpacing>
                                         <IconButton>
+                                            <Popover content={ingredientContent}>
+                                                <InfoCircleTwoTone/>
+                                            </Popover>
+                                        </IconButton>
+                                        <IconButton style={{marginLeft:"auto"}}>
                                             <DeleteOutlined/>
                                         </IconButton>
                                     </CardActions>
