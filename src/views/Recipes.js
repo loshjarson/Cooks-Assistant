@@ -23,6 +23,7 @@ const initialFormState = {
 function Recipes() {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipes, setRecipes] = useState([]);
+    const [lists, setLists] = useState([])
 
     //controls whether or no to show new recipe module
     const [ adding, setAdding ] = useState(false)
@@ -161,6 +162,7 @@ function Recipes() {
                     }
                 })
                 setRecipes(res.data.recipes)
+                setLists(res.data.recipeLists)
             })
             .catch(e => {
                 console.log(e)
@@ -258,7 +260,7 @@ function Recipes() {
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
-                                        <Popover content={<RecipeOptions/>} placement="rightTop">
+                                        <Popover content={<RecipeOptions lists={lists} recipe={recipe._id} setLists={setLists}/>} placement="rightTop" trigger={"focus"}>
                                             <IconButton>                                                
                                                     <MoreOutlined/>
                                             </IconButton> 
