@@ -1,11 +1,11 @@
-import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon,} from "@mui/material";
-import { FilterOutlined, PlusOutlined, InfoCircleTwoTone} from "@ant-design/icons";
+import { CardHeader, CardMedia, Divider, IconButton, Paper, TextField, Card, CardContent, Typography, Icon, CardActions,} from "@mui/material";
+import { FilterOutlined, PlusOutlined, InfoCircleTwoTone, DeleteOutlined, MoreOutlined } from "@ant-design/icons";
 import { Button, Modal, Popover, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
 import {Buffer} from 'buffer'
-
+import RecipeOptions from "./Components/RecipeOptions";
 
 const initialFormState = {
     name: "",
@@ -23,9 +23,13 @@ const initialFormState = {
 function Recipes() {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipes, setRecipes] = useState([]);
+    const [lists, setLists] = useState([])
 
     //controls whether or no to show new recipe module
     const [ adding, setAdding ] = useState(false)
+
+    //controls whether or not to show delete confirmation
+    const [deleting, setDeleting] = useState(false)
 
     //sets unique color for every word to have good looking tags
     const colorTag = (string) => {
@@ -158,6 +162,7 @@ function Recipes() {
                     }
                 })
                 setRecipes(res.data.recipes)
+                setLists(res.data.recipeLists)
             })
             .catch(e => {
                 console.log(e)
@@ -196,6 +201,24 @@ function Recipes() {
             .catch(err=>{
                 console.log(err)
             })
+    }
+
+    const handleDeleteRecipe = () => {
+        const recipeId = deleting._id
+        axios({
+            method:"post",
+            url:"http://localhost:8000/recipes/delete",
+            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
+            data:{recipeId},
+        }).then(res => {
+            const deletedRecipe = res.data.recipe
+            const filteredArray = recipes.filter(recipe => recipe._id !== deletedRecipe._id)
+            setRecipes([...filteredArray])
+            setDeleting(false)
+        })
+        .catch(function(e){
+            console.log(e)
+        })
     }
 
     return (
@@ -237,11 +260,12 @@ function Recipes() {
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
-                                        <IconButton>
-                                            <Popover content={ingredientContent}>
-                                                <InfoCircleTwoTone/>
-                                            </Popover>
-                                        </IconButton>
+                                        <Popover content={<RecipeOptions lists={lists} recipe={recipe._id} setLists={setLists}/>} placement="rightTop" trigger={"focus"}>
+                                            <IconButton>                                                
+                                                    <MoreOutlined/>
+                                            </IconButton> 
+                                        </Popover>
+                                        
                                     }
                                 />
                                 <CardMedia 
@@ -249,9 +273,9 @@ function Recipes() {
                                 height="194"
                                 image={`data:image/png;base64,${recipe.image}`}/>
                                 <CardContent>
-                                    <Typography>
+                                    <Typography style={{height:"80px"}}>
                                         {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
-                                        {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}><Tag>...</Tag></Popover> : null}
+                                        {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}>...</Popover> : null}
                                     </Typography>
                                     <div style={{height:"25px", display:"flex", width:"100%", overflow:"auto", margin:".5rem auto auto auto", whiteSpace:"nowrap", paddingBottom:"15px"}}>
                                         {recipe.tags.map(tag => {
@@ -262,7 +286,17 @@ function Recipes() {
                                             )
                                         })}
                                     </div>
-                                </CardContent>
+                                    </CardContent>
+                                    <CardActions disableSpacing>
+                                        <IconButton>
+                                            <Popover content={ingredientContent}>
+                                                <InfoCircleTwoTone/>
+                                            </Popover>
+                                        </IconButton>
+                                        <IconButton style={{marginLeft:"auto"}} onClick={()=>setDeleting(recipe)}>
+                                            <DeleteOutlined/>
+                                        </IconButton>
+                                    </CardActions>
                             </Card>
                         )
                     })}  
@@ -271,6 +305,7 @@ function Recipes() {
             <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} onOk={()=>{handleRecipeSubmission()}} style={{minWidth:"80vw"}}>
                 <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm}/>
             </Modal>
+            <Modal open={deleting !== false} onCancel={()=>{setDeleting(false)}} title="Delete Recipe?" okText="Delete" cancelText="Cancel" onOk={()=>handleDeleteRecipe()}><p>Are you sure you want to delete {deleting.name}?</p></Modal>
         </div>
     );
 }
