@@ -36,8 +36,8 @@ function Home() {
             <Navbar/>
             {authenticated ? 
                 <Routes>
-                    <Route exact path="/" Component={Recipes}/> 
-                    <Route path="lists" Component={MyLists}/>
+                    <Route exact path="/home" Component={Recipes}/> 
+                    <Route path="/lists" Component={MyLists}/>
                 </Routes>
             : null}
         </div>
