@@ -4,6 +4,7 @@ import Navbar from "./Components/Navbar";
 import { useEffect, useState } from "react";
 import history from "../history";
 import axios from "axios";
+import MyLists from "./Components/MyLists";
 
 function Home() {
     const [authenticated,setAuthenticated] = useState(false)
@@ -33,9 +34,12 @@ function Home() {
         <div>
             
             <Navbar/>
-            <Routes>
-                {authenticated ? <Route exact path="/" Component={Recipes}/> : null}
-            </Routes>
+            {authenticated ? 
+                <Routes>
+                    <Route exact path="/" Component={Recipes}/> 
+                    <Route path="lists" Component={MyLists}/>
+                </Routes>
+            : null}
         </div>
             
     );
