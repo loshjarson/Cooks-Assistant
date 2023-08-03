@@ -56,7 +56,7 @@ function RecipeOptions(args) {
         };
     }
 
-    const addToListItems = [getItem("New list","newList",null,null,null), ...lists.map(list => {
+    const addToListItems = [getItem("New list","newList",null,null,null), {type:"divider"},...lists.map(list => {
         const {name,_id} = list
         return getItem(name,_id,null,null,null)
     })]
