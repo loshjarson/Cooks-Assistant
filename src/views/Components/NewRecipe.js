@@ -41,8 +41,7 @@ const unitsOfMeasurement = [
 ]
 
 
-function NewRecipe({recipeForm, setRecipeForm}) {
-    const [recipePreview, setRecipePreview] = useState()
+function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePreview, setRecipePreview}) {
     const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
     const [newStep, setNewStep] = useState()
     const [ingredientError, setIngredientError] = useState(false)
@@ -50,6 +49,18 @@ function NewRecipe({recipeForm, setRecipeForm}) {
     const [tagInputVisible, setTagInputVisible] = useState(false)
     const [newTag, setNewTag] = useState("")
     const tagInputRef = useRef(null)
+    
+   
+    function setEditingRecipe() {
+        if(editing){
+            setRecipeForm(editingRecipe)
+            setRecipePreview(`data:image/png;base64,${editingRecipe.image}`)
+            return "editing"
+        } else {
+            return "not editing"
+        }
+    }
+    
 
     //handles changing form values
     const handleChange = (e,j) => {

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Form, Input, Menu, Modal } from 'antd';
-import { PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined } from "@ant-design/icons";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 
 function RecipeOptions(args) {
-    const {lists, recipe, setLists} = args
+    const {lists, recipeId, setLists, setEditing, recipe, setRecipeForm, setRecipePreview} = args
     const [addingList, setAddingList] = useState(false)
     const [ newListName, setNewListName ] = useState("")
 
@@ -14,18 +14,22 @@ function RecipeOptions(args) {
 
         if(e.key === "newList") {
             setAddingList(true) 
+        } else if (e.key === "edit") {
+            setRecipeForm(recipe)
+            setRecipePreview(`data:image/png;base64,${recipe.image}`)
+            setEditing(true)
         }
     }
 
     const handleSubmit = () => {
         const recipeListData = new FormData()
-        recipeListData.append("recipes",JSON.stringify([recipe]))
+        recipeListData.append("recipes",JSON.stringify([recipeId]))
         recipeListData.append("name",newListName)
 
         console.log(recipeListData)
         axios.post(
             `http://localhost:8000/lists/`,
-            {recipes:JSON.stringify([recipe]),name:newListName},
+            {recipes:JSON.stringify([recipeId]),name:newListName},
             {
                 headers: {
                     'authorization': `bearer ${sessionStorage.getItem("token")}`,
@@ -52,12 +56,12 @@ function RecipeOptions(args) {
         };
     }
 
-    const addToListItems = [getItem("New list","newList",null,null,null), ...lists.map(list => {
+    const addToListItems = [getItem("New list","newList",null,null,null), {type:"divider"},...lists.map(list => {
         const {name,_id} = list
         return getItem(name,_id,null,null,null)
     })]
 
-    const mainMenu = [getItem("Add to list","addToList",<PlusOutlined/>,addToListItems,null)]
+    const mainMenu = [getItem("Add to list","addToList",<PlusOutlined/>,addToListItems,null), getItem("Edit recipe", "edit", <EditOutlined/>,null,null)]
 
     return(
         <div>

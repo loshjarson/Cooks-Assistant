@@ -12,7 +12,7 @@ function App() {
     <Router history={history}>
       <Routes>
         <Route exact path='/' Component={Landing}/>
-        <Route path='/home/*' Component={Home}/>
+        <Route path='/*' Component={Home}/>
       </Routes>
     </Router>
   );

@@ -4,6 +4,7 @@ import Navbar from "./Components/Navbar";
 import { useEffect, useState } from "react";
 import history from "../history";
 import axios from "axios";
+import MyLists from "./Components/MyLists";
 
 function Home() {
     const [authenticated,setAuthenticated] = useState(false)
@@ -18,7 +19,7 @@ function Home() {
                 url:"http://localhost:8000/auth/authenticate",
                 headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
             }).then(res => {
-                setAuthenticated(true)
+                setAuthenticated(res.status === 200)
             })
             .catch(function(e){
                 if(e.response.status === 403){
@@ -33,9 +34,12 @@ function Home() {
         <div>
             
             <Navbar/>
-            <Routes>
-                {authenticated ? <Route exact path="/" Component={Recipes}/> : null}
-            </Routes>
+            {authenticated ? 
+                <Routes>
+                    <Route exact path="/home" Component={Recipes}/> 
+                    <Route path="/lists" Component={MyLists}/>
+                </Routes>
+            : null}
         </div>
             
     );
