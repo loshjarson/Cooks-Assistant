@@ -162,6 +162,12 @@ function Recipes() {
                     }
                 })
                 setRecipes(res.data.recipes)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        axios.get(`http://localhost:8000/recipelists/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
+            .then(res => {
                 setLists(res.data.recipeLists)
             })
             .catch(e => {
