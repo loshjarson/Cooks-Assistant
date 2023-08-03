@@ -19,7 +19,7 @@ function Home() {
                 url:"http://localhost:8000/auth/authenticate",
                 headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
             }).then(res => {
-                setAuthenticated(true)
+                setAuthenticated(res.status === 200)
             })
             .catch(function(e){
                 if(e.response.status === 403){
