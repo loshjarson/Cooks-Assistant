@@ -22,11 +22,16 @@ const initialFormState = {
 
 function Recipes() {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
+    const [recipePreview, setRecipePreview] = useState()
     const [recipes, setRecipes] = useState([]);
     const [lists, setLists] = useState([])
 
+
     //controls whether or no to show new recipe module
     const [ adding, setAdding ] = useState(false)
+
+    const [editing, setEditing] = useState(false)
+    const [editingRecipe, setEditingRecipe] = useState(null)
 
     //controls whether or not to show delete confirmation
     const [deleting, setDeleting] = useState(false)
@@ -151,7 +156,7 @@ function Recipes() {
         return fontColor;
       }
 
-    useEffect(()=>{
+    const getMyRecipes = () => {
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
             .then(res => {
                 console.log(res.data)
@@ -166,6 +171,11 @@ function Recipes() {
             .catch(e => {
                 console.log(e)
             })
+    }
+
+    useEffect(()=>{
+        getMyRecipes();
+
         axios.get(`http://localhost:8000/recipelists/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
             .then(res => {
                 setLists(res.data.recipeLists)
@@ -201,8 +211,52 @@ function Recipes() {
                     const base64String = Buffer.from(recipe.image).toString('base64');
                     recipe = {...recipe._doc, image:base64String}
                 }
+                getMyRecipes();
+            })
+            .catch(err=>{
+                console.log(err)
+            })
+    }
+
+    const handleEditRecipe = () => {
+        const recipeFormData = new FormData()
+        Object.entries(recipeForm).forEach(([key, value]) => {
+            console.log(key,value)
+            if(key === "ingredients"){
+                value.forEach(ingredient => {
+                    delete ingredient["_id"]
+                })
+            }
+            //stringify objects and arrays to store in database
+            if(key === "instructions" || key === "ingredients" || key === "tags"){
+                recipeFormData.append(key, JSON.stringify(value))
+            } else if (key === "image" && typeof value !== "string"){
+                recipeFormData.append(key,value)
+            } else if (key !== "_id" && key !== "image") {
+                recipeFormData.append(key, value);
+            }
+            
+          });
+          console.log(recipeFormData)
+
+        axios({
+            method:"put",
+            url:`http://localhost:8000/recipes/${recipeForm._id}`,
+            data: recipeFormData,
+            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`, 'Content-Type':'multipart/form-data'},
+        }).then(res => {
+                // reset recipe form and add recipe to state
+                let recipe = res.data.recipe
+                setAdding(false)
+                setEditing(false)
+                setEditingRecipe(null)
+                setRecipeForm(initialFormState)
+                if(recipe.image){
+                    const base64String = Buffer.from(recipe.image).toString('base64');
+                    recipe = {...recipe._doc, image:base64String}
+                }
                 
-                setRecipes([...recipes, recipe])
+                getMyRecipes();
             })
             .catch(err=>{
                 console.log(err)
@@ -266,7 +320,7 @@ function Recipes() {
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
-                                        <Popover content={<RecipeOptions lists={lists} recipe={recipe._id} setLists={setLists}/>} placement="rightTop" trigger={"focus"}>
+                                        <Popover content={<RecipeOptions lists={lists} recipeId={recipe._id} setLists={setLists} setEditing={setEditing} recipe={recipe} setRecipeForm={setRecipeForm} setRecipePreview={setRecipePreview}/> }  placement="rightTop" trigger={"focus"}>
                                             <IconButton>                                                
                                                     <MoreOutlined/>
                                             </IconButton> 
@@ -308,8 +362,11 @@ function Recipes() {
                     })}  
                 </div>
             </Paper>
-            <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState)}} onOk={()=>{handleRecipeSubmission()}} style={{minWidth:"80vw"}}>
-                <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm}/>
+            <Modal open={adding} onCancel={()=>{setAdding(false); setRecipeForm(initialFormState); setEditing(false); setEditingRecipe({})}} onOk={()=>{handleRecipeSubmission()}} style={{minWidth:"80vw"}}>
+                <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm} recipePreview={recipePreview} setRecipePreview={setRecipePreview}/>
+            </Modal>
+            <Modal open={editing} onCancel={()=>{setRecipeForm(initialFormState); setEditing(false); setEditingRecipe({})}} onOk={()=>{handleEditRecipe()}} style={{minWidth:"80vw"}}>
+                <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm} editingRecipe={editingRecipe} editing={editing} recipePreview={recipePreview} setRecipePreview={setRecipePreview}/>
             </Modal>
             <Modal open={deleting !== false} onCancel={()=>{setDeleting(false)}} title="Delete Recipe?" okText="Delete" cancelText="Cancel" onOk={()=>handleDeleteRecipe()}><p>Are you sure you want to delete {deleting.name}?</p></Modal>
         </div>
