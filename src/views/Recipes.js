@@ -20,11 +20,10 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes() {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, open}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
-    const [recipes, setRecipes] = useState([]);
-    const [lists, setLists] = useState([])
+
 
 
     //controls whether or no to show new recipe module
@@ -156,34 +155,6 @@ function Recipes() {
         return fontColor;
       }
 
-    const getMyRecipes = () => {
-        axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
-            .then(res => {
-                console.log(res.data)
-                res.data.recipes.map((recipe,i) => {
-                    if(recipe.image){
-                        const base64String = Buffer.from(recipe.image).toString('base64');
-                        res.data.recipes[i] = {...recipe._doc, image:base64String} 
-                    }
-                })
-                setRecipes(res.data.recipes)
-            })
-            .catch(e => {
-                console.log(e)
-            })
-    }
-
-    useEffect(()=>{
-        getMyRecipes();
-
-        axios.get(`http://localhost:8000/recipelists/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
-            .then(res => {
-                setLists(res.data.recipeLists)
-            })
-            .catch(e => {
-                console.log(e)
-            })
-    },[])
 
     const handleRecipeSubmission = () => {
         const recipeFormData = new FormData()
@@ -285,6 +256,7 @@ function Recipes() {
         <div>
             <Paper 
             className="recipe-book-container"
+            id="recipe-book-container"
             elevation={12} 
             style={{
                 width: "80vw",
