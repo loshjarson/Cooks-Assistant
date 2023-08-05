@@ -11,8 +11,9 @@ import {Buffer} from 'buffer'
 function Home() {
     const [authenticated,setAuthenticated] = useState(false)
     const [recipes, setRecipes] = useState([]);
-    const [lists, setLists] = useState([])
-    const [open, setOpen] = useState(false)
+    const [lists, setLists] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [filteredRecipes, setFilteredRecipes] = useState([])
 
     const getMyRecipes = () => {
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
@@ -25,6 +26,7 @@ function Home() {
                     }
                 })
                 setRecipes(res.data.recipes)
+                setFilteredRecipes(res.data.recipes)
             })
             .catch(e => {
                 console.log(e)
@@ -68,11 +70,20 @@ function Home() {
         <div>
             
             <Navbar setOpen={setOpen} open={open}/>
-            <SideBar open={open}/>
+            <SideBar open={open} lists={lists} setLists={setLists}/>
             <div>
             {authenticated ? 
                 <Routes>
-                    <Route exact path="/home" element={<Recipes getMyRecipes={getMyRecipes} recipes={recipes} setRecipes={setRecipes} lists={lists} setLists={setLists} open={open}/>}/> 
+                    <Route exact path="/home" element={
+                        <Recipes 
+                            getMyRecipes={getMyRecipes} 
+                            recipes={recipes} 
+                            setRecipes={setRecipes} 
+                            lists={lists} 
+                            setLists={setLists} 
+                            filteredRecipes={filteredRecipes} 
+                            setFilteredRecipes={setFilteredRecipes}
+                        />}/> 
                 </Routes>
             : null}
             </div>

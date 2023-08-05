@@ -20,7 +20,7 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, open}) {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
 
@@ -278,7 +278,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, open}) {
                 </div>
                 <Divider/>
                 <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"flex-start"}}>
-                    {recipes.map(recipe => {
+                    {filteredRecipes.map(recipe => {
                         //sets popover content
                         const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
                         const ingredientContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >
