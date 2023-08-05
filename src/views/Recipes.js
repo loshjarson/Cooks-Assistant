@@ -20,7 +20,7 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes}) {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes, focusedList}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
 
@@ -271,7 +271,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                         <TextField id="outlined-basic" label="Search" variant="outlined" style={{width:"20rem", margin:"1rem"}}/>
                         <IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton>  
                     </div>
-                    
+                    <Typography style={{margin:"auto"}}>{focusedList}</Typography>
                     <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
                         <Button onClick={()=>setAdding(true)}><PlusOutlined/>New Recipe</Button>
                     </div>

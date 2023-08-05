@@ -14,6 +14,7 @@ function Home() {
     const [lists, setLists] = useState([]);
     const [open, setOpen] = useState(false);
     const [filteredRecipes, setFilteredRecipes] = useState([])
+    const [focusedList, setFocusedList] = useState("My Recipes")
 
     const getMyRecipes = () => {
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
@@ -83,6 +84,7 @@ function Home() {
                             setLists={setLists} 
                             filteredRecipes={filteredRecipes} 
                             setFilteredRecipes={setFilteredRecipes}
+                            focusedList={focusedList}
                         />}/> 
                 </Routes>
             : null}
