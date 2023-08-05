@@ -1,37 +1,39 @@
-import React, { useState } from "react";
-import { LogoutOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import React from "react";
+import { MenuOutlined, RightOutlined } from "@ant-design/icons";
 import { Paper } from "@mui/material";
-import { Button, Input, Modal } from "antd";
-import history from '../../history';
+import { Button, Input } from "antd";
+
+
+
 
 const {Search} = Input
 
-function Navbar() {
-    const [showConfirmation, setShowConfirmation] = useState(false)
+function Navbar({open, setOpen}) {
 
-    const logout = () => {
-        sessionStorage.clear()
-        history.push("/")
-        history.go("/")
-        setShowConfirmation(false)
+    const toggleSideBar = () => {
+        setOpen(!open); 
+        
+        document.getElementById("recipe-book-container").style.transform=`translate(${open ? "0px":"-6vw"}, 5%)`; 
+        document.getElementById("recipe-book-container").style.transition="transform 300ms ease-in-out 100ms";
+
+        document.getElementById("sidebar-toggle").style.transform=`translate(${open ? "0px":"-12vw"}, 0)`; 
+        
     }
 
     
     return (
-        <Paper elevation={12} style={{
+        <Paper elevation={12} square style={{
             width: "100vw",
             height: "6vh",
             minHeight: "50px",
             display: "flex",
-            alignContent:"center"
+            alignContent:"center",
+            borderBottom:"1px solid rgb(172, 172, 172)"
             }}>
             <Search style={{width:"20vw", margin:"auto -6rem auto auto"}}/>
-            {history.location.pathname === "/home" ? 
-                <Button icon={<UnorderedListOutlined/>} type="text" style={{margin:"auto .5rem auto auto"}} onClick={()=>{history.push("/lists"); history.go("/lists")}}>My Lists</Button>
-            :   <Button icon={<UnorderedListOutlined/>} type="text" style={{margin:"auto .5rem auto auto"}} onClick={()=>{history.push("/home"); history.go("/home")}}>My Recipes</Button> }
-
-            <Button icon={<LogoutOutlined/>} type="text" style={{margin:"auto 1rem auto .5rem"}} onClick={() => setShowConfirmation(true)}>Logout</Button>
-            <Modal open={showConfirmation} onCancel={()=>setShowConfirmation(false)} title="Logout?" okText="Logout" cancelText="Nevermind" onOk={()=>logout()}><p>Are you sure you want to logout</p></Modal>
+            
+            <Button icon={open?<RightOutlined/>:<MenuOutlined/>} type="text" style={{margin:"auto .5rem auto auto",transition:"300ms ease-in-out 100ms"}} onClick={()=>{toggleSideBar()}} id="sidebar-toggle"></Button>
+            
         </Paper>
     );
 }

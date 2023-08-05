@@ -20,11 +20,10 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes() {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes, focusedList, filterRecipes}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
-    const [recipes, setRecipes] = useState([]);
-    const [lists, setLists] = useState([])
+
 
 
     //controls whether or no to show new recipe module
@@ -156,34 +155,6 @@ function Recipes() {
         return fontColor;
       }
 
-    const getMyRecipes = () => {
-        axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
-            .then(res => {
-                console.log(res.data)
-                res.data.recipes.map((recipe,i) => {
-                    if(recipe.image){
-                        const base64String = Buffer.from(recipe.image).toString('base64');
-                        res.data.recipes[i] = {...recipe._doc, image:base64String} 
-                    }
-                })
-                setRecipes(res.data.recipes)
-            })
-            .catch(e => {
-                console.log(e)
-            })
-    }
-
-    useEffect(()=>{
-        getMyRecipes();
-
-        axios.get(`http://localhost:8000/recipelists/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
-            .then(res => {
-                setLists(res.data.recipeLists)
-            })
-            .catch(e => {
-                console.log(e)
-            })
-    },[])
 
     const handleRecipeSubmission = () => {
         const recipeFormData = new FormData()
@@ -285,6 +256,7 @@ function Recipes() {
         <div>
             <Paper 
             className="recipe-book-container"
+            id="recipe-book-container"
             elevation={12} 
             style={{
                 width: "80vw",
@@ -299,14 +271,14 @@ function Recipes() {
                         <TextField id="outlined-basic" label="Search" variant="outlined" style={{width:"20rem", margin:"1rem"}}/>
                         <IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton>  
                     </div>
-                    
+                    <Typography style={{margin:"auto"}}>{focusedList}</Typography>
                     <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
                         <Button onClick={()=>setAdding(true)}><PlusOutlined/>New Recipe</Button>
                     </div>
                 </div>
                 <Divider/>
                 <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"flex-start"}}>
-                    {recipes.map(recipe => {
+                    {filteredRecipes.map(recipe => {
                         //sets popover content
                         const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
                         const ingredientContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >
