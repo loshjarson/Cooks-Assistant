@@ -20,7 +20,7 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes, focusedList}) {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes, focusedList, filterRecipes}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
 

@@ -7,7 +7,7 @@ import history from '../../history';
 
 
 
-function SideBar({open, lists, setLists, setFocusedList}) {
+function SideBar({open, lists, setLists, setFocusedList, filterRecipes}) {
     const [showConfirmation, setShowConfirmation] = useState(false)
 
     const logout = () => {
@@ -27,12 +27,20 @@ function SideBar({open, lists, setLists, setFocusedList}) {
         }}
         >
             <div>
+                        <Button
+                            className='list'
+                            style={{width:"100%", height:"4rem"}}
+                            onClick={()=>{filterRecipes((recipe)=>{return true;})}}
+                        >
+                            My Recipes
+                        </Button>
                 {lists.map(list => {
                     return(
                         <Button
                             id={list._id}
                             className='list'
                             style={{width:"100%", height:"4rem"}}
+                            onClick={()=>{filterRecipes((recipe)=>{return list.recipes.includes(recipe._id)}, list.name)}}
                         >
                             {list.name}
                         </Button>

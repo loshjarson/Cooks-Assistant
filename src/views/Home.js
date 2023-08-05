@@ -16,6 +16,12 @@ function Home() {
     const [filteredRecipes, setFilteredRecipes] = useState([])
     const [focusedList, setFocusedList] = useState("My Recipes")
 
+    const filterRecipes = (dynamicFilter, listName) => {
+        const filtered = recipes.filter((recipe)=>dynamicFilter(recipe))
+        setFilteredRecipes(filtered)
+        listName ? setFocusedList(listName) : setFocusedList("My Recipes")
+    }
+
     const getMyRecipes = () => {
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
             .then(res => {
@@ -71,7 +77,7 @@ function Home() {
         <div>
             
             <Navbar setOpen={setOpen} open={open}/>
-            <SideBar open={open} lists={lists} setLists={setLists}/>
+            <SideBar open={open} lists={lists} setLists={setLists} filterRecipes={filterRecipes}/>
             <div>
             {authenticated ? 
                 <Routes>
@@ -85,6 +91,7 @@ function Home() {
                             filteredRecipes={filteredRecipes} 
                             setFilteredRecipes={setFilteredRecipes}
                             focusedList={focusedList}
+                            filterRecipes={filterRecipes}
                         />}/> 
                 </Routes>
             : null}
