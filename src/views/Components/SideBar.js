@@ -44,17 +44,17 @@ function SideBar({open, lists, setLists, setFocusedList, filterRecipes, dragging
         anchor="right"
         sx={{
             margin: "auto",
-            [`& .MuiDrawer-paper`]: {top:"auto", width:open ? "15vw": "0", transition:"width 300ms ease-in-out 100ms"},
+            [`& .MuiDrawer-paper`]: {top:"auto", width:open ? "15vw": "0", transition:"width 300ms ease-in-out 100ms", zIndex:"500"},
         }}
         >
             <div>
-                        <Button
-                            className='list'
-                            style={{width:"100%", height:"4rem"}}
-                            onClick={()=>{filterRecipes((recipe)=>{return true;})}}
-                        >
-                            My Recipes
-                        </Button>
+                <Button
+                    className='list'
+                    style={{width:"100%", height:"4rem"}}
+                    onClick={()=>{filterRecipes((recipe)=>{return true;})}}
+                >
+                    My Recipes
+                </Button>
                 {lists.map(list => {
                     return(
                         <Button
