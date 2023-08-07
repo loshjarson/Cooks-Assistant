@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Form, Input, Menu, Modal } from 'antd';
-import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import FormItem from "antd/es/form/FormItem";
 import axios from "axios";
 
-function RecipeOptions(args) {
-    const {lists, recipeId, setLists, setEditing, recipe, setRecipeForm, setRecipePreview} = args
+function RecipeOptions({lists, recipeId, setLists, setEditing, recipe, setRecipeForm, setRecipePreview, setDeleting}) {
     const [addingList, setAddingList] = useState(false)
     const [ newListName, setNewListName ] = useState("")
 
@@ -18,6 +17,8 @@ function RecipeOptions(args) {
             setRecipeForm(recipe)
             setRecipePreview(`data:image/png;base64,${recipe.image}`)
             setEditing(true)
+        } else if (e.key === "delete") {
+            setDeleting(recipe)
         }
     }
 
@@ -61,7 +62,7 @@ function RecipeOptions(args) {
         return getItem(name,_id,null,null,null)
     })]
 
-    const mainMenu = [getItem("Add to list","addToList",<PlusOutlined/>,addToListItems,null), getItem("Edit recipe", "edit", <EditOutlined/>,null,null)]
+    const mainMenu = [getItem("Add to list","addToList",<PlusOutlined/>,addToListItems,null), getItem("Edit recipe", "edit", <EditOutlined/>,null,null), getItem("Delete recipe", "delete", <DeleteOutlined/>, null, null)]
 
     return(
         <div>
