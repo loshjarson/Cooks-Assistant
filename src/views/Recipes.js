@@ -292,7 +292,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
-                                        <Popover content={<RecipeOptions lists={lists} recipeId={recipe._id} setLists={setLists} setEditing={setEditing} recipe={recipe} setRecipeForm={setRecipeForm} setRecipePreview={setRecipePreview}/> }  placement="rightTop" trigger={"focus"}>
+                                        <Popover content={<RecipeOptions lists={lists} recipeId={recipe._id} setLists={setLists} setEditing={setEditing} recipe={recipe} setRecipeForm={setRecipeForm} setRecipePreview={setRecipePreview} setDeleting={setDeleting}/> }  placement="rightTop" trigger={"focus"}>
                                             <IconButton>                                                
                                                     <MoreOutlined/>
                                             </IconButton> 
@@ -305,7 +305,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                                 height="194"
                                 image={`data:image/png;base64,${recipe.image}`}/>
                                 <CardContent>
-                                    <Typography style={{height:"80px"}}>
+                                    <Typography style={{height:"45px"}}>
                                         {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
                                         {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}>...</Popover> : null}
                                     </Typography>
@@ -319,16 +319,6 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                                         })}
                                     </div>
                                     </CardContent>
-                                    <CardActions disableSpacing>
-                                        <IconButton>
-                                            <Popover content={ingredientContent}>
-                                                <InfoCircleTwoTone/>
-                                            </Popover>
-                                        </IconButton>
-                                        <IconButton style={{marginLeft:"auto"}} onClick={()=>setDeleting(recipe)}>
-                                            <DeleteOutlined/>
-                                        </IconButton>
-                                    </CardActions>
                             </Card>
                         )
                     })}  
