@@ -15,6 +15,7 @@ function Home() {
     const [open, setOpen] = useState(false);
     const [filteredRecipes, setFilteredRecipes] = useState([])
     const [focusedList, setFocusedList] = useState("My Recipes")
+    const [dragging, setDragging] = useState("")
 
     const filterRecipes = (dynamicFilter, listName) => {
         const filtered = recipes.filter((recipe)=>dynamicFilter(recipe))
@@ -77,7 +78,7 @@ function Home() {
         <div>
             
             <Navbar setOpen={setOpen} open={open}/>
-            <SideBar open={open} lists={lists} setLists={setLists} filterRecipes={filterRecipes}/>
+            <SideBar open={open} lists={lists} setLists={setLists} filterRecipes={filterRecipes} dragging={dragging} setDragging={setDragging}/>
             <div>
             {authenticated ? 
                 <Routes>
@@ -92,6 +93,7 @@ function Home() {
                             setFilteredRecipes={setFilteredRecipes}
                             focusedList={focusedList}
                             filterRecipes={filterRecipes}
+                            setDragging={setDragging}
                         />}/> 
                 </Routes>
             : null}

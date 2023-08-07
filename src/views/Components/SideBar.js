@@ -1,20 +1,41 @@
 import React, { useState } from 'react';
-import { Divider, Drawer } from '@mui/material';
+import { Button, Divider, Drawer } from '@mui/material';
 import { LogoutOutlined } from "@ant-design/icons";
-import { Button, Modal } from "antd";
+import { Modal } from "antd";
 import history from '../../history';
+import axios from "axios";
 
 
 
 
-function SideBar({open, lists, setLists, setFocusedList, filterRecipes}) {
+function SideBar({open, lists, setLists, setFocusedList, filterRecipes, dragging, setDragging}) {
     const [showConfirmation, setShowConfirmation] = useState(false)
+    const [hovered, setHovered] = useState("")
 
     const logout = () => {
         sessionStorage.clear()
         history.push("/")
         history.go("/")
         setShowConfirmation(false)
+    }
+
+    const addToList = (recipeId,list) => {
+        console.log(list)
+        axios.put(
+            `http://localhost:8000/recipelists/${list._id}`,
+            {recipes:JSON.stringify([...list.recipes, recipeId])},
+            {
+                headers: {
+                    'authorization': `bearer ${sessionStorage.getItem("token")}`,
+                },
+            })
+        .then(res => {
+            console.log(res)
+            const updatedLists = lists.filter(l => l._id !== res.data.updatedList._id);
+            updatedLists.push(res.data.updatedList)
+            setLists(updatedLists)
+            setDragging("")
+        })
     }
     
     return ( 
@@ -40,12 +61,19 @@ function SideBar({open, lists, setLists, setFocusedList, filterRecipes}) {
                             id={list._id}
                             className='list'
                             style={{width:"100%", height:"4rem"}}
+                            color={list._id === hovered ? "secondary" : "primary"}
+                            variant={list._id === hovered ? "outlined" : "text"}
                             onClick={()=>{filterRecipes((recipe)=>{return list.recipes.includes(recipe._id)}, list.name)}}
+                            onDragOver={(e)=>{e.preventDefault(); setHovered(list._id)}}
+                            onDragLeave={(e)=>{e.preventDefault(); setHovered("")}}
+                            onDrop={()=>{setHovered(""); addToList(dragging,list)}}
+
                         >
                             {list.name}
                         </Button>
                     )
                 })}
+
             </div>
             <div 
             id='account-actions'

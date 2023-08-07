@@ -20,7 +20,7 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes, focusedList, filterRecipes}) {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes, focusedList, filterRecipes, setDragging}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
 
@@ -287,7 +287,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                                 )}
                             </div>)
                         return(
-                            <Card style={{ width: 345, margin:"1rem" }}>
+                            <Card style={{ width: 345, margin:"1rem" }} draggable onDrag={(e)=>setDragging(recipe._id)}>
                                 <CardHeader
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
