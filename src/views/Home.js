@@ -35,6 +35,7 @@ function Home() {
                 })
                 setRecipes(res.data.recipes)
                 setFilteredRecipes(res.data.recipes)
+                setFocusedList("My Recipes")
             })
             .catch(e => {
                 console.log(e)
