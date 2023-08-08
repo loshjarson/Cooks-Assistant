@@ -8,7 +8,7 @@ import axios from "axios";
 
 
 
-function SideBar({open, lists, setLists, setFocusedList, filterRecipes, dragging, setDragging, filterValues, setFilterValues}) {
+function SideBar({open, lists, setLists, dragging, setDragging, filterValues, setFilterValues}) {
     const [showConfirmation, setShowConfirmation] = useState(false)
     const [hovered, setHovered] = useState("")
 
