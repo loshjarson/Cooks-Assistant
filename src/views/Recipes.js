@@ -20,7 +20,7 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setFilteredRecipes, focusedList, filterRecipes, setDragging}) {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, focusedList, setDragging, filterValues, setFilterValues}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
 
@@ -252,6 +252,10 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
         })
     }
 
+    const handleSearch = (searchString) => {
+        setFilterValues({...filterValues, search:searchString})
+    }
+
     return (
         <div>
             <Paper 
@@ -268,10 +272,10 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
             }}>
                 <div style={{display:"flex", justifyContent:"space-around"}}>
                     <div className="filter-container" style={{display:"flex", justifyContent:"space-around", width:"30rem"}}>
-                        <TextField id="outlined-basic" label="Search" variant="outlined" style={{width:"20rem", margin:"1rem"}}/>
+                        <TextField id="outlined-basic" label="Search" variant="outlined" style={{width:"20rem", margin:"1rem"}} onChange={(e)=>setFilterValues({...filterValues, search:e.target.value})}/>
                         <IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton>  
                     </div>
-                    <Typography style={{margin:"auto"}}>{focusedList}</Typography>
+                    <Typography style={{margin:"auto"}}>{filterValues.list.name}</Typography>
                     <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
                         <Button onClick={()=>setAdding(true)}><PlusOutlined/>New Recipe</Button>
                     </div>

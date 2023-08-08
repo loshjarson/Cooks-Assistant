@@ -8,7 +8,7 @@ import axios from "axios";
 
 
 
-function SideBar({open, lists, setLists, setFocusedList, filterRecipes, dragging, setDragging}) {
+function SideBar({open, lists, setLists, setFocusedList, filterRecipes, dragging, setDragging, filterValues, setFilterValues}) {
     const [showConfirmation, setShowConfirmation] = useState(false)
     const [hovered, setHovered] = useState("")
 
@@ -51,7 +51,7 @@ function SideBar({open, lists, setLists, setFocusedList, filterRecipes, dragging
                 <Button
                     className='list'
                     style={{width:"100%", height:"4rem"}}
-                    onClick={()=>{filterRecipes((recipe)=>{return true;})}}
+                    onClick={()=>setFilterValues({...filterValues, list:{name:"My Recipes"}})}
                 >
                     My Recipes
                 </Button>
@@ -63,7 +63,7 @@ function SideBar({open, lists, setLists, setFocusedList, filterRecipes, dragging
                             style={{width:"100%", height:"4rem"}}
                             color={list._id === hovered ? "secondary" : "primary"}
                             variant={list._id === hovered ? "outlined" : "text"}
-                            onClick={()=>{filterRecipes((recipe)=>{return list.recipes.includes(recipe._id)}, list.name)}}
+                            onClick={()=>setFilterValues({...filterValues, list:list})}
                             onDragOver={(e)=>{e.preventDefault(); setHovered(list._id)}}
                             onDragLeave={(e)=>{e.preventDefault(); setHovered("")}}
                             onDrop={()=>{setHovered(""); addToList(dragging,list)}}
