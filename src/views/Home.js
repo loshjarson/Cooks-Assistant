@@ -14,7 +14,6 @@ function Home() {
     const [lists, setLists] = useState([]);
     const [open, setOpen] = useState(false);
     const [filteredRecipes, setFilteredRecipes] = useState([])
-    const [focusedList, setFocusedList] = useState("My Recipes")
     const [dragging, setDragging] = useState("")
     const [filterValues, setFilterValues] = useState({search:"",prep:null, cook:null, total:null, list:{name:"My Recipes"}})
 
@@ -22,21 +21,21 @@ function Home() {
         //compare recipes to filter object
         let filteredList = recipes.filter((recipe)=>{
             let matchesFilter = true;
-            let finished = false;
-            while(matchesFilter && !finished) {
-                //checks recipe names, tags, and ingredients for search value
-                if(filterValues.search.length > 0){
-                    const search = filterValues.search.toLowerCase()
-                    const inName = recipe.name.toLowerCase().includes(search)
-                    const inTags = recipe.tags.map((tag)=>tag.toLowerCase()).includes(search)
-                    const inIngredients = recipe.ingredients.map((i)=>i.name.toLowerCase()).includes(search)
-                    matchesFilter = inName || inTags || inIngredients
-                }
-                //checks if recipe is in focused list unless user is on My Recipes page
-                if(filterValues.list.name !== "My Recipes") {
-                    matchesFilter = filterValues.list.recipes.includes(recipe._id)
-                }
-                finished = true
+            //checks recipe names, tags, and ingredients for search value
+            if(filterValues.search.length > 0){
+                const search = filterValues.search.toLowerCase()
+                const inName = recipe.name.toLowerCase().includes(search)
+                const inTags = recipe.tags.map((tag)=>tag.toLowerCase()).includes(search)
+                const inIngredients = recipe.ingredients.map((i)=>i.name.toLowerCase()).includes(search)
+                matchesFilter = inName || inTags || inIngredients
+                //escapes if filter not met
+                if(!matchesFilter) return false
+            }
+            //checks if recipe is in focused list unless user is on My Recipes page
+            if(filterValues.list.name !== "My Recipes") {
+                matchesFilter = filterValues.list.recipes.includes(recipe._id)
+                //escapes if filter not met
+                if(!matchesFilter) return false
             }
             return matchesFilter
         })
@@ -54,8 +53,6 @@ function Home() {
                     }
                 })
                 setRecipes(res.data.recipes)
-                setFilteredRecipes(res.data.recipes)
-                setFocusedList({name:"My Recipes"})
             })
             .catch(e => {
                 console.log(e)
@@ -111,7 +108,6 @@ function Home() {
                             lists={lists} 
                             setLists={setLists} 
                             filteredRecipes={filteredRecipes} 
-                            focusedList={focusedList}
                             setDragging={setDragging}
                             filterValues={filterValues}
                             setFilterValues={setFilterValues}
