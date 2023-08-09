@@ -6,6 +6,7 @@ import axios from "axios";
 import NewRecipe from "./Components/NewRecipe";
 import {Buffer} from 'buffer'
 import RecipeOptions from "./Components/RecipeOptions";
+import RecipeView from "./Components/RecipeView";
 
 const initialFormState = {
     name: "",
@@ -24,7 +25,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
 
-
+    const [ viewing, setViewing ] = useState(null)
 
     //controls whether or no to show new recipe module
     const [ adding, setAdding ] = useState(false)
@@ -284,13 +285,13 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                         const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
 
                         return(
-                            <Card style={{ width: 345, margin:"1rem" }} draggable onDrag={(e)=>setDragging(recipe._id)}>
+                            <Card style={{ width: 345, margin:"1rem", cursor:"pointer" }} draggable onDrag={(e)=>setDragging(recipe._id)} onClick={()=>{console.log(recipe);setViewing(recipe)}}>
                                 <CardHeader
                                     title= {recipe.name}
                                     subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
                                     action={
-                                        <Popover content={<RecipeOptions lists={lists} recipeId={recipe._id} setLists={setLists} setEditing={setEditing} recipe={recipe} setRecipeForm={setRecipeForm} setRecipePreview={setRecipePreview} setDeleting={setDeleting}/> }  placement="rightTop" trigger={"focus"}>
-                                            <IconButton>                                                
+                                        <Popover content={<RecipeOptions lists={lists} recipeId={recipe._id} setLists={setLists} setEditing={setEditing} recipe={recipe} setRecipeForm={setRecipeForm} setRecipePreview={setRecipePreview} setDeleting={setDeleting}/> }  placement="rightTop" trigger="focus">
+                                            <IconButton onClick={(e)=>{if (!e) var e = window.event; e.cancelBubble = true;if (e.stopPropagation) e.stopPropagation();}}>                                                
                                                     <MoreOutlined/>
                                             </IconButton> 
                                         </Popover>
@@ -327,7 +328,12 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
             <Modal open={editing} onCancel={()=>{setRecipeForm(initialFormState); setEditing(false); setEditingRecipe({})}} onOk={()=>{handleEditRecipe()}} style={{minWidth:"80vw"}}>
                 <NewRecipe recipeForm={recipeForm} setRecipeForm={setRecipeForm} editingRecipe={editingRecipe} editing={editing} recipePreview={recipePreview} setRecipePreview={setRecipePreview}/>
             </Modal>
-            <Modal open={deleting !== false} onCancel={()=>{setDeleting(false)}} title="Delete Recipe?" okText="Delete" cancelText="Cancel" onOk={()=>handleDeleteRecipe()}><p>Are you sure you want to delete {deleting.name}?</p></Modal>
+            <Modal open={deleting} onCancel={()=>{setDeleting(false)}} title="Delete Recipe?" okText="Delete" cancelText="Cancel" onOk={()=>handleDeleteRecipe()}>
+                <p>Are you sure you want to delete {deleting.name}?</p>
+            </Modal>
+            <Modal open={viewing !== null} onCancel={()=>{setViewing(null)}} footer={null} style={{minWidth:"80vw"}}>
+                <RecipeView recipe={viewing} colorTag={colorTag} getReadableFontColor={getReadableFontColor}/>
+            </Modal>
         </div>
     );
 }
