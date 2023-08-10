@@ -15,7 +15,9 @@ function Home() {
     const [open, setOpen] = useState(false);
     const [filteredRecipes, setFilteredRecipes] = useState([])
     const [dragging, setDragging] = useState("")
-    const [filterValues, setFilterValues] = useState({search:"",prep:null, cook:null, total:null, list:{name:"My Recipes"}})
+    const [filterValues, setFilterValues] = useState({search:"",prepTime:[0,Infinity], cookTime:[0,Infinity], totalTime:[0,Infinity], list:{name:"My Recipes"}})
+    const [tagsInFilter, setTagsInFilter] = useState([])
+    const [ingredientsInFilter, setIngredientsInFilter] = useState([])
 
     useEffect(()=>{
         //compare recipes to filter object
@@ -37,8 +39,30 @@ function Home() {
                 //escapes if filter not met
                 if(!matchesFilter) return false
             }
+            if(filterValues.prepTime[0] !== 0 || filterValues.prepTime[1] !== Infinity){
+                matchesFilter = recipe.prepTime >= filterValues.prepTime[0] && recipe.prepTime <= filterValues.prepTime[1]
+                if(!matchesFilter) return false
+            }
+            if(filterValues.cookTime[0] !== 0 || filterValues.cookTime[1] !== Infinity){
+                matchesFilter = recipe.cookTime >= filterValues.cookTime[0] && recipe.cookTime <= filterValues.cookTime[1]
+                if(!matchesFilter) return false
+            }
+            if(filterValues.totalTime[0] !== 0 || filterValues.totalTime[1] !== Infinity){
+                matchesFilter = recipe.totalTime >= filterValues.totalTime[0] && recipe.totalTime <= filterValues.totalTime[1]
+                if(!matchesFilter) return false
+            }
             return matchesFilter
         })
+        const tagsToFilter = []
+        filteredList.forEach(recipe => {
+            tagsToFilter.push(...recipe.tags.filter(tag => !tagsToFilter.includes(tag)))
+        })
+        const ingredientsToFilter = []
+        filteredList.forEach(recipe => {
+            ingredientsToFilter.push(...recipe.ingredients.map(ingredient => {return ingredient.name.toLowerCase()}).filter(ingredient => !ingredientsToFilter.includes(ingredient)))
+        })
+        setIngredientsInFilter(ingredientsToFilter)
+        setTagsInFilter(tagsToFilter)
         setFilteredRecipes(filteredList)
     },[filterValues,recipes])
 
@@ -111,6 +135,8 @@ function Home() {
                             setDragging={setDragging}
                             filterValues={filterValues}
                             setFilterValues={setFilterValues}
+                            tagsInFilter={tagsInFilter}
+                            ingredientsInFilter={ingredientsInFilter}
                         />}/> 
                 </Routes>
             : null}

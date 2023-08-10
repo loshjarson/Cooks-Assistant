@@ -7,6 +7,7 @@ import NewRecipe from "./Components/NewRecipe";
 import {Buffer} from 'buffer'
 import RecipeOptions from "./Components/RecipeOptions";
 import RecipeView from "./Components/RecipeView";
+import Filter from "./Components/Filter";
 
 const initialFormState = {
     name: "",
@@ -271,7 +272,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                 <div style={{display:"flex", justifyContent:"space-around"}}>
                     <div className="filter-container" style={{display:"flex", justifyContent:"space-around", width:"30rem"}}>
                         <TextField id="outlined-basic" label="Search" variant="outlined" style={{width:"20rem", margin:"1rem"}} onChange={(e)=>setFilterValues({...filterValues, search:e.target.value})}/>
-                        <IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton>  
+                        <Popover content={<Filter filterValues={filterValues} setFilterValues={setFilterValues}/>} placement="rightTop" trigger="click"><IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton></Popover>  
                     </div>
                     <Typography style={{margin:"auto"}}>{filterValues.list.name}</Typography>
                     <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
