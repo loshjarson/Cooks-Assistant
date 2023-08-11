@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Slider, Box, Button } from '@mui/material'
-import { Typography } from 'antd';
+import { Tag, Typography } from 'antd';
+import { AddOutlined } from '@mui/icons-material';
 
 function valuetext(value) {
     return `${value} min`;
@@ -17,7 +18,7 @@ const valueLabelFormat = (value) => {
         }
     }
 
-function Filter({filterValues,setFilterValues,tagsInFilter,ingredientsInFilter}) {
+function Filter({filterValues,setFilterValues,tagsInFilter,ingredientsInFilter, addedTags, setAddedTags, addedIngredients, setAddedIngredients}) {
     const [prepTime, setPrepTime] = useState([0,Infinity])
     const [cookTime, setCookTime] = useState([0,Infinity])
     const [totalTime, setTotalTime] = useState([0,Infinity])
@@ -38,11 +39,19 @@ function Filter({filterValues,setFilterValues,tagsInFilter,ingredientsInFilter})
         setFilterValues({...filterValues, [name]:newValue})
       };
 
-    
+    const handleIngredientChange = (ingredient) => {
+        if (addedIngredients.includes(ingredient)) setAddedIngredients([...addedIngredients.filter(addedIngredient => addedIngredient !== ingredient)])
+        else setAddedIngredients([...addedIngredients,ingredient])
+        
+    }
 
+    const handleTagChange = (tag) => {
+        if(addedTags.includes(tag)) setAddedTags([...addedTags.filter(addedTag => addedTag !== tag)]) 
+        else setAddedTags([...addedTags,tag])
+    }
 
     return ( 
-    <div style={{width:"20rem"}}>
+    <div style={{width:"30rem", display:"flex"}}>
         <Box sx={{ width: "15rem", margin:"auto" }}>
             <Typography>Prep Time:</Typography>
             <Slider
@@ -77,6 +86,22 @@ function Filter({filterValues,setFilterValues,tagsInFilter,ingredientsInFilter})
                 getAriaValueText={valuetext}
                 disableSwap
             />
+        </Box>
+        <Box sx={{display:"flex", flexDirection:"column", justifyContent:"space-evenly"}}>
+            <Box sx={{border:"1px solid grey", height:"45%",width:"12.5rem", borderRadius:"10px", overflow:"scroll"}}>
+                {tagsInFilter.map(tag => {
+                    return(
+                        <Tag color={addedTags.includes(tag) ? "green" : ""} style={{cursor:"pointer"}} onClick={()=>handleTagChange(tag)}>{tag}</Tag>
+                    )
+                })}
+            </Box>
+            <Box sx={{border:"1px solid grey", height:"45%",width:"12.5rem", borderRadius:"10px", overflow:"scroll"}}>
+                {ingredientsInFilter.map(ingredient => {
+                    return(
+                        <Tag color={addedIngredients.includes(ingredient) ? "green" : ""} style={{cursor:"pointer"}} onClick={()=>handleIngredientChange(ingredient)}>{ingredient}</Tag>
+                    )
+                })}
+            </Box>
         </Box>
     </div>
      );

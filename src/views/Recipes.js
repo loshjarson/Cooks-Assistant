@@ -22,7 +22,7 @@ const initialFormState = {
     tags: [],
 }
 
-function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setDragging, filterValues, setFilterValues}) {
+function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRecipes, setDragging, filterValues, setFilterValues, tagsInFilter, ingredientsInFilter, addedTags, setAddedTags, addedIngredients, setAddedIngredients}) {
     const [recipeForm, setRecipeForm] = useState(initialFormState)
     const [recipePreview, setRecipePreview] = useState()
 
@@ -272,7 +272,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
                 <div style={{display:"flex", justifyContent:"space-around"}}>
                     <div className="filter-container" style={{display:"flex", justifyContent:"space-around", width:"30rem"}}>
                         <TextField id="outlined-basic" label="Search" variant="outlined" style={{width:"20rem", margin:"1rem"}} onChange={(e)=>setFilterValues({...filterValues, search:e.target.value})}/>
-                        <Popover content={<Filter filterValues={filterValues} setFilterValues={setFilterValues}/>} placement="rightTop" trigger="click"><IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton></Popover>  
+                        <Popover content={<Filter filterValues={filterValues} setFilterValues={setFilterValues} tagsInFilter={tagsInFilter} ingredientsInFilter={ingredientsInFilter} addedTags={addedTags} setAddedTags={setAddedTags} addedIngredients={addedIngredients} setAddedIngredients={setAddedIngredients}/>} placement="rightTop" trigger="click"><IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton></Popover>  
                     </div>
                     <Typography style={{margin:"auto"}}>{filterValues.list.name}</Typography>
                     <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
