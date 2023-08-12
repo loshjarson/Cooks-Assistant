@@ -78,6 +78,14 @@ function Home() {
             return matchesFilter
         })
 
+        //update tags and ingredients available according to added tag and ingredient filters
+        tagsToFilter.length = 0
+        ingredientsToFilter.length = 0
+        filteredList.forEach(recipe => {
+            tagsToFilter.push(...recipe.tags.filter(tag => !tagsToFilter.includes(tag)))
+            ingredientsToFilter.push(...recipe.ingredients.map(ingredient => {return ingredient.name.toLowerCase()}).filter(ingredient => !ingredientsToFilter.includes(ingredient)))
+        })
+
         setIngredientsInFilter(ingredientsToFilter)
         setTagsInFilter(tagsToFilter)
         setFilteredRecipes(filteredList)
