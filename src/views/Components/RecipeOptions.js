@@ -22,7 +22,10 @@ function RecipeOptions({lists, recipeId, setLists, setEditing, recipe, setRecipe
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        if (!e) var e = window.event; 
+        e.cancelBubble = true; 
+        if (e.stopPropagation) e.stopPropagation();
         const recipeListData = new FormData()
         recipeListData.append("recipes",JSON.stringify([recipeId]))
         recipeListData.append("name",newListName)
