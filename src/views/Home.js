@@ -15,7 +15,11 @@ function Home() {
     const [open, setOpen] = useState(false);
     const [filteredRecipes, setFilteredRecipes] = useState([])
     const [dragging, setDragging] = useState("")
-    const [filterValues, setFilterValues] = useState({search:"",prep:null, cook:null, total:null, list:{name:"My Recipes"}})
+    const [filterValues, setFilterValues] = useState({search:"",prepTime:[0,Infinity], cookTime:[0,Infinity], totalTime:[0,Infinity], ingredients:[], tags:[], list:{name:"My Recipes"}})
+    const [tagsInFilter, setTagsInFilter] = useState([])
+    const [ingredientsInFilter, setIngredientsInFilter] = useState([])
+    const [addedTags, setAddedTags] = useState([])
+    const [addedIngredients, setAddedIngredients] = useState([])
 
     useEffect(()=>{
         //compare recipes to filter object
@@ -25,9 +29,7 @@ function Home() {
             if(filterValues.search.length > 0){
                 const search = filterValues.search.toLowerCase()
                 const inName = recipe.name.toLowerCase().includes(search)
-                const inTags = recipe.tags.map((tag)=>tag.toLowerCase()).includes(search)
-                const inIngredients = recipe.ingredients.map((i)=>i.name.toLowerCase()).includes(search)
-                matchesFilter = inName || inTags || inIngredients
+                matchesFilter = inName
                 //escapes if filter not met
                 if(!matchesFilter) return false
             }
@@ -37,10 +39,57 @@ function Home() {
                 //escapes if filter not met
                 if(!matchesFilter) return false
             }
+            if(filterValues.prepTime[0] !== 0 || filterValues.prepTime[1] !== Infinity){
+                matchesFilter = recipe.prepTime >= filterValues.prepTime[0] && recipe.prepTime <= filterValues.prepTime[1]
+                if(!matchesFilter) return false
+            }
+            if(filterValues.cookTime[0] !== 0 || filterValues.cookTime[1] !== Infinity){
+                matchesFilter = recipe.cookTime >= filterValues.cookTime[0] && recipe.cookTime <= filterValues.cookTime[1]
+                if(!matchesFilter) return false
+            }
+            if(filterValues.totalTime[0] !== 0 || filterValues.totalTime[1] !== Infinity){
+                matchesFilter = recipe.totalTime >= filterValues.totalTime[0] && recipe.totalTime <= filterValues.totalTime[1]
+                if(!matchesFilter) return false
+            }
             return matchesFilter
         })
+
+        //update filterable tags and ingredients based on filtered recipe list
+        const tagsToFilter = []
+        const ingredientsToFilter = []
+        filteredList.forEach(recipe => {
+            tagsToFilter.push(...recipe.tags.filter(tag => !tagsToFilter.includes(tag)))
+            ingredientsToFilter.push(...recipe.ingredients.map(ingredient => {return ingredient.name.toLowerCase()}).filter(ingredient => !ingredientsToFilter.includes(ingredient)))
+        })
+        //update added filterable tags and ingredients
+        setAddedTags(addedTags.filter(tag => tagsToFilter.includes(tag)))
+        setAddedIngredients(addedIngredients.filter(tag => ingredientsToFilter.includes(tag)))
+
+        //futher filter list based off tags and ingredients
+        filteredList = filteredList.filter(recipe => {
+            let matchesFilter = true;
+            //check recipe matches tag filter
+            matchesFilter = addedTags.every(tag => recipe.tags.includes(tag))
+            if(!matchesFilter) return false
+            //check recipe matches ingredient filter
+            matchesFilter = addedIngredients.every(ingredient => recipe.ingredients.map(ingredient => {return ingredient.name.toLowerCase()}).includes(ingredient))
+            if(!matchesFilter) return false
+
+            return matchesFilter
+        })
+
+        //update tags and ingredients available according to added tag and ingredient filters
+        tagsToFilter.length = 0
+        ingredientsToFilter.length = 0
+        filteredList.forEach(recipe => {
+            tagsToFilter.push(...recipe.tags.filter(tag => !tagsToFilter.includes(tag)))
+            ingredientsToFilter.push(...recipe.ingredients.map(ingredient => {return ingredient.name.toLowerCase()}).filter(ingredient => !ingredientsToFilter.includes(ingredient)))
+        })
+
+        setIngredientsInFilter(ingredientsToFilter)
+        setTagsInFilter(tagsToFilter)
         setFilteredRecipes(filteredList)
-    },[filterValues,recipes])
+    },[filterValues,recipes,addedIngredients,addedTags])
 
     const getMyRecipes = () => {
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
@@ -111,6 +160,13 @@ function Home() {
                             setDragging={setDragging}
                             filterValues={filterValues}
                             setFilterValues={setFilterValues}
+                            tagsInFilter={tagsInFilter}
+                            ingredientsInFilter={ingredientsInFilter}
+                            addedTags={addedTags}
+                            setAddedTags={setAddedTags}
+                            addedIngredients={addedIngredients}
+                            setAddedIngredients={setAddedIngredients}
+
                         />}/> 
                 </Routes>
             : null}
