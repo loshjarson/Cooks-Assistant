@@ -22,7 +22,10 @@ function RecipeOptions({lists, recipeId, setLists, setEditing, recipe, setRecipe
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        if (!e) var e = window.event; 
+        e.cancelBubble = true; 
+        if (e.stopPropagation) e.stopPropagation();
         const recipeListData = new FormData()
         recipeListData.append("recipes",JSON.stringify([recipeId]))
         recipeListData.append("name",newListName)
@@ -65,7 +68,7 @@ function RecipeOptions({lists, recipeId, setLists, setEditing, recipe, setRecipe
     const mainMenu = [getItem("Add to list","addToList",<PlusOutlined/>,addToListItems,null), getItem("Edit recipe", "edit", <EditOutlined/>,null,null), getItem("Delete recipe", "delete", <DeleteOutlined/>, null, null)]
 
     return(
-        <div>
+        <div onClick={(e)=>{if (!e) var e = window.event; e.cancelBubble = true;if (e.stopPropagation) e.stopPropagation();}}>
           <Menu
             onClick={handleSelect}
             selectable={false}
