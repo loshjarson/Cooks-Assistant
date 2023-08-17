@@ -5,6 +5,7 @@ import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
 
 //units used in type of measurement dropdown
+// NOTE: This could be used anywhere and should be moved to a class called Constants or something similar.
 const unitsOfMeasurement = [
     { 
         value: "",
@@ -42,7 +43,7 @@ const unitsOfMeasurement = [
 
 
 function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePreview, setRecipePreview}) {
-    const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
+    const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined}) // NOTE: Lists of properties is a good sign to encapsulate in its own class
     const [newStep, setNewStep] = useState()
     const [ingredientError, setIngredientError] = useState(false)
     const [editingStep, setEditingStep] = useState({step:0,instruction:""})
@@ -54,6 +55,7 @@ function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePre
     function setEditingRecipe() {
         if(editing){
             setRecipeForm(editingRecipe)
+            // NOTE: It's good practice to not make the caller responsible for decorating data.
             setRecipePreview(`data:image/png;base64,${editingRecipe.image}`)
             return "editing"
         } else {

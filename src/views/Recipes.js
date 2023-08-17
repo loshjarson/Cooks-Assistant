@@ -7,6 +7,7 @@ import NewRecipe from "./Components/NewRecipe";
 import {Buffer} from 'buffer'
 import RecipeOptions from "./Components/RecipeOptions";
 
+// NOTE: Good opportunity to make a Form object and define these default values there.  Creating a new Form object would automatically assign these.
 const initialFormState = {
     name: "",
     description: "",
@@ -37,7 +38,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
 
     //sets unique color for every word to have good looking tags
     const colorTag = (string) => {
-
+        // NOTE: Could move this logic to a getRandomColor() helper function to clean this up
     
         //alert(string.length);
     
@@ -131,6 +132,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
         }
     }
 
+    // NOTE: It's good practice to move helper functions to their own class since this could be used anywhere, not just for recipes
     function getReadableFontColor(backgroundHexColor) {
         // Remove the '#' symbol from the background color string
         backgroundHexColor = backgroundHexColor.replace('#', '');
@@ -217,6 +219,7 @@ function Recipes({getMyRecipes, recipes, setRecipes, lists, setLists, filteredRe
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`, 'Content-Type':'multipart/form-data'},
         }).then(res => {
                 // reset recipe form and add recipe to state
+                // NOTE: Move logic to a `resetForm()` function to make it more readable
                 let recipe = res.data.recipe
                 setAdding(false)
                 setEditing(false)

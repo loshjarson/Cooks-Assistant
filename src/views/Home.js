@@ -20,7 +20,7 @@ function Home() {
     const filterRecipes = (dynamicFilter, listName) => {
         const filtered = recipes.filter((recipe)=>dynamicFilter(recipe))
         setFilteredRecipes(filtered)
-        listName ? setFocusedList(listName) : setFocusedList("My Recipes")
+        listName ? setFocusedList(listName) : setFocusedList("My Recipes") // NOTE: Null check could be moved to an effect hook (useEffect()).
     }
 
     const getMyRecipes = () => {
@@ -28,14 +28,15 @@ function Home() {
             .then(res => {
                 console.log(res.data)
                 res.data.recipes.map((recipe,i) => {
+                    // NOTE: Good opportunity for a comment explaining why this is done.
                     if(recipe.image){
                         const base64String = Buffer.from(recipe.image).toString('base64');
                         res.data.recipes[i] = {...recipe._doc, image:base64String} 
                     }
                 })
                 setRecipes(res.data.recipes)
-                setFilteredRecipes(res.data.recipes)
-                setFocusedList("My Recipes")
+                setFilteredRecipes(res.data.recipes) // NOTE: Every time your base recipes are updated, it'd be good to update your filtered list (effect hook).
+                setFocusedList("My Recipes") // NOTE: Could move this to a resetFocusedList() function to centralize the behavior.
             })
             .catch(e => {
                 console.log(e)
@@ -48,6 +49,7 @@ function Home() {
                 setLists(res.data.recipeLists)
             })
             .catch(e => {
+                // NOTE: This is fine for now, but good practice is to gracefully handle this and allow the user to retry the fetch.
                 console.log(e)
             })
     }
