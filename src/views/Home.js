@@ -7,6 +7,7 @@ import axios from "axios";
 import SideBar from "./Components/SideBar";
 import {Buffer} from 'buffer'
 
+const initialFilter = {search:"",prep:null, cook:null, total:null, list:{name:"My Recipes"}}
 
 function Home() {
     const [authenticated,setAuthenticated] = useState(false)
@@ -14,14 +15,33 @@ function Home() {
     const [lists, setLists] = useState([]);
     const [open, setOpen] = useState(false);
     const [filteredRecipes, setFilteredRecipes] = useState([])
-    const [focusedList, setFocusedList] = useState("My Recipes")
     const [dragging, setDragging] = useState("")
+    const [filterValues, setFilterValues] = useState(initialFilter)
 
-    const filterRecipes = (dynamicFilter, listName) => {
-        const filtered = recipes.filter((recipe)=>dynamicFilter(recipe))
-        setFilteredRecipes(filtered)
-        listName ? setFocusedList(listName) : setFocusedList("My Recipes")
-    }
+    useEffect(()=>{
+        //compare recipes to filter object
+        let filteredList = recipes.filter((recipe)=>{
+            let matchesFilter = true;
+            //checks recipe names, tags, and ingredients for search value
+            if(filterValues.search.length > 0){
+                const search = filterValues.search.toLowerCase()
+                const inName = recipe.name.toLowerCase().includes(search)
+                const inTags = recipe.tags.map((tag)=>tag.toLowerCase()).includes(search)
+                const inIngredients = recipe.ingredients.map((i)=>i.name.toLowerCase()).includes(search)
+                matchesFilter = inName || inTags || inIngredients
+                //escapes if filter not met
+                if(!matchesFilter) return false
+            }
+            //checks if recipe is in focused list unless user is on My Recipes page
+            if(filterValues.list.name !== "My Recipes") {
+                matchesFilter = filterValues.list.recipes.includes(recipe._id)
+                //escapes if filter not met
+                if(!matchesFilter) return false
+            }
+            return true
+        })
+        setFilteredRecipes(filteredList)
+    },[filterValues,recipes])
 
     const getMyRecipes = () => {
         axios.get(`http://localhost:8000/recipes/${sessionStorage.getItem("userId")}`, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
@@ -34,8 +54,6 @@ function Home() {
                     }
                 })
                 setRecipes(res.data.recipes)
-                setFilteredRecipes(res.data.recipes)
-                setFocusedList("My Recipes")
             })
             .catch(e => {
                 console.log(e)
@@ -79,7 +97,7 @@ function Home() {
         <div>
             
             <Navbar setOpen={setOpen} open={open}/>
-            <SideBar open={open} lists={lists} setLists={setLists} filterRecipes={filterRecipes} dragging={dragging} setDragging={setDragging}/>
+            <SideBar open={open} lists={lists} setLists={setLists} dragging={dragging} setDragging={setDragging} filterValues={filterValues} setFilterValues={setFilterValues}/>
             <div>
             {authenticated ? 
                 <Routes>
@@ -91,16 +109,14 @@ function Home() {
                             lists={lists} 
                             setLists={setLists} 
                             filteredRecipes={filteredRecipes} 
-                            setFilteredRecipes={setFilteredRecipes}
-                            focusedList={focusedList}
-                            filterRecipes={filterRecipes}
                             setDragging={setDragging}
+                            filterValues={filterValues}
+                            setFilterValues={setFilterValues}
                         />}/> 
                 </Routes>
             : null}
             </div>
-        </div>
-            
+        </div>     
     );
 }
 
