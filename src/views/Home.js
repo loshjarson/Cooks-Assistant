@@ -7,6 +7,7 @@ import axios from "axios";
 import SideBar from "./Components/SideBar";
 import {Buffer} from 'buffer'
 
+const initialFilter = {search:"",prep:null, cook:null, total:null, list:{name:"My Recipes"}}
 
 function Home() {
     const [authenticated,setAuthenticated] = useState(false)
@@ -15,7 +16,7 @@ function Home() {
     const [open, setOpen] = useState(false);
     const [filteredRecipes, setFilteredRecipes] = useState([])
     const [dragging, setDragging] = useState("")
-    const [filterValues, setFilterValues] = useState({search:"",prep:null, cook:null, total:null, list:{name:"My Recipes"}})
+    const [filterValues, setFilterValues] = useState(initialFilter)
 
     useEffect(()=>{
         //compare recipes to filter object
@@ -37,7 +38,7 @@ function Home() {
                 //escapes if filter not met
                 if(!matchesFilter) return false
             }
-            return matchesFilter
+            return true
         })
         setFilteredRecipes(filteredList)
     },[filterValues,recipes])
