@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Login from "./Login";
-import Signup from "./Signup";
+import Login from "../Components/Login";
+import Signup from "../Components/Signup";
 import { Paper, Button } from "@mui/material";
 
 
