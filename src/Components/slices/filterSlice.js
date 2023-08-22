@@ -27,9 +27,6 @@ const filterSlice = createSlice({
         setFilterAndStatus: (state,action) => {
             return {...state, ...action.payload, status:"filtered"}
         },
-        resetFilter: (state) => {
-            return  {...initialState}
-        },
         setFilterableTags: (state, action) => {
             state.filterableTags = [...action.payload];
             state.status = "updated"

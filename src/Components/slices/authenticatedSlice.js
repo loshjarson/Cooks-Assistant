@@ -8,7 +8,7 @@ const initialState = {
     error: null
 }
 
-export const fetchAuthenticated = createAsyncThunk('authenticated/fetchAuthenticated', (_,{getState}) => {
+export const fetchAuthenticated = createAsyncThunk('authenticated/fetchAuthenticated', () => {
     if(!sessionStorage.getItem("token")){
         history.push("/")
         history.go("/")
@@ -38,14 +38,14 @@ const authenticatedSlice = createSlice({
     },
     extraReducers(builder) {
         builder
-            .addCase(fetchAuthenticated.pending, (state, action) => {
+            .addCase(fetchAuthenticated.pending, (state) => {
                 state.status = 'pending';
             } )
-            .addCase(fetchAuthenticated.fulfilled, (state, action) => {
+            .addCase(fetchAuthenticated.fulfilled, (state) => {
                 state.status = 'succeeded';
                 state.authenticated = true;
             })
-            .addCase(fetchAuthenticated.rejected, (state, action) => {
+            .addCase(fetchAuthenticated.rejected, (state) => {
                 state.status = "failed"
                 state.authenticated = false
             })

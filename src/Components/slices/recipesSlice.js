@@ -17,7 +17,7 @@ const initialState = {
     error: null,
 }
 
-export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async (l,{dispatch}) => {
+export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async () => {
     const userId = sessionStorage.getItem("userId")
     return axios.get(RECIPES_URL+userId, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
             .then(res => {
@@ -63,7 +63,7 @@ export const addRecipe = createAsyncThunk('recipes/addRecipe', async (recipe,{di
         })
 })
 
-export const editRecipe  = createAsyncThunk('recipes/editRecipe', async (action,dispatch) => {
+export const editRecipe  = createAsyncThunk('recipes/editRecipe', async (action) => {
     const [recipeId, edits] = action
     const recipeFormData = recipeToFormData(edits)
     return axios({
