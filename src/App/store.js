@@ -2,9 +2,10 @@ import { configureStore } from "@reduxjs/toolkit";
 import filterReducer from "../Components/slices/filterSlice"; 
 import recipesReducer from "../Components/slices/recipesSlice";
 import listsReducer from "../Components/slices/listsSlice";
-import modalsReducer from "../Components/slices/modalsSlice"
-import draggableReducer from "../Components/slices/draggableSlice"
+import modalsReducer from "../Components/slices/modalsSlice";
+import draggableReducer from "../Components/slices/draggableSlice";
 import authenticatedReducer from "../Components/slices/authenticatedSlice";
+import usersReducer from "../Components/slices/usersSlice"
 
 export const store = configureStore({
     reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
         lists: listsReducer,
         modals: modalsReducer,
         draggable: draggableReducer,
-        authenticated: authenticatedReducer
+        authenticated: authenticatedReducer,
+        users: usersReducer
     }
 })
