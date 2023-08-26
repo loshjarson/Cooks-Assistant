@@ -5,10 +5,12 @@ import { LogoutOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import history from '../App/history';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { batch, useDispatch, useSelector } from 'react-redux';
 import { selectDragging } from './slices/draggableSlice';
 import { selectModalByName, setModal } from './slices/modalsSlice';
 import { editList, selectAllLists, setFocusedList } from './slices/listsSlice';
+import { selectFocusedUserId, setFocusedUser, setUserStatus } from './slices/usersSlice';
+import { fetchRecipes } from './slices/recipesSlice';
 
 
 
@@ -21,12 +23,29 @@ function SideBar() {
     const loggingOut = useSelector(state => selectModalByName(state,"loggingOut"))
     const lists = useSelector(selectAllLists)
     const [ hovering, setHovering ] = useState("")
+    const focusedUser = useSelector(selectFocusedUserId)
     
 
     const logout = () => {
         sessionStorage.clear()
         history.push("/")
         history.go("/")
+    }
+
+    const handleReturnHome = () => {
+        dispatch(setFocusedList(""))
+        if(focusedUser){
+                dispatch(setFocusedUser(null))
+                dispatch(fetchRecipes()) 
+        }
+    }
+
+    const handleList = (list) => {
+        dispatch(setFocusedList(list._id))
+        if(focusedUser){
+            dispatch(setFocusedUser(null))
+            dispatch(fetchRecipes()) 
+        }
     }
     
     return ( 
@@ -42,7 +61,7 @@ function SideBar() {
                 <Button
                     className='list'
                     style={{width:"100%", height:"4rem"}}
-                    onClick={()=>dispatch(setFocusedList(""))}
+                    onClick={()=>handleReturnHome()}
                 >
                     My Recipes
                 </Button>
@@ -55,7 +74,7 @@ function SideBar() {
                             style={{width:"100%", height:"4rem"}}
                             color={list._id === hovering ? "secondary" : "primary"}
                             variant={list._id === hovering ? "outlined" : "text"}
-                            onClick={()=>dispatch(setFocusedList(list._id))}
+                            onClick={()=>handleList(list)}
                             onDragOver={(e)=>{e.preventDefault(); setHovering(list._id)}}
                             onDragLeave={(e)=>{e.preventDefault(); setHovering("")}}
                             onDrop={(e)=>{e.preventDefault(); dispatch(editList([dragging,hovering])); setHovering("")}}

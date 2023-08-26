@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { MenuOutlined, RightOutlined } from "@ant-design/icons";
 import { Paper } from "@mui/material";
-import { Button, Input } from "antd";
+import { AutoComplete, Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModalByName, setModal } from "./slices/modalsSlice";
+import { selectFocusedUserId, selectUserStatus, selectUsernameIdPairs, setFocusedUser } from "./slices/usersSlice";
+import { fetchRecipes } from "./slices/recipesSlice";
+import { useEffect } from "react";
 
-
-
-
-const {Search} = Input
 
 function Navbar() {
-    const sidebarOpen = useSelector((state)=>selectModalByName(state,"sidebarOpen"))
     const dispatch = useDispatch()
+    const sidebarOpen = useSelector((state)=>selectModalByName(state,"sidebarOpen"))
+    const userOptions = useSelector(selectUsernameIdPairs)
+    const focusedUser = useSelector(selectFocusedUserId)
+    const userStatus = useSelector(selectUserStatus)
+    const [searchValue, setSearchValue] = useState("")
 
     const toggleSideBar = () => {
         if(sidebarOpen){
@@ -34,6 +37,26 @@ function Navbar() {
         }
     }
 
+    const handleSelect = (value,option) => {
+        console.log(value,option)
+        setSearchValue(option.label)
+        dispatch(setFocusedUser(option.value))
+        dispatch(fetchRecipes(option.value))
+    }
+    
+    const handleChange = (e) => {
+        e.preventDefault()
+        setSearchValue(e.target.value)
+    }
+
+    useEffect(()=>{
+        console.log(userStatus)
+        if(userStatus === "home"){
+            console.log(userStatus)
+            setSearchValue("")
+        }
+    },[userStatus])
+
     return (
         <Paper elevation={12} square style={{
             width: "100vw",
@@ -43,10 +66,20 @@ function Navbar() {
             alignContent:"center",
             borderBottom:"1px solid rgb(172, 172, 172)"
             }}>
-            <Search style={{width:"20vw", margin:"auto -6rem auto auto"}}/>
-                <Button icon={sidebarOpen? <RightOutlined />:<MenuOutlined/>} type="text" style={{margin:"auto .5rem auto auto",transition:"300ms ease-in-out 100ms"}} id="sidebar-toggle" onClick={toggleSideBar}/>
+            <AutoComplete 
+                style={{margin:"auto -6rem auto auto", width:"20vw"}} 
+                options={userOptions} 
+                onSelect={handleSelect} 
+                value={searchValue}
+                filterOption={(inputValue, option) =>
+                    {return option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
+                  }
+            >
+                <Input.Search onChange={(e)=>handleChange(e)}/>
+            </AutoComplete>
+            <Button icon={sidebarOpen? <RightOutlined />:<MenuOutlined/>} type="text" style={{margin:"auto .5rem auto auto",transition:"300ms ease-in-out 100ms"}} id="sidebar-toggle" onClick={toggleSideBar}/>
         </Paper>
-    );
+    )
 }
 
 export default Navbar;

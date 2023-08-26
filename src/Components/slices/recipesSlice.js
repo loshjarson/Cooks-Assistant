@@ -17,8 +17,10 @@ const initialState = {
     error: null,
 }
 
-export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async () => {
-    const userId = sessionStorage.getItem("userId")
+export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async (_,{getState}) => {
+    const { users } = getState()
+    const userId = users.focused !== null ?  users.focused : sessionStorage.getItem("userId")
+    console.log(userId)
     return axios.get(RECIPES_URL+userId, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
             .then(res => {
                 const recipes = res.data
@@ -30,6 +32,7 @@ export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async () =>
                         recipe.image = window.URL.createObjectURL(blob)
                     }
                 })
+                console.log(recipes)
                 return(recipes)
             })
             .catch(err => {
@@ -110,8 +113,8 @@ export const fetchFilteredRecipes = createAsyncThunk('recipes/fetchFilteredRecip
     const { recipes, filter, lists } = getState();
     const { focused, lists: listData } = lists;
     const { recipes: recipeData } = recipes;
-  
     const recipesToFilter = focused ? listData[focused].recipes : Object.keys(recipeData);
+    
   
     const selectedTagsArray = filter.selectedTags;
     const selectedIngredientsArray = filter.selectedIngredients;
@@ -253,6 +256,7 @@ const recipesSlice = createSlice({
 
             //cases for fetchFilteredList
             .addCase(fetchFilteredRecipes.fulfilled, (state,action) => {
+                state.filtered = {}
                 Object.keys(state.recipes).forEach((recipeId)=> {
                     if(action.payload.includes(recipeId)){
                         state.filtered[recipeId] = state.recipes[recipeId]

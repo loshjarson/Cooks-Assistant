@@ -16,12 +16,21 @@ import { deleteRecipe, fetchFilteredRecipes, fetchRecipes, selectFocusedRecipeOb
 import { selectFilterStatus } from "./slices/filterSlice";
 import { selectModalByName, setModal } from "./slices/modalsSlice";
 import { addList, fetchLists, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
+import { fetchUsers, selectAllUsers, selectFocusedUser } from "./slices/usersSlice";
+import { debounce } from "lodash";
 
 
 
 function Recipes() {
 
     const dispatch = useDispatch()
+    const debouncedBatch = debounce(()=>
+        batch(()=>{
+            dispatch(fetchRecipes())
+            dispatch(fetchLists())
+            dispatch(fetchUsers())
+        }), 200)
+    const debouncedFilter = debounce(dispatch)
 
     const creatingRecipe = useSelector(state =>selectModalByName(state,"creatingRecipe"))
     const editingRecipe = useSelector(state =>selectModalByName(state,"editingRecipe"))
@@ -34,6 +43,9 @@ function Recipes() {
     const listStatus = useSelector(selectListsStatus)
     const focusedRecipeObj = useSelector(selectFocusedRecipeObj)
     const focusedListName = useSelector(selectFocusedListName)
+    const focusedUserId = useSelector(selectFocusedUser)
+    const focusedUser = useSelector(selectFocusedUser)
+
 
     const recipeIds = useSelector(selectRecipeIds)
 
@@ -42,21 +54,16 @@ function Recipes() {
     useEffect(()=>{
         if(recipesStatus === 'idle') {
             dispatch(setRecipeStatus())
-            batch(()=>{
-                dispatch(fetchRecipes())
-                dispatch(fetchLists())
-                
-            })
+            debouncedBatch()
         }
-    },[recipesStatus,dispatch])
+    })
     
     
-
     useEffect(() => {
-        if(filterStatus !== "filtered" || recipesStatus === 'succeeded' || listStatus !== "filtered"){
-            dispatch(fetchFilteredRecipes());
+        if(filterStatus !== "filtered" || recipesStatus === 'succeeded' || listStatus !== "filtered" || focusedUserId){
+            debouncedFilter(fetchFilteredRecipes());
         }
-    },[dispatch,listStatus,filterStatus,recipesStatus])
+    },[dispatch,listStatus,filterStatus,recipesStatus,focusedUserId,debouncedFilter])
 
     const handleCreateList = () => {
         dispatch(addList({name:newListName}))
@@ -84,7 +91,7 @@ function Recipes() {
                         <RecipeSearch/>
                         <Popover content={<Filter/>} placement="rightTop" trigger="click"><IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton></Popover>  
                     </div>
-                    <Typography style={{margin:"auto"}}>{focusedListName}</Typography>
+                    <Typography style={{margin:"auto"}}>{focusedUser[0] ? `${focusedUser[0].username}'s Recipes`:focusedListName}</Typography>
                     <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
                         <Button 
                             onClick={()=>{
