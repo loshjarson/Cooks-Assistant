@@ -67,7 +67,7 @@ function SideBar() {
                 <Divider/>
                 
                 {Object.values(lists).map(list => 
-                    (<ListCard list={list}/>)
+                    (<ListCard list={list} key={list.name}/>)
                 )}
             </div>
             <div 
