@@ -42,10 +42,9 @@ export const addList = createAsyncThunk('lists/addList', async (list,{getState})
 
 export const editList = createAsyncThunk('lists/addToList', async (action, {getState}) => {
     const {lists} = getState()
-    const [recipe, list] = action
+    const [recipe, list, name] = action
     const editingList = lists.lists[list]
-
-    const updatedList = {...editingList,recipes:JSON.stringify([...editingList.recipes,recipe])}
+    const updatedList = recipe ? {...editingList,recipes:JSON.stringify([...editingList.recipes,recipe])} : {...editingList,recipes:JSON.stringify(editingList.recipes),name}
 
     return axios({
         method:"put",

@@ -16,7 +16,7 @@ import { deleteRecipe, fetchFilteredRecipes, fetchRecipes, selectFocusedRecipeOb
 import { selectFilterStatus } from "./slices/filterSlice";
 import { selectModalByName, setModal } from "./slices/modalsSlice";
 import { addList, fetchLists, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
-import { fetchUsers, selectAllUsers, selectFocusedUser } from "./slices/usersSlice";
+import { fetchUsers, selectFocusedUser } from "./slices/usersSlice";
 import { debounce } from "lodash";
 
 
@@ -37,6 +37,7 @@ function Recipes() {
     const deletingRecipe = useSelector(state =>selectModalByName(state,"deletingRecipe"))
     const viewingRecipe = useSelector(state => selectModalByName(state, "viewingRecipe"))
     const creatingList = useSelector(state => selectModalByName(state, "creatingList"))
+    const editingList = useSelector(state => selectModalByName(state, "editingList"))
 
     const recipesStatus = useSelector(selectRecipesStatus)
     const filterStatus = useSelector(selectFilterStatus)
@@ -124,6 +125,9 @@ function Recipes() {
                 <RecipeView/>
             </Modal>
             <Modal open={creatingList} onCancel={()=>{dispatch(setModal({creatingList:false}))}} title="New List" okText={"Create"} onOk={()=>handleCreateList()}>
+                <Input placeholder="List Name" value={newListName} onChange={(e)=>setNewListName(e.target.value)}/>
+            </Modal>
+            <Modal open={editingList} onCancel={()=>{dispatch(setModal({editingList:false}))}} title="New List" okText={"Create"} onOk={()=>handleCreateList()}>
                 <Input placeholder="List Name" value={newListName} onChange={(e)=>setNewListName(e.target.value)}/>
             </Modal>
         </div>

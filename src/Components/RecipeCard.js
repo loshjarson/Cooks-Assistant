@@ -1,9 +1,8 @@
 import React from "react"
 
-import RecipeOptions from "./RecipeOptions";
 
-import { CardHeader, CardMedia, IconButton, Card, CardContent, Typography } from "@mui/material";
-import { MoreOutlined } from "@ant-design/icons";
+import { CardHeader, CardMedia, IconButton, Card, CardContent, Typography, Menu, MenuItem } from "@mui/material";
+import { DeleteOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
 import { Popover, Tag } from "antd";
 
 import { colorTag, colorText } from "./helpers/helpers";
@@ -12,23 +11,26 @@ import { useSelector, useDispatch, batch } from "react-redux";
 import { setFocusedRecipe, selectFilteredRecipeById} from "./slices/recipesSlice";
 import { setDragging } from "./slices/draggableSlice";
 import { setModal } from "./slices/modalsSlice";
+import { bindMenu, bindTrigger } from "material-ui-popup-state";
+import { usePopupState } from "material-ui-popup-state/hooks";
 
 const RecipeCard = React.memo(({recipeId}) => {
     const dispatch = useDispatch()
     const recipe = useSelector((state) => selectFilteredRecipeById(state,recipeId))
+    const popupState = usePopupState({ variant: 'popover', popupId: recipeId })
 
     if(recipe){
         const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
 
         return ( 
                 <Card 
-                    key={recipe._id}
+                    key={recipeId}
                     style={{ width: 345, margin:"1rem", cursor:"pointer" }} 
                     draggable 
-                    onDragStart={()=>dispatch(setDragging(recipe._id))} 
+                    onDragStart={()=>dispatch(setDragging(recipeId))} 
                     onClick={() => {
                             batch(()=>{
-                                dispatch(setFocusedRecipe(recipe._id)); 
+                                dispatch(setFocusedRecipe(recipeId)); 
                                 dispatch(setModal({viewingRecipe:true}))
                             })
                             
@@ -37,24 +39,25 @@ const RecipeCard = React.memo(({recipeId}) => {
                     <CardHeader
                         title= {recipe.name}
                         subheader={<p style={{fontSize:"14.25px", margin:"0"}}>prep: {recipe.prepTime}min | cook: {recipe.cookTime}min | total: {recipe.totalTime}min</p>}
-                        action={
-                            <Popover 
-                                content={<RecipeOptions recipe={recipe}/> }  
-                                placement="rightTop" 
-                                trigger="focus"
-                            >
-                                <IconButton 
+                        action={<div
                                     onClick={(e)=>{
-                                        e.cancelBubble = true;
-                                        if (e.stopPropagation) e.stopPropagation();
-                                        dispatch(setFocusedRecipe(recipe._id))
-                                    }}
-                                >                                                
-                                    <MoreOutlined/>
-                                </IconButton> 
-                            </Popover>
-                            
-                        }
+                                            console.log(e)
+                                            e.cancelBubble = true;
+                                            if (e.stopPropagation) e.stopPropagation();
+                                            dispatch(setFocusedRecipe(recipeId))}}
+                                >
+                                    <IconButton {...bindTrigger(popupState)}>                                      
+                                        <MoreOutlined/>
+                                    </IconButton>
+                                    <Menu {...bindMenu(popupState)}>
+                                        <MenuItem onClick={()=>{ popupState.close()
+                                            dispatch(setModal({editingRecipe:true}))
+                                        }}><EditOutlined style={{marginRight:"1rem"}}/> Edit Recipe</MenuItem>
+                                        <MenuItem onClick={()=>{ popupState.close()
+                                            dispatch(setModal({deletingRecipe:true}))
+                                        }}><DeleteOutlined style={{marginRight:"1rem"}}/> Delete Recipe</MenuItem>
+                                    </Menu>
+                                </div>}
                     />
                     <CardMedia 
                     component="img"

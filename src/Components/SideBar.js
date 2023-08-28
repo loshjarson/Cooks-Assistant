@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Button, Divider, Drawer } from '@mui/material';
-import { LogoutOutlined } from "@ant-design/icons";
+import { HomeOutlined, LogoutOutlined, PlusOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import history from '../App/history';
 
-import { batch, useDispatch, useSelector } from 'react-redux';
-import { selectDragging } from './slices/draggableSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectModalByName, setModal } from './slices/modalsSlice';
-import { editList, selectAllLists, setFocusedList } from './slices/listsSlice';
-import { selectFocusedUserId, setFocusedUser, setUserStatus } from './slices/usersSlice';
-import { fetchRecipes } from './slices/recipesSlice';
+import {  selectAllLists, setFocusedList } from './slices/listsSlice';
+import { selectFocusedUserId, setFocusedUser } from './slices/usersSlice';
+import { fetchRecipes, setFocusedRecipe } from './slices/recipesSlice';
+import ListCard from './ListCard';
 
 
 
@@ -18,13 +18,11 @@ import { fetchRecipes } from './slices/recipesSlice';
 function SideBar() {
 
     const dispatch = useDispatch()
-    const dragging = useSelector(selectDragging)
     const sidebarOpen = useSelector(state => selectModalByName(state,"sidebarOpen"))
     const loggingOut = useSelector(state => selectModalByName(state,"loggingOut"))
     const lists = useSelector(selectAllLists)
-    const [ hovering, setHovering ] = useState("")
     const focusedUser = useSelector(selectFocusedUserId)
-    
+
 
     const logout = () => {
         sessionStorage.clear()
@@ -37,14 +35,6 @@ function SideBar() {
         if(focusedUser){
                 dispatch(setFocusedUser(null))
                 dispatch(fetchRecipes()) 
-        }
-    }
-
-    const handleList = (list) => {
-        dispatch(setFocusedList(list._id))
-        if(focusedUser){
-            dispatch(setFocusedUser(null))
-            dispatch(fetchRecipes()) 
         }
     }
     
@@ -62,28 +52,23 @@ function SideBar() {
                     className='list'
                     style={{width:"100%", height:"4rem"}}
                     onClick={()=>handleReturnHome()}
+                    startIcon={<HomeOutlined/>}
                 >
                     My Recipes
                 </Button>
-                {Object.values(lists).map(list => {
-                    return(
-                        <Button
-                            key={list._id}
-                            id={list._id}
-                            className='list'
-                            style={{width:"100%", height:"4rem"}}
-                            color={list._id === hovering ? "secondary" : "primary"}
-                            variant={list._id === hovering ? "outlined" : "text"}
-                            onClick={()=>handleList(list)}
-                            onDragOver={(e)=>{e.preventDefault(); setHovering(list._id)}}
-                            onDragLeave={(e)=>{e.preventDefault(); setHovering("")}}
-                            onDrop={(e)=>{e.preventDefault(); dispatch(editList([dragging,hovering])); setHovering("")}}
-                        >
-                            {list.name}
-                        </Button>
-                    )
-                })}
-
+                <Button
+                    className='list'
+                    style={{width:"100%", height:"4rem"}}
+                    onClick={()=>{dispatch(setFocusedRecipe(""));dispatch(setModal({creatingList:true}))}}
+                    startIcon={<PlusOutlined/>}
+                >
+                    New List
+                </Button>
+                <Divider/>
+                
+                {Object.values(lists).map(list => 
+                    (<ListCard list={list}/>)
+                )}
             </div>
             <div 
             id='account-actions'
