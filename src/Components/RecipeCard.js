@@ -2,7 +2,7 @@ import React from "react"
 
 
 import { CardHeader, CardMedia, IconButton, Card, CardContent, Typography, Menu, MenuItem } from "@mui/material";
-import { DeleteOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, MinusCircleOutlined, MoreOutlined } from "@ant-design/icons";
 import { Popover, Tag } from "antd";
 
 import { colorTag, colorText } from "./helpers/helpers";
@@ -13,10 +13,12 @@ import { setDragging } from "./slices/draggableSlice";
 import { setModal } from "./slices/modalsSlice";
 import { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { usePopupState } from "material-ui-popup-state/hooks";
+import { editList, selectFocusedList } from "./slices/listsSlice";
 
 const RecipeCard = React.memo(({recipeId}) => {
     const dispatch = useDispatch()
     const recipe = useSelector((state) => selectFilteredRecipeById(state,recipeId))
+    const list = useSelector(selectFocusedList)
     const popupState = usePopupState({ variant: 'popover', popupId: recipeId })
 
     if(recipe){
@@ -53,6 +55,14 @@ const RecipeCard = React.memo(({recipeId}) => {
                                         <MenuItem onClick={()=>{ popupState.close()
                                             dispatch(setModal({editingRecipe:true}))
                                         }}><EditOutlined style={{marginRight:"1rem"}}/> Edit Recipe</MenuItem>
+                                        {list ? 
+                                            <MenuItem 
+                                                onClick={()=>{ popupState.close()
+                                                dispatch(editList([null,list,null,recipe._id]))
+                                            }}>
+                                                <MinusCircleOutlined style={{marginRight:"1rem"}}/> Remove From List</MenuItem>
+                                            : null
+                                        }
                                         <MenuItem onClick={()=>{ popupState.close()
                                             dispatch(setModal({deletingRecipe:true}))
                                         }}><DeleteOutlined style={{marginRight:"1rem"}}/> Delete Recipe</MenuItem>

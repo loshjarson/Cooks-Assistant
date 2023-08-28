@@ -54,7 +54,7 @@ function ListCard ({list}) {
                     editable={{
                         editing: list._id === editingList,
                         icon:<Edit style={{display:"none"}}/>,
-                        onChange:(s)=>{ if(list.name !== s){dispatch(editList([null,list._id,s]));} setEditingList("")},
+                        onChange:(s)=>{ if(list.name !== s){dispatch(editList([null,list._id,s,null]));} setEditingList("")},
                         onEnd:()=>{setEditingList("")}
                     }}
                 >
@@ -64,7 +64,7 @@ function ListCard ({list}) {
             onClick={()=>handleList(list)}
             onDragOver={(e)=>{e.preventDefault(); setHovering(list._id)}}
             onDragLeave={(e)=>{e.preventDefault(); setHovering("")}}
-            onDrop={(e)=>{e.preventDefault(); dispatch(editList([dragging,hovering])); setHovering("")}}
+            onDrop={(e)=>{e.preventDefault(); dispatch(editList([dragging,hovering,null,null])); setHovering("")}}
             extra={<div
                     onClick={(e)=>{
                         console.log(e)

@@ -42,9 +42,17 @@ export const addList = createAsyncThunk('lists/addList', async (list,{getState})
 
 export const editList = createAsyncThunk('lists/addToList', async (action, {getState}) => {
     const {lists} = getState()
-    const [recipe, list, name] = action
+    const [recipeToAdd, list, name, recipeToDelete] = action
     const editingList = lists.lists[list]
-    const updatedList = recipe ? {...editingList,recipes:JSON.stringify([...editingList.recipes,recipe])} : {...editingList,recipes:JSON.stringify(editingList.recipes),name}
+    let updatedList;
+    if(recipeToAdd){
+        updatedList = {...editingList,recipes:JSON.stringify([...editingList.recipes,recipeToAdd])}
+    } else if (recipeToDelete) {
+        updatedList = {...editingList,recipes:JSON.stringify([...editingList.recipes.filter(recipe=>recipe !== recipeToDelete)])}
+    } else if (name) {
+        updatedList =  {...editingList,recipes:JSON.stringify(editingList.recipes),name}
+    }
+
 
     return axios({
         method:"put",
