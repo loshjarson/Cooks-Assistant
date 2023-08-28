@@ -58,13 +58,14 @@ export const editList = createAsyncThunk('lists/addToList', async (action, {getS
     })
 })
 
-export const deleteList = createAsyncThunk('lists/deleteList', async (listId) => {
+export const deleteList = createAsyncThunk('lists/deleteList', async (_,{getState}) => {
+    const {lists} = getState()
     return axios({
         method:"delete",
-        url: LISTS_URL+listId,
+        url: LISTS_URL+lists.focused,
         headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
     }).then(res => {
-        return listId
+        return lists.focused
     }).catch(err => {
         return err.message
     })

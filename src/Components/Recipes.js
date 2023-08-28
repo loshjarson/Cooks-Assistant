@@ -15,7 +15,7 @@ import { useSelector, useDispatch, batch } from "react-redux";
 import { deleteRecipe, fetchFilteredRecipes, fetchRecipes, selectFocusedRecipeObj, selectRecipeIds, selectRecipesStatus, setFocusedRecipe, setRecipeStatus } from "./slices/recipesSlice";
 import { selectFilterStatus } from "./slices/filterSlice";
 import { selectModalByName, setModal } from "./slices/modalsSlice";
-import { addList, fetchLists, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
+import { addList, deleteList, fetchLists, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
 import { fetchUsers, selectFocusedUser } from "./slices/usersSlice";
 import { debounce } from "lodash";
 
@@ -37,7 +37,7 @@ function Recipes() {
     const deletingRecipe = useSelector(state =>selectModalByName(state,"deletingRecipe"))
     const viewingRecipe = useSelector(state => selectModalByName(state, "viewingRecipe"))
     const creatingList = useSelector(state => selectModalByName(state, "creatingList"))
-    const editingList = useSelector(state => selectModalByName(state, "editingList"))
+    const deletingList = useSelector(state => selectModalByName(state, "deletingList"))
 
     const recipesStatus = useSelector(selectRecipesStatus)
     const filterStatus = useSelector(selectFilterStatus)
@@ -70,6 +70,10 @@ function Recipes() {
         dispatch(addList({name:newListName}))
         dispatch(setModal({creatingList:false}))
         setNewListName("")
+    }
+    const handleDeleteList = () => {
+        dispatch(deleteList())
+        dispatch(setModal({deletingList:false}))
     }
 
 
@@ -127,8 +131,8 @@ function Recipes() {
             <Modal open={creatingList} onCancel={()=>{dispatch(setModal({creatingList:false}))}} title="New List" okText={"Create"} onOk={()=>handleCreateList()}>
                 <Input placeholder="List Name" value={newListName} onChange={(e)=>setNewListName(e.target.value)}/>
             </Modal>
-            <Modal open={editingList} onCancel={()=>{dispatch(setModal({editingList:false}))}} title="New List" okText={"Create"} onOk={()=>handleCreateList()}>
-                <Input placeholder="List Name" value={newListName} onChange={(e)=>setNewListName(e.target.value)}/>
+            <Modal open={deletingList} onCancel={()=>{dispatch(setModal({deletingList:false}))}} title="Delete List" okText="Delete" onOk={()=>handleDeleteList()}>
+                <p>Are you sure you want to delete {focusedListName}?</p>
             </Modal>
         </div>
     );
