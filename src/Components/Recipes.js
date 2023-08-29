@@ -72,8 +72,11 @@ function Recipes() {
         setNewListName("")
     }
     const handleDeleteList = () => {
-        dispatch(deleteList())
-        dispatch(setModal({deletingList:false}))
+        batch(()=>{
+            dispatch(setModal({deletingList:false}))  
+            dispatch(deleteList())
+        })
+        
     }
 
 
@@ -109,7 +112,7 @@ function Recipes() {
                     </div>
                 </div>
                 <Divider/>
-                <div style={{display:"flex", flexFlow:"wrap", overflow:"scroll", justifyContent:"flex-start"}}>
+                <div style={{display:"flex", flexFlow:"wrap", overflow:"auto", justifyContent:"flex-start"}}>
                     {Array.from(Object.values(recipeIds)).map(recipeId => {
                         //sets popover content
                         return(<RecipeCard recipeId={recipeId} key={recipeId}/>)
