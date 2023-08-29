@@ -2,24 +2,26 @@ import React from "react"
 
 
 import { CardHeader, CardMedia, IconButton, Card, CardContent, Typography, Menu, MenuItem } from "@mui/material";
-import { DeleteOutlined, EditOutlined, MinusCircleOutlined, MoreOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, MinusCircleOutlined, MoreOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { Popover, Tag } from "antd";
 
 import { colorTag, colorText } from "./helpers/helpers";
 
 import { useSelector, useDispatch, batch } from "react-redux";
-import { setFocusedRecipe, selectFilteredRecipeById} from "./slices/recipesSlice";
+import { setFocusedRecipe, selectFilteredRecipeById, pullRecipe} from "./slices/recipesSlice";
 import { setDragging } from "./slices/draggableSlice";
 import { setModal } from "./slices/modalsSlice";
 import { bindMenu, bindTrigger } from "material-ui-popup-state";
 import { usePopupState } from "material-ui-popup-state/hooks";
 import { editList, selectFocusedList } from "./slices/listsSlice";
+import { selectFocusedUserId } from "./slices/usersSlice";
 
 const RecipeCard = React.memo(({recipeId}) => {
     const dispatch = useDispatch()
     const recipe = useSelector((state) => selectFilteredRecipeById(state,recipeId))
     const list = useSelector(selectFocusedList)
     const popupState = usePopupState({ variant: 'popover', popupId: recipeId })
+    const user = useSelector(selectFocusedUserId)
 
     if(recipe){
         const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
@@ -51,22 +53,32 @@ const RecipeCard = React.memo(({recipeId}) => {
                                     <IconButton {...bindTrigger(popupState)}>                                      
                                         <MoreOutlined/>
                                     </IconButton>
-                                    <Menu {...bindMenu(popupState)}>
-                                        <MenuItem onClick={()=>{ popupState.close()
-                                            dispatch(setModal({editingRecipe:true}))
-                                        }}><EditOutlined style={{marginRight:"1rem"}}/> Edit Recipe</MenuItem>
-                                        {list ? 
-                                            <MenuItem 
-                                                onClick={()=>{ popupState.close()
-                                                dispatch(editList([null,list,null,recipe._id]))
-                                            }}>
-                                                <MinusCircleOutlined style={{marginRight:"1rem"}}/> Remove From List</MenuItem>
-                                            : null
+                                    
+                                        {user ? 
+                                            <Menu {...bindMenu(popupState)}>
+                                                <MenuItem onClick={()=>{popupState.close()
+                                                    dispatch(pullRecipe(recipe._id))
+                                                }}><PlusCircleOutlined style={{marginRight:"1rem"}}/> Add to Your Recipes </MenuItem>
+                                            </Menu>
+                                        : <Menu {...bindMenu(popupState)}>
+                                            <MenuItem onClick={()=>{ popupState.close()
+                                                dispatch(setModal({editingRecipe:true}))
+                                            }}><EditOutlined style={{marginRight:"1rem"}}/> Edit Recipe</MenuItem>
+                                            {list ? 
+                                                <MenuItem 
+                                                    onClick={()=>{ popupState.close()
+                                                    dispatch(editList([null,list,null,recipe._id]))
+                                                }}>
+                                                    <MinusCircleOutlined style={{marginRight:"1rem"}}/> Remove From List</MenuItem>
+                                                : null
+                                            }
+                                            <MenuItem onClick={()=>{ popupState.close()
+                                                dispatch(setModal({deletingRecipe:true}))
+                                            }}><DeleteOutlined style={{marginRight:"1rem"}}/> Delete Recipe</MenuItem>
+                                        </Menu>
                                         }
-                                        <MenuItem onClick={()=>{ popupState.close()
-                                            dispatch(setModal({deletingRecipe:true}))
-                                        }}><DeleteOutlined style={{marginRight:"1rem"}}/> Delete Recipe</MenuItem>
-                                    </Menu>
+                                        
+                                    
                                 </div>}
                     />
                     <CardMedia 

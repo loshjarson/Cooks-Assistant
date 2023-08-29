@@ -6,7 +6,9 @@ import { recipeToFormData, matchesRangeFilter, matchesNameFilter } from "../help
 import { setFilterAndStatus } from "./filterSlice";
 import { fetchLists, setListsStatus } from "./listsSlice";
 import { batch } from "react-redux";
+import { setModal } from "./modalsSlice";
 
+const USERS_URL = "http://localhost:8000/users/"
 const RECIPES_URL = 'http://localhost:8000/recipes/'
 
 const initialState = {
@@ -84,7 +86,6 @@ export const editRecipe  = createAsyncThunk('recipes/editRecipe', async (action)
                 recipe.image = window.URL.createObjectURL(blob)
                 console.log(recipe.image)
             }
-
             return recipe
         })
         .catch(err=>{
@@ -95,17 +96,30 @@ export const editRecipe  = createAsyncThunk('recipes/editRecipe', async (action)
 export const deleteRecipe = createAsyncThunk('recipes/deleteRecipe', async (_,{getState,dispatch}) => {
         const { recipes } = getState()
         const recipeId = recipes.focused
+        console.log(recipeId)
         return axios({
-            method:"delete",
-            url:RECIPES_URL+recipeId,
+            method:"put",
+            url:USERS_URL+"remove",
+            data:{recipeId},
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
         }).then(res => {
-            const deletedRecipe = res.data.recipe
             dispatch(fetchLists)
-            return deletedRecipe
+            dispatch(setModal({deletingRecipe:false}))
+            return res.data
         })
         .catch(err => {
             return err.message
+        })
+})
+
+export const pullRecipe = createAsyncThunk('recipes/pullRecipe', async (recipeId,{getState})=>{
+        return axios({
+            method:"put",
+            url:USERS_URL + "add",
+            data:{recipeId},
+            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
+        }).then(res => {
+            return(res.data)
         })
 })
 
@@ -114,6 +128,7 @@ export const fetchFilteredRecipes = createAsyncThunk('recipes/fetchFilteredRecip
     const { focused, lists: listData } = lists;
     const { recipes: recipeData } = recipes;
     const recipesToFilter = focused ? listData[focused].recipes : Object.keys(recipeData);
+    console.log(recipesToFilter)
     
   
     const selectedTagsArray = filter.selectedTags;
@@ -124,6 +139,7 @@ export const fetchFilteredRecipes = createAsyncThunk('recipes/fetchFilteredRecip
   
     let filteredList = recipesToFilter.filter((recipeId) => {
       const recipe = recipeData[recipeId];
+      console.log(recipe)
       
       let matchesFilter = true;
       const recipeTagsSet = new Set(recipe.tags);
@@ -192,6 +208,9 @@ const recipesSlice = createSlice({
     name: 'recipe',
     initialState,
     reducers: {
+        addToRecipes: (state,action) => {
+            state.recipes[action.payload._id] = action.payload
+        },
         resetRecipes: (state) => {
             state = {
                 ...initialState, 
@@ -246,7 +265,7 @@ const recipesSlice = createSlice({
             .addCase(deleteRecipe.fulfilled, (state,action) => {
                 state.status = 'succeeded'
                 const deletedRecipe = action.payload
-                delete state.recipes[deletedRecipe._id]
+                delete state.recipes[deletedRecipe]
                 state.focused = ""
             })
             .addCase(deleteRecipe.rejected, (state,action) => {
@@ -271,6 +290,16 @@ const recipesSlice = createSlice({
                 state.status = 'failed'
                 state.error = action.error.message
             })
+            
+            //cases for pull recipes
+            .addCase(pullRecipe.fulfilled, (state,action) => {
+                const recipe = action.payload
+                state.recipes[recipe._id] = recipe
+            })
+            .addCase(pullRecipe.rejected, (state,action)=> {
+                state.status = 'failed'
+                state.error = action.error.message
+            })
     }
 })
 
@@ -292,6 +321,6 @@ export const selectFilteredRecipeById = createSelector(
 // (state,action)=>state.recipes.filtered[action]
 
 
-export const {setFocusedRecipe,setRecipeStatus} = recipesSlice.actions
+export const {setFocusedRecipe,setRecipeStatus,addToRecipes} = recipesSlice.actions
 
 export default recipesSlice.reducer

@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { addToRecipes } from "./recipesSlice";
+
 
 
 const LISTS_URL = 'http://localhost:8000/recipelists/'
@@ -31,6 +33,7 @@ export const addList = createAsyncThunk('lists/addList', async (list,{getState})
         data: list,
         headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
     }).then(res => {
+        console.log(res.data)
         return res.data
     }).catch(err => {
         return err.message
@@ -40,19 +43,17 @@ export const addList = createAsyncThunk('lists/addList', async (list,{getState})
     
 })
 
-export const editList = createAsyncThunk('lists/addToList', async (action, {getState}) => {
-    const {lists} = getState()
+export const editList = createAsyncThunk('lists/addToList', async (action, {getState,dispatch}) => {
     const [recipeToAdd, list, name, recipeToDelete] = action
-    const editingList = lists.lists[list]
+    const {users} = getState()
     let updatedList;
     if(recipeToAdd){
-        updatedList = {...editingList,recipes:JSON.stringify([...editingList.recipes,recipeToAdd])}
+        updatedList = {recipeToAdd}
     } else if (recipeToDelete) {
-        updatedList = {...editingList,recipes:JSON.stringify([...editingList.recipes.filter(recipe=>recipe !== recipeToDelete)])}
+        updatedList = {recipeToDelete}
     } else if (name) {
-        updatedList =  {...editingList,recipes:JSON.stringify(editingList.recipes),name}
+        updatedList =  {name}
     }
-
 
     return axios({
         method:"put",
@@ -60,7 +61,13 @@ export const editList = createAsyncThunk('lists/addToList', async (action, {getS
         data: updatedList,
         headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
     }).then(res => {
-        return res.data
+        if(recipeToAdd){
+            return(["adding", list, recipeToAdd])
+        }else if (recipeToDelete){
+            return(["removing", list, recipeToDelete])
+        } else {
+            return(["naming", list, res.data])
+        }
     }).catch(err => {
         return err.message
     })
@@ -122,9 +129,14 @@ const listsSlice = createSlice({
             //cases for editList request
             .addCase(editList.fulfilled, (state, action) => {
                 state.status = 'succeeded'
-                const updatedList = action.payload
-                //add updated list to lists state map
-                state.lists[updatedList._id] = updatedList
+                const [method, list, payload] = action.payload
+                if(method === "adding"){
+                    state.lists[list].recipes.push(payload)
+                } else if(method === "removing"){
+                    state.lists[list].recipes.filter(recipe => recipe !== payload)
+                } else {
+                    state.lists[list] = payload
+                }
             })
             .addCase(editList.rejected, (state, action) => {
                 state.status = 'failed'

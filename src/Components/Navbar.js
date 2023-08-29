@@ -7,6 +7,7 @@ import { selectModalByName, setModal } from "./slices/modalsSlice";
 import { selectFocusedUserId, selectUserStatus, selectUsernameIdPairs, setFocusedUser } from "./slices/usersSlice";
 import { fetchRecipes } from "./slices/recipesSlice";
 import { useEffect } from "react";
+import { setFocusedList } from "./slices/listsSlice";
 
 
 function Navbar() {
@@ -40,6 +41,7 @@ function Navbar() {
     const handleSelect = (value,option) => {
         console.log(value,option)
         setSearchValue(option.label)
+        dispatch(setFocusedList(""))
         dispatch(setFocusedUser(option.value))
         dispatch(fetchRecipes(option.value))
     }
