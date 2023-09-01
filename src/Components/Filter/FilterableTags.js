@@ -17,7 +17,7 @@ function FilterableTags() {
     return ( 
         filterableTags.map(tag => {
             return (
-              <Tag key={tag} color={selectedTags.includes(tag) ? "green" : ""} style={{ cursor: "pointer" }} onClick={() => handleTagChange(tag)}>{tag}</Tag>
+              <Tag key={tag} color={selectedTags.includes(tag) ? "green" : ""} style={{ cursor: "pointer", height:"min-content", margin:"3px"}} onClick={() => handleTagChange(tag)}>{tag}</Tag>
             )
           })
      );

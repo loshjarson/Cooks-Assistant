@@ -38,7 +38,7 @@ function RecipeView () {
 
                         <Typography id="servings" name="servings">Servings: {recipe.servings}</Typography> 
                     </div>
-                   <div style={{height:"14rem", overflow:"scroll", margin:"4rem auto"}} label="Description">
+                   <div style={{height:"14rem", overflow:"auto", margin:"4rem auto"}} label="Description">
                     
                         <Typography id="description" name="description">
                             {recipe.description}

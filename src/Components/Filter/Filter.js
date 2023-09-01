@@ -16,10 +16,10 @@ function Filter() {
         <TotalSlider/>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly" }}>
-        <Box sx={{ border: "1px solid grey", height: "45%", width: "12.5rem", borderRadius: "10px", overflow: "scroll" }}>
+        <Box sx={{ display: "flex", flexWrap:"wrap", alignContent:"flex-start", border: "1px solid grey", height: "45%", width: "12.5rem", borderRadius: "10px"}}>
           <FilterableTags/>
         </Box>
-        <Box sx={{ border: "1px solid grey", height: "45%", width: "12.5rem", borderRadius: "10px", overflow: "scroll" }}>
+        <Box sx={{ display: "flex", flexWrap:"wrap", alignContent:"flex-start", border: "1px solid grey", height: "45%", width: "12.5rem", borderRadius: "10px"}}>
           <FilterableIngredients/>
         </Box>
       </Box>

@@ -4,12 +4,10 @@ import { Buffer } from "buffer";
 
 import { recipeToFormData, matchesRangeFilter, matchesNameFilter } from "../helpers/helpers";
 import { setFilterAndStatus } from "./filterSlice";
-import { fetchLists, setListsStatus } from "./listsSlice";
+import { setListsStatus } from "./listsSlice";
 import { batch } from "react-redux";
-import { setModal } from "./modalsSlice";
 import _ from "lodash"
 
-const USERS_URL = "http://localhost:8000/users/"
 const RECIPES_URL = 'http://localhost:8000/recipes/'
 
 const initialState = {
