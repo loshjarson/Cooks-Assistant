@@ -9,7 +9,8 @@ const initialState = {
     editingList: false,
     deletingList: false,
     loggingOut: false,
-    sidebarOpen: false    
+    sidebarOpen: false,
+    viewingGroceryRecipes: false    
 }
 
 const modalsSlice = createSlice({

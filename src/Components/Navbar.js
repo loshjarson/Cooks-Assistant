@@ -8,6 +8,7 @@ import { selectFocusedUserId, selectUserStatus, selectUsernameIdPairs, setFocuse
 import { fetchRecipes } from "./slices/recipesSlice";
 import { useEffect } from "react";
 import { setFocusedList } from "./slices/listsSlice";
+import history from "../App/history";
 
 
 function Navbar() {
@@ -22,28 +23,36 @@ function Navbar() {
         if(sidebarOpen){
             //move sidebar toggle button and recipe container to match sidebar
             dispatch(setModal({sidebarOpen:false}))
-
-            document.getElementById("recipe-book-container").style.transform=`translate(0px, 5%)`;
-            document.getElementById("recipe-book-container").style.transition="transform 300ms ease-in-out 100ms";
-
+            if(document.getElementById("recipe-book-container")){
+                document.getElementById("recipe-book-container").style.transform=`translate(0px, 5%)`;
+                document.getElementById("recipe-book-container").style.transition="transform 300ms ease-in-out 100ms";
+            } else if(document.getElementById("groceries-container")){
+                document.getElementById("groceries-container").style.transform=`translate(0px, 5%)`;
+                document.getElementById("groceries-container").style.transition="transform 300ms ease-in-out 100ms";
+            }
             document.getElementById("sidebar-toggle").style.transform=`translate(0px, 0)`;
         } else {
             //reset sidebar toggle button and recipe container to match sidebar
             dispatch(setModal({sidebarOpen:true}))
-        
-            document.getElementById("recipe-book-container").style.transform=`translate(-6vw, 5%)`; 
-            document.getElementById("recipe-book-container").style.transition="transform 300ms ease-in-out 100ms";
+
+            if(document.getElementById("recipe-book-container")){
+                document.getElementById("recipe-book-container").style.transform=`translate(-6vw, 5%)`; 
+                document.getElementById("recipe-book-container").style.transition="transform 300ms ease-in-out 100ms";
+            } else if(document.getElementById("groceries-container")){
+                document.getElementById("groceries-container").style.transform=`translate(-6vw, 5%)`; 
+                document.getElementById("groceries-container").style.transition="transform 300ms ease-in-out 100ms";
+            }
 
             document.getElementById("sidebar-toggle").style.transform=`translate(-12vw, 0)`; 
         }
     }
 
     const handleSelect = (value,option) => {
-        console.log(value,option)
         setSearchValue(option.label)
         dispatch(setFocusedList(""))
         dispatch(setFocusedUser(option.value))
         dispatch(fetchRecipes(option.value))
+        
     }
     
     const handleChange = (e) => {
@@ -52,9 +61,7 @@ function Navbar() {
     }
 
     useEffect(()=>{
-        console.log(userStatus)
         if(userStatus === "home"){
-            console.log(userStatus)
             setSearchValue("")
         }
     },[userStatus])
@@ -68,17 +75,20 @@ function Navbar() {
             alignContent:"center",
             borderBottom:"1px solid rgb(172, 172, 172)"
             }}>
-            <AutoComplete 
-                style={{margin:"auto -6rem auto auto", width:"20vw"}} 
-                options={userOptions} 
-                onSelect={handleSelect} 
-                value={searchValue}
-                filterOption={(inputValue, option) =>
-                    {return option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
-                  }
-            >
-                <Input.Search onChange={(e)=>handleChange(e)}/>
-            </AutoComplete>
+            {history.location.pathname === "/home" ?
+                <AutoComplete 
+                    style={{margin:"auto -6rem auto auto", width:"20vw"}} 
+                    options={userOptions} 
+                    onSelect={handleSelect} 
+                    value={searchValue}
+                    filterOption={(inputValue, option) =>
+                        {return option.label.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
+                    }
+                >
+                    <Input.Search onChange={(e)=>handleChange(e)}/>
+                </AutoComplete> : null
+            }
+            
             <Button icon={sidebarOpen? <RightOutlined />:<MenuOutlined/>} type="text" style={{margin:"auto .5rem auto auto",transition:"300ms ease-in-out 100ms"}} id="sidebar-toggle" onClick={toggleSideBar}/>
         </Paper>
     )

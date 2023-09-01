@@ -27,7 +27,6 @@ function ListCard ({list}) {
 
     const handleList = (list) => {
         dispatch(setFocusedList(list._id))
-        console.log(list)
         if(focusedUser){
             dispatch(setFocusedUser(null))
             dispatch(fetchRecipes()) 

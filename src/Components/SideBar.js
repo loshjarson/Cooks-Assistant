@@ -11,6 +11,7 @@ import {  selectAllLists, setFocusedList } from './slices/listsSlice';
 import { selectFocusedUserId, setFocusedUser } from './slices/usersSlice';
 import { fetchRecipes, setFocusedRecipe } from './slices/recipesSlice';
 import ListCard from './ListCard';
+import { ShoppingCartOutlined } from '@mui/icons-material';
 
 
 
@@ -35,6 +36,16 @@ function SideBar() {
         if(focusedUser){
                 dispatch(setFocusedUser(null))
                 dispatch(fetchRecipes()) 
+        } if(history.location.pathname !== "/home"){
+            history.push("/home")
+            history.go("/home")
+        }
+    }
+
+    const handleGoToGroceries = () => {
+        if(history.location !== "home"){
+            history.push("/groceries")
+            history.go("/groceries")
         }
     }
     
@@ -48,6 +59,15 @@ function SideBar() {
         }}
         >
             <div>
+            <Button
+                    className='list'
+                    style={{width:"100%", height:"4rem"}}
+                    onClick={()=>handleGoToGroceries()}
+                    startIcon={<ShoppingCartOutlined/>}
+                >
+                    My Grocery List
+                </Button>
+                <Divider/>
                 <Button
                     className='list'
                     style={{width:"100%", height:"4rem"}}
@@ -56,6 +76,7 @@ function SideBar() {
                 >
                     My Recipes
                 </Button>
+                
                 <Button
                     className='list'
                     style={{width:"100%", height:"4rem"}}

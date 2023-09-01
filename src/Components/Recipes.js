@@ -12,24 +12,20 @@ import RecipeSearch from "./Filter/RecipeSearch";
 import RecipeCard from "./RecipeCard";
 
 import { useSelector, useDispatch, batch } from "react-redux";
-import { deleteRecipe, fetchFilteredRecipes, fetchRecipes, selectFocusedRecipeObj, selectRecipeIds, selectRecipesStatus, setFocusedRecipe, setRecipeStatus } from "./slices/recipesSlice";
+import { deleteRecipe, fetchFilteredRecipes, selectFocusedRecipeObj, selectRecipeIds, selectRecipesStatus, setFocusedRecipe } from "./slices/recipesSlice";
 import { selectFilterStatus } from "./slices/filterSlice";
 import { selectModalByName, setModal } from "./slices/modalsSlice";
-import { addList, deleteList, fetchLists, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
-import { fetchUsers, selectFocusedUser } from "./slices/usersSlice";
+import { addList, deleteList, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
+import { selectFocusedUser } from "./slices/usersSlice";
 import { debounce } from "lodash";
+
 
 
 
 function Recipes() {
 
     const dispatch = useDispatch()
-    const debouncedBatch = debounce(()=>
-        batch(()=>{
-            dispatch(fetchRecipes())
-            dispatch(fetchLists())
-            dispatch(fetchUsers())
-        }), 200)
+
     const debouncedFilter = debounce(dispatch)
 
     const creatingRecipe = useSelector(state =>selectModalByName(state,"creatingRecipe"))
@@ -51,13 +47,6 @@ function Recipes() {
     const recipeIds = useSelector(selectRecipeIds)
 
     const [ newListName, setNewListName ] = useState("")
-
-    useEffect(()=>{
-        if(recipesStatus === 'idle') {
-            dispatch(setRecipeStatus())
-            debouncedBatch()
-        }
-    })
     
     
     useEffect(() => {
@@ -73,8 +62,15 @@ function Recipes() {
     }
     const handleDeleteList = () => {
         batch(()=>{
-            dispatch(setModal({deletingList:false}))  
+            dispatch(setModal({deletingList:false}))
             dispatch(deleteList())
+        })
+        
+    }
+    const handleDeleteRecipe = () => {
+        batch(()=>{
+            dispatch(setModal({deletingRecipe:false}))
+            dispatch(deleteRecipe())
         })
         
     }
@@ -125,7 +121,7 @@ function Recipes() {
             <Modal open={editingRecipe} onCancel={()=>{dispatch(setModal({editingRecipe:false}));}} footer={null} style={{minWidth:"80vw"}}>
                 <NewRecipe/>
             </Modal>
-            <Modal open={deletingRecipe} onCancel={()=>{dispatch(setModal({deletingRecipe:false}));}} title="Delete Recipe?" okText="Delete" cancelText="Cancel" onOk={()=>dispatch(deleteRecipe())}>
+            <Modal open={deletingRecipe} onCancel={()=>{dispatch(setModal({deletingRecipe:false}));}} title="Delete Recipe?" okText="Delete" cancelText="Cancel" onOk={()=>{handleDeleteRecipe()}}>
                 <p>Are you sure you want to delete {focusedRecipeObj ? focusedRecipeObj.name: null}?</p>
             </Modal>
             <Modal open={viewingRecipe} onCancel={()=>{dispatch(setModal({viewingRecipe:false}))}} footer={null} style={{minWidth:"80vw"}}>

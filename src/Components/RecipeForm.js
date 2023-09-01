@@ -21,15 +21,15 @@ const unitsOfMeasurement = [
         label:"Teaspoon"
     },
     {
-        value:"tbsp",
+        value:"Tbs",
         label:"Tablespoon"
     },
     {
-        value:"oz",
-        label:"Ounce"
+        value:"fl oz",
+        label:"Fluid Ounce"
     },
     {
-        value:"c",
+        value:"cup",
         label:"Cup"
     },
     {
@@ -93,10 +93,12 @@ function NewRecipe() {
     const handleSubmit = () => {
         //check whether user is editing or not to set form
         if (editing) {
-            dispatch(editRecipe([recipeId,recipeForm]))
-            dispatch(setModal({editingRecipe:false}))
+            dispatch(editRecipe([recipeId,recipeForm]));
+            dispatch(setModal({editingRecipe:false}));
+            
         } else {
-            dispatch(addRecipe(recipeForm))
+            dispatch(addRecipe(recipeForm));
+            dispatch(setModal({creatingRecipe:false}));
         }
     }
     
@@ -251,7 +253,7 @@ function NewRecipe() {
                     {ingredientError && (<Alert message="Ingredient is already in list" type="error" closable afterClose={handleClose} />)}
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
                         <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} value={newIngredient.amount} min={0} style={{width: 150}}/>
-                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
+                        <Select placeholder="Units" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
                         <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")}/>
                         <Button onClick={()=>addIngredient()}>Add</Button>
                     </div>

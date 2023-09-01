@@ -7,6 +7,7 @@ import { setFilterAndStatus } from "./filterSlice";
 import { fetchLists, setListsStatus } from "./listsSlice";
 import { batch } from "react-redux";
 import { setModal } from "./modalsSlice";
+import _ from "lodash"
 
 const USERS_URL = "http://localhost:8000/users/"
 const RECIPES_URL = 'http://localhost:8000/recipes/'
@@ -22,19 +23,17 @@ const initialState = {
 export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async (_,{getState}) => {
     const { users } = getState()
     const userId = users.focused !== null ?  users.focused : sessionStorage.getItem("userId")
-    console.log(userId)
     return axios.get(RECIPES_URL+userId, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
             .then(res => {
                 const recipes = res.data
                 //replace node.js Buffer object with object url pointing to blob
-                recipes.forEach((recipe,i)=>{
+                recipes.forEach((recipe)=>{
                     if(recipe.image){
                         const buffer = Buffer.from(recipe.image.data)
                         const blob = new Blob([buffer], {type:"image/jpeg"})
                         recipe.image = window.URL.createObjectURL(blob)
                     }
                 })
-                console.log(recipes)
                 return(recipes)
             })
             .catch(err => {
@@ -61,6 +60,7 @@ export const addRecipe = createAsyncThunk('recipes/addRecipe', async (recipe,{di
                 recipe.image = window.URL.createObjectURL(blob)
             }
             dispatch(setFocusedRecipe(recipe._id))
+            console.log(recipe)
             return recipe
         })
         .catch(err=>{
@@ -84,7 +84,6 @@ export const editRecipe  = createAsyncThunk('recipes/editRecipe', async (action)
                 const buffer = Buffer.from(recipe.image.data)
                 const blob = new Blob([buffer], {type:"image/jpeg"})
                 recipe.image = window.URL.createObjectURL(blob)
-                console.log(recipe.image)
             }
             return recipe
         })
@@ -98,14 +97,12 @@ export const deleteRecipe = createAsyncThunk('recipes/deleteRecipe', async (_,{g
         const recipeId = recipes.focused
         console.log(recipeId)
         return axios({
-            method:"put",
-            url:USERS_URL+"remove",
-            data:{recipeId},
+            method:"delete",
+            url:RECIPES_URL+recipeId,
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
         }).then(res => {
-            dispatch(fetchLists)
-            dispatch(setModal({deletingRecipe:false}))
-            return res.data
+            console.log(res)
+            return recipeId
         })
         .catch(err => {
             return err.message
@@ -113,11 +110,16 @@ export const deleteRecipe = createAsyncThunk('recipes/deleteRecipe', async (_,{g
 })
 
 export const pullRecipe = createAsyncThunk('recipes/pullRecipe', async (recipeId,{getState})=>{
+        const {recipes} = getState()
+        let recipeData = {..._.omit(recipes.recipes[recipeId],["_id","createdAt","updatedAt","__v"])}
+        let blob = await fetch(recipeData.image).then(r => r.blob());
+        recipeData.image = new File([blob], "image.png", {type:"image/png"})
+        recipeData = recipeToFormData(recipeData)
         return axios({
-            method:"put",
-            url:USERS_URL + "add",
-            data:{recipeId},
-            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
+            method:"post",
+            url:RECIPES_URL,
+            data:recipeData,
+            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`, 'Content-Type':'multipart/form-data'},
         }).then(res => {
             return(res.data)
         })
@@ -128,7 +130,6 @@ export const fetchFilteredRecipes = createAsyncThunk('recipes/fetchFilteredRecip
     const { focused, lists: listData } = lists;
     const { recipes: recipeData } = recipes;
     const recipesToFilter = focused ? listData[focused].recipes : Object.keys(recipeData);
-    console.log(recipesToFilter)
     
   
     const selectedTagsArray = filter.selectedTags;
@@ -139,7 +140,6 @@ export const fetchFilteredRecipes = createAsyncThunk('recipes/fetchFilteredRecip
   
     let filteredList = recipesToFilter.filter((recipeId) => {
       const recipe = recipeData[recipeId];
-      console.log(recipe)
       
       let matchesFilter = true;
       const recipeTagsSet = new Set(recipe.tags);
@@ -293,8 +293,6 @@ const recipesSlice = createSlice({
             
             //cases for pull recipes
             .addCase(pullRecipe.fulfilled, (state,action) => {
-                const recipe = action.payload
-                state.recipes[recipe._id] = recipe
             })
             .addCase(pullRecipe.rejected, (state,action)=> {
                 state.status = 'failed'

@@ -33,7 +33,6 @@ export const addList = createAsyncThunk('lists/addList', async (list,{getState})
         data: list,
         headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
     }).then(res => {
-        console.log(res.data)
         return res.data
     }).catch(err => {
         return err.message

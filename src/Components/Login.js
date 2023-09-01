@@ -16,7 +16,6 @@ function Login() {
     const handleSubmit = () => {
           axios.post("http://localhost:8000/auth/login", user)
             .then(res => {
-                console.log(res.data.message)
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.userID)
                 history.push("/home")
