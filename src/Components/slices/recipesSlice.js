@@ -8,7 +8,7 @@ import { setListsStatus } from "./listsSlice";
 import { batch } from "react-redux";
 import _ from "lodash"
 
-const RECIPES_URL = 'https://cooksassistant-4e729736581a.herokuapp.com//recipes/'
+const RECIPES_URL = 'https://cooksassistant-4e729736581a.herokuapp.com/recipes/'
 
 const initialState = {
     focused:"",

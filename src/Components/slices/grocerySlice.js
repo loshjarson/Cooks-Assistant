@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import convert from 'convert-units';
 import axios from "axios";
-const GROCERIES_URL = 'https://cooksassistant-4e729736581a.herokuapp.com//grocerylists/'
+const GROCERIES_URL = 'https://cooksassistant-4e729736581a.herokuapp.com/grocerylists/'
 
 const initialState = {
     recipes:{},
