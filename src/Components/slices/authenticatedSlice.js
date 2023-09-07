@@ -15,7 +15,7 @@ export const fetchAuthenticated = createAsyncThunk('authenticated/fetchAuthentic
     } else {
         axios({
             method:"post",
-            url:"http://localhost:8000/auth/authenticate",
+            url:"https://cooksassistant-4e729736581a.herokuapp.com//auth/authenticate",
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
         }).then(res => {
             return(Boolean(res.status === 200))

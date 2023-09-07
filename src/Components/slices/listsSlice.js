@@ -4,7 +4,7 @@ import { addToRecipes } from "./recipesSlice";
 
 
 
-const LISTS_URL = 'http://localhost:8000/recipelists/'
+const LISTS_URL = 'https://cooksassistant-4e729736581a.herokuapp.com//recipelists/'
 
 const initialState = {
     focused:"",

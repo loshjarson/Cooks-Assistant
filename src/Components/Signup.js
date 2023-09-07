@@ -14,7 +14,7 @@ function Signup() {
     }
 
     const handleSubmit = () => {
-          axios.post("http://localhost:8000/auth/register", user)
+          axios.post("https://cooksassistant-4e729736581a.herokuapp.com//auth/register", user)
             .then(res => {
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.id)

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-const USERS_URL = "http://localhost:8000/users/"
+const USERS_URL = "https://cooksassistant-4e729736581a.herokuapp.com//users/"
 
 const initialState = {
     focused: null,

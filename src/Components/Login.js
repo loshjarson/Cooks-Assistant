@@ -14,7 +14,7 @@ function Login() {
     }
 
     const handleSubmit = () => {
-          axios.post("http://localhost:8000/auth/login", user)
+          axios.post("https://cooksassistant-4e729736581a.herokuapp.com//auth/login", user)
             .then(res => {
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.userID)
