@@ -2,7 +2,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Form, Button, Input } from "antd";
 import axios from 'axios';
 import { useState } from "react";
-import history from '../history';
+import history from '../App/history';
 
 function Login() {
     const [user, setUser] = useState({username:"",password:""})
@@ -10,14 +10,12 @@ function Login() {
 
     const handleChange = (e) => {
         const {id, value} = e.target
-        console.log(id,value)
         setUser({...user, [id]:value})
     }
 
     const handleSubmit = () => {
-          axios.post("http://localhost:8000/auth/login", user)
+          axios.post("https://cooksassistant-4e729736581a.herokuapp.com/auth/login", user)
             .then(res => {
-                console.log(res.data.message)
                 sessionStorage.setItem("token",res.data.token)
                 sessionStorage.setItem("userId", res.data.userID)
                 history.push("/home")

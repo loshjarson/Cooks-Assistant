@@ -1,8 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
+
 import { Button, Input, Form, List, InputNumber, Upload, Select, Alert, Tag } from "antd";
 import { CheckOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import VirtualList from "rc-virtual-list"
+
+import { useDispatch, useSelector } from "react-redux";
+import { addRecipe, editRecipe, selectFocusedRecipe, selectRecipeById } from "./slices/recipesSlice";
+import { selectModalByName, setModal } from "./slices/modalsSlice";
+import { omit } from "lodash";
 
 //units used in type of measurement dropdown
 const unitsOfMeasurement = [
@@ -15,15 +21,15 @@ const unitsOfMeasurement = [
         label:"Teaspoon"
     },
     {
-        value:"tbsp",
+        value:"Tbs",
         label:"Tablespoon"
     },
     {
-        value:"oz",
-        label:"Ounce"
+        value:"fl oz",
+        label:"Fluid Ounce"
     },
     {
-        value:"c",
+        value:"cup",
         label:"Cup"
     },
     {
@@ -40,39 +46,68 @@ const unitsOfMeasurement = [
     },
 ]
 
+const initialState = {
+    name: "",
+    description: "",
+    ingredients: [],
+    instructions: {},
+    prepTime: 0,
+    cookTime: 0,
+    totalTime: 0,
+    servings: 0,
+    tags: [],
+    image: null,
+}
 
-function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePreview, setRecipePreview}) {
+
+function NewRecipe() {
     const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
-    const [newStep, setNewStep] = useState()
     const [ingredientError, setIngredientError] = useState(false)
+
+    const [newStep, setNewStep] = useState()
     const [editingStep, setEditingStep] = useState({step:0,instruction:""})
+    
     const [tagInputVisible, setTagInputVisible] = useState(false)
     const [newTag, setNewTag] = useState("")
     const tagInputRef = useRef(null)
+
+    const [recipeForm, setRecipeForm] = useState(initialState)
+    const [recipeImage, setRecipeImage] = useState("")
+
+    const editing = useSelector(state => selectModalByName(state,"editingRecipe"))
+
+    const recipeId = useSelector(selectFocusedRecipe)
+    const recipe = useSelector(state => selectRecipeById(state,recipeId))
+
+    const dispatch = useDispatch()
     
-   
-    function setEditingRecipe() {
-        if(editing){
-            setRecipeForm(editingRecipe)
-            setRecipePreview(`data:image/png;base64,${editingRecipe.image}`)
-            return "editing"
+    useEffect(()=>{
+        if (editing) {
+            const toForm = omit(recipe, "_id")
+            setRecipeForm({...toForm});
+            setRecipeImage(recipe.image)
+        } 
+        else setRecipeForm({...initialState})
+    },[editing,recipe])
+    
+    const handleSubmit = () => {
+        //check whether user is editing or not to set form
+        if (editing) {
+            dispatch(editRecipe([recipeId,recipeForm]));
+            dispatch(setModal({editingRecipe:false}));
+            
         } else {
-            return "not editing"
+            dispatch(addRecipe(recipeForm));
+            dispatch(setModal({creatingRecipe:false}));
         }
     }
     
-
     //handles changing form values
     const handleChange = (e,j) => {
         if(e.file){
             setRecipeForm({...recipeForm, image:e.file})
+            setRecipeImage(window.URL.createObjectURL(e.file))
 
-            //reads image as url to display as preview
-            const imageReader = new FileReader() 
-            imageReader.onload = function(e) {
-                setRecipePreview(e.target.result)
-            }
-            imageReader.readAsDataURL(e.file)
         } else if(e.target) {
             setRecipeForm({...recipeForm, [e.target.name]:e.target.value}) 
         } else if(j.includes("prep")){
@@ -169,11 +204,11 @@ function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePre
                 <Input id="name-input" name="name" onChange={handleChange} value={recipeForm.name} />
             </Form.Item>
             <div style={{width:"40rem", margin:"0 auto"}}>
-                {recipeForm.tags.map((tag,index) => {
+                {recipeForm.tags.map((tag) => {
                     return(
-                    <Tag closable={true} onClose={() => handleCloseTag()} key={tag}>
-                        {tag}
-                    </Tag>
+                        <Tag closable={true} onClose={() => handleCloseTag(tag)} key={tag}>
+                            {tag}
+                        </Tag>
                     )
                 })}
                 {tagInputVisible ? 
@@ -190,7 +225,7 @@ function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePre
                 </Form.Item>
                 <Form.Item label="Recipe Image" style={{width:"30%"}}>
                     <Upload.Dragger id="image-input" name="image" listType="picture-card" customRequest={handleChange} showUploadList={false} style={{width:"100%"}}>
-                          {recipeForm.image ? <img src={recipePreview} alt="recipe preview" style={{width:"80%"}}/> : <div style={{}}><PlusOutlined/><div>Upload</div></div>}  
+                          {recipeForm.image ? <img src={recipeImage} alt="recipe example" style={{width:"80%"}}/> : <div><PlusOutlined/><div>Upload</div></div>}  
                     </Upload.Dragger>
                 </Form.Item>
             </div>
@@ -218,7 +253,7 @@ function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePre
                     {ingredientError && (<Alert message="Ingredient is already in list" type="error" closable afterClose={handleClose} />)}
                     <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
                         <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} value={newIngredient.amount} min={0} style={{width: 150}}/>
-                        <Select placeholder="Unit" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
+                        <Select placeholder="Units" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
                         <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")}/>
                         <Button onClick={()=>addIngredient()}>Add</Button>
                     </div>
@@ -233,10 +268,10 @@ function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePre
                                 height={200}
                             >
                                 {(stepNumber) => (
-                                    <List.Item key={stepNumber} actions={[editingStep.step == parseInt(stepNumber) ? <CheckOutlined onClick={()=>{saveEdit()}}/> : <EditOutlined onClick={()=>{handleEditStep(stepNumber)}}/>,parseInt(stepNumber) === Object.keys(recipeForm.instructions).length && <DeleteOutlined onClick={()=>{handleDeleteStep(stepNumber)}}/>]}>
+                                    <List.Item key={stepNumber} actions={[editingStep.step === parseInt(stepNumber) ? <CheckOutlined onClick={()=>{saveEdit()}}/> : <EditOutlined onClick={()=>{handleEditStep(stepNumber)}}/>,parseInt(stepNumber) === Object.keys(recipeForm.instructions).length && <DeleteOutlined onClick={()=>{handleDeleteStep(stepNumber)}}/>]}>
                                         <List.Item.Meta
                                             avatar={stepNumber}
-                                            description={editingStep.step == parseInt(stepNumber) ? <TextArea value={editingStep.instruction} onChange={e=>setEditingStep({...editingStep, instruction:e.target.value})}/> : recipeForm.instructions[stepNumber]}
+                                            description={editingStep.step === parseInt(stepNumber) ? <TextArea value={editingStep.instruction} onChange={e=>setEditingStep({...editingStep, instruction:e.target.value})}/> : recipeForm.instructions[stepNumber]}
                                             />
                                     </List.Item>
                                 )}
@@ -264,6 +299,9 @@ function NewRecipe({recipeForm, setRecipeForm, editingRecipe, editing, recipePre
                     <InputNumber id="servings-input" name="servings" onChange={(e) => handleChange(e,"servings")} value={recipeForm.servings} min={0}/>
                 </Form.Item>  
             </div>
+            <Form.Item style={{width:"100%", textAlign:"center"}}>
+                <Button onClick={handleSubmit}>Submit Changes</Button>
+            </Form.Item>
         </Form>
     );
 }
