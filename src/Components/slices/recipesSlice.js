@@ -36,7 +36,7 @@ export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async (_,{g
             })
             .catch(err => {
                 console.log(err)
-                return err.message
+                return err
             })
 })
 
@@ -223,14 +223,21 @@ const recipesSlice = createSlice({
         builder
 
             .addCase(fetchRecipes.fulfilled, (state, action) => {
-                state.status = 'succeeded'
-                const loadedRecipes = action.payload
+                
                 const recipeMap = {}
                 //map recipes with recipe ids as keys
-                loadedRecipes.forEach((recipe) => {
+                if(action.payload.code !== "ERR_NETWORK" && action.payload.code !== "ERR_BAD_RESPONSE"){
+                    const loadedRecipes = action.payload
+                   loadedRecipes.forEach((recipe) => {
                     recipeMap[recipe._id]= {...recipe};
-                });
-                state.recipes = recipeMap
+                    });
+                    state.recipes = recipeMap 
+                    state.status = 'succeeded'
+                } else {
+                    state.status = "failed"
+                    state.error = action.payload.message
+                }
+                
             })
             .addCase(fetchRecipes.rejected, (state, action) => {
                 state.status = 'failed'

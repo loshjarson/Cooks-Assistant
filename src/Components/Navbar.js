@@ -4,7 +4,7 @@ import { Paper } from "@mui/material";
 import { AutoComplete, Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModalByName, setModal } from "./slices/modalsSlice";
-import { selectFocusedUserId, selectUserStatus, selectUsernameIdPairs, setFocusedUser } from "./slices/usersSlice";
+import { selectUserStatus, selectUsernameIdPairs, setFocusedUser } from "./slices/usersSlice";
 import { fetchRecipes } from "./slices/recipesSlice";
 import { useEffect } from "react";
 import { setFocusedList } from "./slices/listsSlice";
@@ -15,7 +15,6 @@ function Navbar() {
     const dispatch = useDispatch()
     const sidebarOpen = useSelector((state)=>selectModalByName(state,"sidebarOpen"))
     const userOptions = useSelector(selectUsernameIdPairs)
-    const focusedUser = useSelector(selectFocusedUserId)
     const userStatus = useSelector(selectUserStatus)
     const [searchValue, setSearchValue] = useState("")
 

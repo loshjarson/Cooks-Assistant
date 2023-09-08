@@ -23,26 +23,28 @@ export const fetchGroceries = createAsyncThunk('groceries/fetchGroceries', async
 
 export const editGroceries = createAsyncThunk('groceries/editGroceries', async (none, {getState})=>{
     const {groceries} = getState()
-    const data = Object.keys(groceries.recipes).map(recipe => {
-        return {
-            recipe,
-            quantity: groceries.recipes[recipe]
-        }
-    })
-    const recipes = JSON.stringify(data)
-    return axios({
-        method:"put",
-        url:GROCERIES_URL + "update",
-        data:{recipes},
-        headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}
+    if(Object.keys(groceries.recipes)>0){
+        const data = Object.keys(groceries.recipes).map(recipe => {
+            return {
+                recipe,
+                quantity: groceries.recipes[recipe]
+            }
         })
-        .then(res => {
-            return res.data
-        })
-        .catch(err => {
-            console.log(err)
-            return err.message
-        })
+        const recipes = JSON.stringify(data)
+        return axios({
+            method:"put",
+            url:GROCERIES_URL + "update",
+            data:{recipes},
+            headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}
+            })
+            .then(res => {
+                return res.data
+            })
+            .catch(err => {
+                console.log(err)
+                return err.message
+            })
+    }
 })
 
 export const calculateGroceries = createAsyncThunk('groceries/calculate', async (none,{getState,dispatch}) => {
@@ -102,10 +104,16 @@ const groceries = createSlice({
         builder
 
             .addCase(fetchGroceries.fulfilled, (state,action) => {
-                action.payload.groceries.forEach(recipe => {
+                if(action.payload.groceries.code !== "ERR_NETWORK"){
+                   action.payload.groceries.forEach(recipe => {
                     state.recipes[recipe.recipe] = recipe.quantity
-                })
-                state.status = "fetched"
+                    })
+                    state.status = "fetched" 
+                }else {
+                    state.status = "failed"
+                    state.error = action.payload
+                }
+                
             })
             .addCase(fetchGroceries.rejected, (state,action) => {
                 state.status = "failed"
