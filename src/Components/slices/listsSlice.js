@@ -20,7 +20,7 @@ export const fetchLists = createAsyncThunk('lists/fetchLists', async () => {
                 return(res.data)
             })
             .catch(err => {
-                return err.message
+                return err
             })
 })
 
@@ -99,14 +99,22 @@ const listsSlice = createSlice({
         builder
             //cases for fetchLists request
             .addCase(fetchLists.fulfilled, (state, action) => {
-                state.status = 'succeeded'
-                const loadedLists = action.payload
-                const listMap = {}
+                
                 //create map of lists with list ids as keys
-                loadedLists.forEach((list) => {
+                if(action.payload.code !== "ERR_NETWORK" && action.payload.code !== "ERR_BAD_RESPONSE"){
+                    state.status = 'succeeded'
+                    const loadedLists = action.payload
+                    const listMap = {}
+                    loadedLists.forEach((list) => {
                     listMap[list._id] = {...list};
-                });
-                state.lists = listMap
+                        state.lists = listMap
+                    });
+                }else {
+                    state.status = 'failed'
+                    state.error = action.payload.message
+                }
+                
+                
             })
             .addCase(fetchLists.rejected, (state, action) => {
                 state.status = 'failed'

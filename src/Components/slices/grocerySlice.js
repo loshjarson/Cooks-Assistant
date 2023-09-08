@@ -104,7 +104,7 @@ const groceries = createSlice({
         builder
 
             .addCase(fetchGroceries.fulfilled, (state,action) => {
-                if(action.payload.groceries.code !== "ERR_NETWORK"){
+                if(action.payload.code !== "ERR_NETWORK" && action.payload.code !== "ERR_BAD_RESPONSE"){
                    action.payload.groceries.forEach(recipe => {
                     state.recipes[recipe.recipe] = recipe.quantity
                     })
