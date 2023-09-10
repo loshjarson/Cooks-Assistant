@@ -9,6 +9,8 @@ import { fetchRecipes } from "./slices/recipesSlice";
 import { useEffect } from "react";
 import { setFocusedList } from "./slices/listsSlice";
 import history from "../App/history";
+import { PaletteOutlined } from "@mui/icons-material";
+import { cycleStep } from "./slices/colorSlice";
 
 
 function Navbar() {
@@ -17,8 +19,9 @@ function Navbar() {
     const userOptions = useSelector(selectUsernameIdPairs)
     const userStatus = useSelector(selectUserStatus)
     const [searchValue, setSearchValue] = useState("")
-
+    
     const toggleSideBar = () => {
+        if(window.screen.width > 767){
         if(sidebarOpen){
             //move sidebar toggle button and recipe container to match sidebar
             dispatch(setModal({sidebarOpen:false}))
@@ -43,6 +46,12 @@ function Navbar() {
             }
 
             document.getElementById("sidebar-toggle").style.transform=`translate(-12vw, 0)`; 
+        }} else {
+            if(sidebarOpen){
+                dispatch(setModal({sidebarOpen:false}))
+            } else {
+                dispatch(setModal({sidebarOpen:true}))
+            }
         }
     }
 
@@ -66,17 +75,11 @@ function Navbar() {
     },[userStatus])
 
     return (
-        <Paper elevation={12} square style={{
-            width: "100vw",
-            height: "6vh",
-            minHeight: "50px",
-            display: "flex",
-            alignContent:"center",
-            borderBottom:"1px solid rgb(172, 172, 172)"
-            }}>
+        <Paper elevation={13} square id="navbar" >
+            <Button icon={<PaletteOutlined/>} id="color-cycle" onClick={()=>{dispatch(cycleStep())}}/>
             {history.location.pathname === "/home" ?
                 <AutoComplete 
-                    style={{margin:"auto -6rem auto auto", width:"20vw"}} 
+                    className="user-search"
                     options={userOptions} 
                     onSelect={handleSelect} 
                     value={searchValue}
@@ -88,7 +91,7 @@ function Navbar() {
                 </AutoComplete> : null
             }
             
-            <Button icon={sidebarOpen? <RightOutlined />:<MenuOutlined/>} type="text" style={{margin:"auto .5rem auto auto",transition:"300ms ease-in-out 100ms"}} id="sidebar-toggle" onClick={toggleSideBar}/>
+            <Button icon={sidebarOpen? <RightOutlined />:<MenuOutlined/>} type="text" id="sidebar-toggle" onClick={toggleSideBar}/>
         </Paper>
     )
 }
