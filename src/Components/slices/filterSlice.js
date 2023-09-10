@@ -49,12 +49,12 @@ const filterSlice = createSlice({
     }
 })
 
-export const selectFullFilter = (state) => state.filter
-export const selectFilterableTags = (state) => state.filter.filterableTags
-export const selectFilterableIngredients = (state) => state.filter.filterableIngredients
-export const selectSelectedTags = (state) => state.filter.selectedTags
-export const selectSelectedIngredients = (state) => state.filter.selectedIngredients
-export const selectFilterStatus = (state) => state.filter.status
+export const selectFullFilter = (state) => state.persistedReducer.filter
+export const selectFilterableTags = (state) => state.persistedReducer.filter.filterableTags
+export const selectFilterableIngredients = (state) => state.persistedReducer.filter.filterableIngredients
+export const selectSelectedTags = (state) => state.persistedReducer.filter.selectedTags
+export const selectSelectedIngredients = (state) => state.persistedReducer.filter.selectedIngredients
+export const selectFilterStatus = (state) => state.persistedReducer.filter.status
 
 export const {
     setFilterableTags,

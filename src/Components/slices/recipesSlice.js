@@ -19,7 +19,7 @@ const initialState = {
 }
 
 export const fetchRecipes = createAsyncThunk('recipes/fetchRecipes', async (_,{getState}) => {
-    const { users } = getState()
+    const { users } = getState().persistedReducer
     const userId = users.focused !== null ?  users.focused : sessionStorage.getItem("userId")
     return axios.get(RECIPES_URL+userId, {headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`}})
             .then(res => {
@@ -58,7 +58,6 @@ export const addRecipe = createAsyncThunk('recipes/addRecipe', async (recipe,{di
                 recipe.image = window.URL.createObjectURL(blob)
             }
             dispatch(setFocusedRecipe(recipe._id))
-            console.log(recipe)
             return recipe
         })
         .catch(err=>{
@@ -91,15 +90,13 @@ export const editRecipe  = createAsyncThunk('recipes/editRecipe', async (action)
 })
 
 export const deleteRecipe = createAsyncThunk('recipes/deleteRecipe', async (_,{getState,dispatch}) => {
-        const { recipes } = getState()
+        const { recipes } = getState().persistedReducer
         const recipeId = recipes.focused
-        console.log(recipeId)
         return axios({
             method:"delete",
             url:RECIPES_URL+recipeId,
             headers:{'authorization':`bearer ${sessionStorage.getItem("token")}`},
         }).then(res => {
-            console.log(res)
             return recipeId
         })
         .catch(err => {
@@ -108,7 +105,7 @@ export const deleteRecipe = createAsyncThunk('recipes/deleteRecipe', async (_,{g
 })
 
 export const pullRecipe = createAsyncThunk('recipes/pullRecipe', async (recipeId,{getState})=>{
-        const {recipes} = getState()
+        const {recipes} = getState().persistedReducer
         let recipeData = {..._.omit(recipes.recipes[recipeId],["_id","createdAt","updatedAt","__v"])}
         let blob = await fetch(recipeData.image).then(r => r.blob());
         recipeData.image = new File([blob], "image.png", {type:"image/png"})
@@ -124,7 +121,7 @@ export const pullRecipe = createAsyncThunk('recipes/pullRecipe', async (recipeId
 })
 
 export const fetchFilteredRecipes = createAsyncThunk('recipes/fetchFilteredRecipes', (_, { getState, dispatch }) => {
-    const { recipes, filter, lists } = getState();
+    const { recipes, filter, lists } = getState().persistedReducer;
     const { focused, lists: listData } = lists;
     const { recipes: recipeData } = recipes;
     const recipesToFilter = focused ? listData[focused].recipes : Object.keys(recipeData);
@@ -306,15 +303,15 @@ const recipesSlice = createSlice({
     }
 })
 
-export const selectAllRecipes = (state) => state.recipes.recipes;
-export const selectFilteredRecipes = (state) => state.recipes.filtered;
-export const selectRecipeById = (state,action) => state.recipes.recipes[action];
-export const selectRecipesStatus = (state) => state.recipes.status;
-export const selectRecipesError = (state) => state.recipes.error;
-export const selectFocusedRecipe = (state) => state.recipes.focused;
-export const selectFocusedRecipeObj = (state) => state.recipes.recipes[state.recipes.focused];
+export const selectAllRecipes = (state) => state.persistedReducer.recipes.recipes;
+export const selectFilteredRecipes = (state) => state.persistedReducer.recipes.filtered;
+export const selectRecipeById = (state,action) => state.persistedReducer.recipes.recipes[action];
+export const selectRecipesStatus = (state) => state.persistedReducer.recipes.status;
+export const selectRecipesError = (state) => state.persistedReducer.recipes.error;
+export const selectFocusedRecipe = (state) => state.persistedReducer.recipes.focused;
+export const selectFocusedRecipeObj = (state) => state.persistedReducer.recipes.recipes[state.persistedReducer.recipes.focused];
 export const selectRecipeIds = createSelector(
-    [state=>state.recipes.recipes], recipes => Object.keys(recipes)
+    [state=>state.persistedReducer.recipes.recipes], recipes => Object.keys(recipes)
 )
 export const selectFilteredRecipeById = createSelector(
     [selectFilteredRecipes, (state,recipeId)=>recipeId],

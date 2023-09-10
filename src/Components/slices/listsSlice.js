@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { addToRecipes } from "./recipesSlice";
 
 
 
@@ -25,7 +24,7 @@ export const fetchLists = createAsyncThunk('lists/fetchLists', async () => {
 })
 
 export const addList = createAsyncThunk('lists/addList', async (list,{getState}) => {
-    const {recipes} = getState()
+    const {recipes} = getState().persistedReducer
     if (recipes.focused) list.recipes = JSON.stringify(recipes.focused);
     return axios({
         method: "post",
@@ -44,7 +43,6 @@ export const addList = createAsyncThunk('lists/addList', async (list,{getState})
 
 export const editList = createAsyncThunk('lists/addToList', async (action, {getState,dispatch}) => {
     const [recipeToAdd, list, name, recipeToDelete] = action
-    const {users} = getState()
     let updatedList;
     if(recipeToAdd){
         updatedList = {recipeToAdd}
@@ -73,7 +71,7 @@ export const editList = createAsyncThunk('lists/addToList', async (action, {getS
 })
 
 export const deleteList = createAsyncThunk('lists/deleteList', async (_,{getState}) => {
-    const {lists} = getState()
+    const {lists} = getState().persistedReducer
     return axios({
         method:"delete",
         url: LISTS_URL+lists.focused,
@@ -165,13 +163,13 @@ const listsSlice = createSlice({
     }
 })
 
-export const selectAllLists = (state) => state.lists.lists;
-export const selectFocusedList = (state) => state.lists.focused;
-export const selectListById = (state,action) => state.lists.lists[action.payload];
-export const selectListsStatus = (state) => state.lists.status;
-export const selectListsError = (state) => state.lists.error;
-export const selectFocusedListName = (state) => state.lists.focused ? state.lists.lists[state.lists.focused].name : "My Recipes"
-export const selectFocusedListRecipes = (state) => state.lists.lists[state.focused].recipes
+export const selectAllLists = (state) => state.persistedReducer.lists.lists;
+export const selectFocusedList = (state) => state.persistedReducer.lists.focused;
+export const selectListById = (state,action) => state.persistedReducer.lists.lists[action.payload];
+export const selectListsStatus = (state) => state.persistedReducer.lists.status;
+export const selectListsError = (state) => state.persistedReducer.lists.error;
+export const selectFocusedListName = (state) => state.persistedReducer.lists.focused ? state.persistedReducer.lists.lists[state.persistedReducer.lists.focused].name : "My Recipes"
+export const selectFocusedListRecipes = (state) => state.persistedReducer.lists.lists[state.focused].recipes
 
 export const { setFocusedList, setListsStatus } = listsSlice.actions
 

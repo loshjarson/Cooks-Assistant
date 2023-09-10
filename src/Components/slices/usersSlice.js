@@ -54,10 +54,10 @@ const usersSlice = createSlice({
     }
 })
 
-export const selectFocusedUserId = (state) => state.users.focused
-export const selectUserStatus = (state) => state.users.status
-export const selectAllUsers = (state) => state.users.users
-export const selectFocusedUser = createSelector([selectFocusedUserId, state => state.users.users], (userId,users) => users.filter(user => user._id === userId))
+export const selectFocusedUserId = (state) => state.persistedReducer.users.focused
+export const selectUserStatus = (state) => state.persistedReducer.users.status
+export const selectAllUsers = (state) => state.persistedReducer.users.users
+export const selectFocusedUser = createSelector([selectFocusedUserId, state => state.persistedReducer.users.users], (userId,users) => users.filter(user => user._id === userId))
 export const selectUsernameIdPairs = createSelector(
     [selectAllUsers], 
     users => users.map((user) => { return {label: user.username, value: user._id} })

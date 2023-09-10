@@ -18,8 +18,8 @@ const draggableSlice = createSlice({
     }
 })
 
-export const selectDragging = (state) => state.draggable.dragging
-export const selectHovering = (state) => state.draggable.hovering
+export const selectDragging = (state) => state.persistedReducer.draggable.dragging
+export const selectHovering = (state) => state.persistedReducer.draggable.hovering
 export const { setDragging, setHovering } = draggableSlice.actions
 
 export default draggableSlice.reducer

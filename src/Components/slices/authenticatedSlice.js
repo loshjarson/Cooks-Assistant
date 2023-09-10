@@ -9,10 +9,6 @@ const initialState = {
 }
 
 export const fetchAuthenticated = createAsyncThunk('authenticated/fetchAuthenticated', () => {
-    if(!sessionStorage.getItem("token")){
-        history.push("/")
-        history.go("/")
-    } else {
         axios({
             method:"post",
             url:"https://cooksassistant-4e729736581a.herokuapp.com/auth/authenticate",
@@ -27,8 +23,6 @@ export const fetchAuthenticated = createAsyncThunk('authenticated/fetchAuthentic
                 return false
             }
         })
-        
-    }
 })
 
 const authenticatedSlice = createSlice({
@@ -53,6 +47,6 @@ const authenticatedSlice = createSlice({
     }
 })
 
-export const selectAuthenticated = (state) => state.authenticated.authenticated
+export const selectAuthenticated = (state) => state.persistedReducer.authenticated.authenticated
 
 export default authenticatedSlice.reducer

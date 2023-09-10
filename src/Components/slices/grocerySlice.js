@@ -22,8 +22,8 @@ export const fetchGroceries = createAsyncThunk('groceries/fetchGroceries', async
 })
 
 export const editGroceries = createAsyncThunk('groceries/editGroceries', async (none, {getState})=>{
-    const {groceries} = getState()
-    if(Object.keys(groceries.recipes)>0){
+    const {groceries} = getState().persistedReducer
+    if(Object.keys(groceries.recipes).length>0){
         const data = Object.keys(groceries.recipes).map(recipe => {
             return {
                 recipe,
@@ -48,7 +48,7 @@ export const editGroceries = createAsyncThunk('groceries/editGroceries', async (
 })
 
 export const calculateGroceries = createAsyncThunk('groceries/calculate', async (none,{getState,dispatch}) => {
-    const {recipes, groceries} = getState()
+    const {recipes, groceries} = getState().persistedReducer
     const groceryList = {};
     Object.keys(groceries.recipes).forEach(recipe => {
         const quantity = groceries.recipes[recipe];
@@ -143,10 +143,10 @@ const groceries = createSlice({
     }
 })
 
-export const selectIngredients = (state) => state.groceries.ingredients
-export const selectGroceriesStatus = (state) => state.groceries.status
-export const selectRecipeQuantities = (state) => state.groceries.recipes
-export const selectQuantityByRecipe = (state,action) => state.groceries.recipes[action.payload]
+export const selectIngredients = (state) => state.persistedReducer.groceries.ingredients
+export const selectGroceriesStatus = (state) => state.persistedReducer.groceries.status
+export const selectRecipeQuantities = (state) => state.persistedReducer.groceries.recipes
+export const selectQuantityByRecipe = (state,action) => state.persistedReducer.groceries.recipes[action.payload]
 
 export const {increaseQuantity, decreaseQuantity} = groceries.actions
 

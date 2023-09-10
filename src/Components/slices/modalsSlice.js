@@ -24,9 +24,9 @@ const modalsSlice = createSlice({
     }
 })
 
-export const selectAllModals = (state) => state.modals
-export const selectModalByName = (state,action) => state.modals[action]
-export const selectIsModalOpen = (state) => Object.values(state.modals).includes(true)
+export const selectAllModals = (state) => state.persistedReducer.modals
+export const selectModalByName = (state,action) => state.persistedReducer.modals[action]
+export const selectIsModalOpen = (state) => Object.values(state.persistedReducer.modals).includes(true)
 
 export const {setModal} = modalsSlice.actions
 
