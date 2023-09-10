@@ -82,33 +82,32 @@ function Recipes() {
             className="recipe-book-container"
             id="recipe-book-container"
             elevation={12} 
-            style={{
-                width: "80vw",
-                height: "85vh",
-                margin: "auto",
-                transform: "translate(0,5%)",
-                display: "flex",
-                flexDirection: "column"
-            }}>
-                <div style={{display:"flex", justifyContent:"space-around"}}>
-                    <div className="filter-container" style={{display:"flex", justifyContent:"space-around", width:"30rem"}}>
+            >
+                <div id="recipe-toolbar">
+                    <div id="search-filter">
                         <RecipeSearch/>
-                        <Popover content={<Filter/>} placement="rightTop" trigger="click"><IconButton style={{margin:"auto"}}><FilterOutlined/></IconButton></Popover>  
+                        <Popover content={<Filter/>} placement="rightTop" trigger="click"><IconButton style={{margin:"auto" }}><FilterOutlined/></IconButton></Popover>  
                     </div>
-                    <Typography style={{margin:"auto"}}>{focusedUser[0] ? `${focusedUser[0].username}'s Recipes`:focusedListName}</Typography>
-                    <div style={{margin:"auto 2rem auto auto", right:"0", display:"flex", justifySelf:"right"}} className="new-recipe-button-container">
-                        <Button 
-                            onClick={()=>{
-                                dispatch(setFocusedRecipe(""))
-                                dispatch(setModal({creatingRecipe: true}));
-                                }}
-                        >
-                            <PlusOutlined/>New Recipe
-                        </Button>
+                    <Typography style={{margin:"auto", textAlign:"center"}} variant="h3">{focusedUser[0] ? `${focusedUser[0].username}'s Recipes`:focusedListName}</Typography>
+                    <div id="new-recipe-button-container">
+                        {
+                            focusedUser[0] ? 
+                            null
+                            : <Button 
+                                onClick={()=>{
+                                    dispatch(setFocusedRecipe(""))
+                                    dispatch(setModal({creatingRecipe: true}));
+                                    }}
+                                id="new-recipe-button"
+                                >
+                                    <PlusOutlined/>New Recipe
+                            </Button>
+                        }
+                        
                     </div>
                 </div>
                 <Divider/>
-                <div style={{display:"flex", flexFlow:"wrap", overflow:"auto", justifyContent:"flex-start"}}>
+                <div id="recipes-container">
                     {Array.from(Object.values(recipeIds)).map(recipeId => {
                         //sets popover content
                         return(<RecipeCard recipeId={recipeId} key={recipeId}/>)
