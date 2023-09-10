@@ -23,7 +23,7 @@ import blueBackground from "../blueBackground.png"
 import redBackground from "../redBackground.png"
 import greenBackground from "../greenBackground.png"
 import history from "../App/history";
-import { setModal } from "../Components/slices/modalsSlice";
+import { selectModalByName, setModal } from "../Components/slices/modalsSlice";
 
 
 const themes = {
@@ -262,6 +262,7 @@ function Home() {
     const groceriesStatus = useSelector(selectGroceriesStatus)
     const recipes = useSelector(selectRecipeQuantities)
     const color = useSelector(selectCycle)
+    const sidebarOpen = useSelector(state => selectModalByName(state,"sidebarOpen"))
 
 
     const debouncedBatch = debounce(()=>
@@ -273,6 +274,22 @@ function Home() {
     }), 200)
 
     const dispatch = useDispatch()
+
+    const handleClose = () => {
+        if(sidebarOpen){
+            dispatch(setModal({sidebarOpen:false}))
+            if(document.getElementById("recipe-book-container")){
+                document.getElementById("recipe-book-container").style.transform=`translate(0px, 5%)`;
+                document.getElementById("recipe-book-container").style.transition="transform 300ms ease-in-out 100ms";
+            } else if(document.getElementById("groceries-container")){
+                document.getElementById("groceries-container").style.transform=`translate(0px, 5%)`;
+                document.getElementById("groceries-container").style.transition="transform 300ms ease-in-out 100ms";
+            }
+            document.getElementById("sidebar-toggle").style.transform=`translate(0px, 0)`;
+        }
+        
+    }
+
 
     //check authentication whenever page reloads
     useEffect(()=>{
@@ -301,7 +318,7 @@ function Home() {
                 <ThemeProvider theme={themes[color].muiTheme}>
                     <Navbar/>
                     <SideBar/>
-                    <div onClick={()=>dispatch(setModal({sidebarOpen:false}))}> 
+                    <div onClick={()=>handleClose()}> 
                         <Routes>
                             <Route exact path="/home" element={<Recipes/>}/> 
                             <Route exact path = "/groceries" element={<GroceryList/>}/>
