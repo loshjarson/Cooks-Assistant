@@ -49,54 +49,62 @@ function SideBar() {
         }
     }
     
+    const sidebarWidth = window.screen.width > 767 ? "15vw" : "60vw"
+
     return ( 
         <Drawer 
         variant='permanent'
         anchor="right"
+        id='sidebar'
+        color='primary'
         sx={{
-            margin: "auto",
-            [`& .MuiDrawer-paper`]: {top:"auto", width:sidebarOpen ? "15vw": "0", transition:"width 300ms ease-in-out 100ms", zIndex:"500"},
+            overflowY:"hidden",
+            [`& .MuiDrawer-paper`]: {width:sidebarOpen ? sidebarWidth: "0"},
         }}
         >
-            <div>
-            <Button
-                    className='list'
-                    style={{width:"100%", height:"4rem"}}
+            <div id="sidebar-head">
+                <Button
+                    className='sidebar-button'
                     onClick={()=>handleGoToGroceries()}
                     startIcon={<ShoppingCartOutlined/>}
+                    style={{color:"black"}}
                 >
                     My Grocery List
                 </Button>
                 <Divider/>
                 <Button
-                    className='list'
-                    style={{width:"100%", height:"4rem"}}
+                    className='sidebar-button'
                     onClick={()=>handleReturnHome()}
                     startIcon={<HomeOutlined/>}
+                    style={{color:"black"}}
                 >
                     My Recipes
                 </Button>
                 
                 <Button
-                    className='list'
-                    style={{width:"100%", height:"4rem"}}
+                    className='sidebar-button'
                     onClick={()=>{dispatch(setFocusedRecipe(""));dispatch(setModal({creatingList:true}))}}
                     startIcon={<PlusOutlined/>}
+                    style={{color:"black"}}
                 >
                     New List
                 </Button>
                 <Divider/>
                 
-                {Object.values(lists).map(list => 
-                    (<ListCard list={list} key={list.name}/>)
-                )}
+            </div>
+            <div id='list-card-container' style={{
+                overflowY:"scroll",
+                height:"inherit",
+                }}>
+                    {Object.values(lists).map(list => 
+                        (<ListCard list={list} key={list._id}/>)
+                    )}
             </div>
             <div 
             id='account-actions'
-            style={{margin:"auto 0 4rem 0"}}
             >
                 <Divider/>
-                <Button icon={<LogoutOutlined/>} type="text" style={{width:"100%"}} onClick={() => dispatch(setModal({loggingOut:true}))}>Logout</Button>
+                <Button icon={<LogoutOutlined/>} type="text" style={{width:"100%",color:"black"}} onClick={() => dispatch(setModal({loggingOut:true}))}>Logout</Button>
                 <Modal open={loggingOut} onCancel={()=>dispatch(setModal({loggingOut: false}))} title="Logout?" okText="Logout" cancelText="Nevermind" onOk={()=>logout()}><p>Are you sure you want to logout</p></Modal>
             </div>
         </Drawer> 
