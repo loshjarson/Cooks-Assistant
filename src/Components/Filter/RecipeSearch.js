@@ -17,9 +17,9 @@ function RecipeSearch(){
   return (
     <TextField
       id="outlined-basic"
+      className="recipe-search"
       label="Search"
       variant="outlined"
-      style={{ width: "20rem", margin: "1rem" }}
       onChange={handleChange}
       value={search}
     />
