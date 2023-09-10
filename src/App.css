@@ -17,6 +17,13 @@
 
 }
 
+.ant-btn-primary {
+  background-color: black;
+  color: white;
+  mix-blend-mode:overlay;
+  box-shadow: none;
+  
+}
 
 .landing-form-container {
   text-align: center

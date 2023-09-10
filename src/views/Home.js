@@ -31,7 +31,8 @@ const themes = {
         antdTheme:{
             components:{
                 Button: {
-                    colorBgContainer: "rgba(96, 130, 162, 0.963)",
+                    defaultBg: "rgba(96, 130, 162, 0.963)",
+
                 },
                 Card: {
                     colorBgContainer: "rgba(96, 130, 162, 0.963)",
@@ -53,6 +54,7 @@ const themes = {
                 colorFillAlter: "rgba(0, 0, 0, 0.10)",
                 colorBgContainer: "rgb(233 240 247)",
                 colorBorderSecondary: "black",
+                
                 
             }
         },
@@ -107,7 +109,8 @@ const themes = {
         antdTheme:{
             components:{
                 Button: {
-                    colorBgContainer: "rgba(163, 96, 102, 0.963)",
+                    defaultBg: "rgba(163, 96, 102, 0.963)",
+
                 },
                 Card: {
                     colorBgContainer: "rgba(163, 96, 102, 0.963)",
@@ -126,7 +129,8 @@ const themes = {
                 colorFillAlter: "rgba(0, 0, 0, 0.10)",
                 colorBgContainer: "rgb(247, 233, 233)",
                 colorBorderSecondary: "black",
-                avatarMarginRight:20
+                avatarMarginRight:20,
+                
             }
         },
         
@@ -180,7 +184,11 @@ const themes = {
         antdTheme:{
             components:{
                 Button: {
-                    colorBgContainer: "rgba(96, 163, 102, 0.963)",
+                    defaultBg: "rgba(96, 163, 102, 0.963)",
+
+                },
+                ButtonPrimary:{
+                    colorBgContainer: "rgba(96, 163, 102)"
                 },
                 Card: {
                     colorBgContainer: "rgba(96, 163, 102, 0.963)",
@@ -199,7 +207,8 @@ const themes = {
                 colorFillAlter: "rgba(0, 0, 0, 0.10)",
                 colorBgContainer: "rgb(233, 247, 234)",
                 colorBorderSecondary: "black",
-                avatarMarginRight:20
+                avatarMarginRight:20,
+                
             }
         },
         
