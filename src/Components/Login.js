@@ -1,12 +1,19 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Form, Button, Input } from "antd";
+import { Form, Button, Input, Alert } from "antd";
 import axios from 'axios';
 import { useState } from "react";
 import history from '../App/history';
+import { Typography } from '@mui/material';
 
 function Login() {
     const [user, setUser] = useState({username:"",password:""})
+    const [error, setError] = useState(false)
     const [form] = Form.useForm();
+
+    const handleClose = () => {
+        setError(false)
+    }
+
 
     const handleChange = (e) => {
         const {id, value} = e.target
@@ -22,18 +29,20 @@ function Login() {
                 history.go("/home")
             })
             .catch(e => {
+                setError(true)
                 console.log(e)
             })
     }
 
     return (
         <div className="landing-form-container" >
-            <header className='landing-header'><h1>Login</h1></header>
+            <header className='landing-header'><Typography variant='h3'>Login</Typography></header>
             <Form
                 form={form}
                 className='landing-form'
                 onFinish={handleSubmit}
             >
+                {error && (<Alert message="Username or password is incorrect" type="error" closable afterClose={handleClose} style={{margin:"10px"}}/>)}
                 <Form.Item
                     name={"username"}
                     rules={[{
