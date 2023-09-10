@@ -61,8 +61,9 @@ const initialState = {
 
 
 function NewRecipe() {
-    const [newIngredient, setNewIngredient] = useState({unit:undefined,amount:undefined,name:undefined})
-    const [ingredientError, setIngredientError] = useState(false)
+    const [newIngredient, setNewIngredient] = useState({unit:"",amount:0,name:""})
+    const [ingredientExistsError, setIngredientExistsError] = useState(false)
+    const [ingredientIncompleteError, setIngredientIncompleteError] = useState(false)
 
     const [newStep, setNewStep] = useState()
     const [editingStep, setEditingStep] = useState({step:0,instruction:""})
@@ -122,19 +123,24 @@ function NewRecipe() {
     //handles adding a new ingredient
     const addIngredient = () => {
         const foundIngredient = recipeForm.ingredients.find(obj => obj.name === newIngredient.name);
-        if(!foundIngredient){ //adds new ingredient to array
+        const incomplete = Boolean(newIngredient.amount <= 0 || newIngredient.name.length < 1)
+        if(!foundIngredient && !incomplete){ //adds new ingredient to array
             setRecipeForm({...recipeForm, ingredients:[...recipeForm.ingredients, newIngredient]})  
-            setNewIngredient({unit:undefined,amount:undefined,name:undefined})
-        } else {   //if ingredient is already added, alert is raised
-            setIngredientError(true)
-            setNewIngredient({unit:undefined,amount:undefined,name:undefined})
+            setNewIngredient({amount:0,unit:"",name:""})
+        } else if (incomplete) {   //if ingredient is already added, alert is raised
+            setIngredientIncompleteError(true)
+            setNewIngredient({amount:0,unit:"",name:""})
+        } else {
+            setIngredientExistsError(true)
+            setNewIngredient({amount:0,unit:"",name:""})
         }
         
     }
 
     //closes ingredient already existing alert
     const handleClose = () => {
-        setIngredientError(false)
+        setIngredientExistsError(false)
+        setIngredientIncompleteError(false)
     }
 
     //holds new ingredient before it is added
@@ -199,11 +205,11 @@ function NewRecipe() {
     useEffect(()=>{tagInputRef.current?.focus()},[tagInputVisible])
 
     return (
-        <Form style={{margin:"2rem auto", minWidth:"80%", fontSize:"50px"}} layout="vertical" >
-            <Form.Item style={{width:"25rem", margin:"2rem auto 0"}} label="Title">
+        <Form id="recipe-form" layout="vertical" >
+            <Form.Item className="name-input-container" label="Title">
                 <Input id="name-input" name="name" onChange={handleChange} value={recipeForm.name} />
             </Form.Item>
-            <div style={{width:"40rem", margin:"0 auto"}}>
+            <div id="tags-container">
                 {recipeForm.tags.map((tag) => {
                     return(
                         <Tag closable={true} onClose={() => handleCloseTag(tag)} key={tag}>
@@ -219,22 +225,30 @@ function NewRecipe() {
                     </Tag>
                 }
             </div>
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
-                <Form.Item style={{width:"60%", margin:"auto 0"}} label="Description">
-                    <TextArea id="description-input" name="description" onChange={handleChange} value={recipeForm.description} style={{resize: 'none' }} rows={10}/>
+            <div id="description-and-image-input" >
+                <Form.Item className="description-input-container" label="Description">
+                    <TextArea id="description-input" name="description" onChange={handleChange} value={recipeForm.description} rows={10}/>
                 </Form.Item>
-                <Form.Item label="Recipe Image" style={{width:"30%"}}>
+                <Form.Item className="image-input-container" label="Recipe Image">
                     <Upload.Dragger id="image-input" name="image" listType="picture-card" customRequest={handleChange} showUploadList={false} style={{width:"100%"}}>
-                          {recipeForm.image ? <img src={recipeImage} alt="recipe example" style={{width:"80%"}}/> : <div><PlusOutlined/><div>Upload</div></div>}  
+                          {recipeForm.image ? <img src={recipeImage} alt="recipe example" id="recipe-image" style={{width:"80%"}}/> : <div><PlusOutlined/><div>Upload</div></div>}  
                     </Upload.Dragger>
                 </Form.Item>
             </div>
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around", marginTop:"1rem"}}>
-                <div style={{width:"45%"}}>
-                    <Form.Item label="Ingredients" style={{width:"100%"}}>
-                        <List style={{border:"1px dashed grey", padding:"0 1rem"}}>
+            <div id="ingredients-and-steps-inputs" >
+                <div id="ingredients-container">
+                    <Form.Item className="ingredients" label="Ingredients">
+                        <List id="ingredients-list">
+                        {ingredientExistsError && (<Alert message="Ingredient is already in list" type="error" closable afterClose={handleClose} />)}
+                        {ingredientIncompleteError && (<Alert message="Please fill all fields" type="error" closable afterClose={handleClose} />)}
+                        <div id="ingredients-input">
+                            <InputNumber className="ingredient-amount-input" placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} value={newIngredient.amount} min={0}/>
+                            <Select className="ingredient-unit-input" placeholder="Units" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit}/>
+                            <Input className="ingredient-name-input" placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")}/>
+                            <Button className="ingredient-input-submit" onClick={()=>addIngredient()}>Add</Button>
+                        </div>
                             <VirtualList
-                                id="ingredients-list" 
+                                id="ingredients" 
                                 name="ingredients" 
                                 data={recipeForm.ingredients}
                                 height={200}
@@ -242,7 +256,7 @@ function NewRecipe() {
                                 {(ingredient) => (
                                     <List.Item key={ingredient.name} actions={[<DeleteOutlined onClick={()=>{handleRemoveIngredient(ingredient.name)}}/>]}>
                                         <List.Item.Meta
-                                            avatar={ingredient.amount + " " + ingredient.unit}
+                                            avatar={ingredient.amount + " " + ingredient.unit }
                                             title={ingredient.name}
                                             />
                                     </List.Item>
@@ -250,19 +264,16 @@ function NewRecipe() {
                             </VirtualList>
                         </List>
                     </Form.Item>
-                    {ingredientError && (<Alert message="Ingredient is already in list" type="error" closable afterClose={handleClose} />)}
-                    <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <InputNumber placeholder="Amount" name="amount" onChange={(e)=>handleNewIngredient(e,"amount")} value={newIngredient.amount} min={0} style={{width: 150}}/>
-                        <Select placeholder="Units" name="unit" options={unitsOfMeasurement} onChange={(e)=>handleNewIngredient(e,"unit")} onClear={(e)=>handleNewIngredient(e,"unit")} value={newIngredient.unit} style={{width: 200}}/>
-                        <Input placeholder="New Ingredient" name="name" value={newIngredient.name} onChange={(e) => handleNewIngredient(e.target.value.toLowerCase(),"name")}/>
-                        <Button onClick={()=>addIngredient()}>Add</Button>
-                    </div>
                 </div>
-                <div style={{width:"45%"}}>
-                    <Form.Item label="Instructions" style={{width:"100%"}}>
-                        <List style={{border:"1px dashed grey", padding:"0 1rem"}}>
+                <div id="instructions-container">
+                    <Form.Item className="instructions" label="Instructions">
+                        <List id="instructions-list" >
+                            <div id="step-input">
+                                <TextArea id="step-instructions" placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)} onPressEnter={()=>addStep()} autoSize/>
+                                <Button id="step-instructions-submit" onClick={()=>addStep()}>Add</Button>
+                            </div>
                             <VirtualList
-                                id="instructions-list" 
+                                id="instructions" 
                                 name="instructions" 
                                 data={Object.keys(recipeForm.instructions)}
                                 height={200}
@@ -279,27 +290,24 @@ function NewRecipe() {
                         </List>
                     </Form.Item>
                     
-                    <div style={{display:"flex", flexDirection:"row", width:"100%"}}>
-                        <TextArea placeholder="New Step" value={newStep} onChange={(e)=>setNewStep(e.target.value)} onPressEnter={()=>addStep()} autoSize/>
-                        <Button onClick={()=>addStep()}>Add</Button>
-                    </div>
+                    
                 </div>
             </div>
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-evenly", width:"70%", margin:"1rem auto"}}>
-                <Form.Item label="Prep Time" style={{width:"6.7rem"}}>
+            <div id="time-and-servings">
+                <Form.Item id="prep-time-input" label="Prep Time">
                     <InputNumber id="prep-time-input" name="prepTime" onChange={(e) => {handleChange(e,"prepTime")}} value={recipeForm.prepTime} min={0} addonAfter="min"/>
                 </Form.Item>
-                <Form.Item label="Cook Time" style={{width:"6.7rem"}}>
+                <Form.Item id="cook-time-input" label="Cook Time">
                     <InputNumber id="cook-time-input" name="cookTime" onChange={(e) => {handleChange(e,"cookTime")}} value={recipeForm.cookTime} min={0} addonAfter="min"/>
                 </Form.Item>
-                <Form.Item label="Total Time" style={{width:"6.7rem"}}>
+                <Form.Item id="total-time-input" label="Total Time">
                     <InputNumber id="total-time-input" name="totalTime" onChange={(e) => handleChange(e,"totalTime")} value={recipeForm.totalTime} min={0} addonAfter="min"/>
                 </Form.Item>
-                <Form.Item label="Servings">
+                <Form.Item id="servings-input" label="Servings">
                     <InputNumber id="servings-input" name="servings" onChange={(e) => handleChange(e,"servings")} value={recipeForm.servings} min={0}/>
                 </Form.Item>  
             </div>
-            <Form.Item style={{width:"100%", textAlign:"center"}}>
+            <Form.Item className="recipe-submit">
                 <Button onClick={handleSubmit}>Submit Changes</Button>
             </Form.Item>
         </Form>
