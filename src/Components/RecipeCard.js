@@ -24,12 +24,12 @@ const RecipeCard = React.memo(({recipeId}) => {
     const user = useSelector(selectFocusedUserId)
 
     if(recipe){
-        const overflowDescriptionContent = (<div style={{width:"15rem", height:"10rem", overflow:"scroll", padding:"6px"}} >{recipe.description}</div>)
+        const overflowDescriptionContent = (<div className="description-overflow" >{recipe.description}</div>)
 
         return ( 
                 <Card 
                     key={recipeId}
-                    style={{ width: 345, margin:"1rem", cursor:"pointer" }} 
+                    className="recipe-card"
                     draggable 
                     onDragStart={()=>dispatch(setDragging(recipeId))} 
                     onClick={() => {
@@ -90,7 +90,7 @@ const RecipeCard = React.memo(({recipeId}) => {
                             {recipe.description.length > 80 ? recipe.description.substring(0,80) : recipe.description }
                             {recipe.description.length > 80 ? <Popover content={overflowDescriptionContent}>...</Popover> : null}
                         </Typography>
-                        <div style={{height:"25px", display:"flex", width:"100%", overflow:"auto", margin:".5rem auto auto auto", whiteSpace:"nowrap", paddingBottom:"15px"}}>
+                        <div className="tag-container">
                             {recipe.tags.map(tag => {
                                 const background = colorTag(tag)
                                 return(
