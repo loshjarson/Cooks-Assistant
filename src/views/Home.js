@@ -322,12 +322,12 @@ function Home() {
 
 
     return (
-        <div id="home" style={{backgroundImage:colorKey[color]}}>
+        <div id="home" style={{backgroundImage:colorKey[color], height:"100%", overflow:"hidden"}}>
             <ConfigProvider theme={themes[color].antdTheme}>
                 <ThemeProvider theme={themes[color].muiTheme}>
                     <Navbar/>
                     <SideBar/>
-                    <div onClick={()=>handleClose()}> 
+                    <div onClick={()=>handleClose()} style={{height:"100%"}}> 
                         <Routes>
                             <Route exact path="/home" element={<Recipes/>}/> 
                             <Route exact path = "/groceries" element={<GroceryList/>}/>

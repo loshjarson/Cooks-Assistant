@@ -70,7 +70,7 @@ function Recipes() {
 
 
     return (
-        <div>
+        <div style={{height:"100%"}}>
             <Paper 
             className="recipe-book-container"
             id="recipe-book-container"

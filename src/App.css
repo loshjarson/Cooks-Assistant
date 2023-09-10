@@ -575,6 +575,10 @@
     margin-right: auto;
   }
 
+  #recipe-book-container{
+    height: 85%;
+  }
+
   #navbar #sidebar-toggle {
     margin-left: 0;
   }
