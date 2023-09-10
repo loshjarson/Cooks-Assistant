@@ -5,6 +5,7 @@ import { calculateGroceries, decreaseQuantity, editGroceries, increaseQuantity, 
 import { selectModalByName, setModal } from "./slices/modalsSlice";
 import { selectAllRecipes } from "./slices/recipesSlice";
 import { SettingsOutlined } from "@mui/icons-material";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 
 
 function GroceryList() {
@@ -21,22 +22,13 @@ function GroceryList() {
             <Paper
             className="groceries-container"
             id="groceries-container"
-            elevation={12} 
-            style={{
-                width: "40vw",
-                minWidth:"500px",
-                height: "85vh",
-                margin: "auto",
-                transform: "translate(0,5%)",
-                display: "flex",
-                flexDirection: "column",
-            }}>
-                <div style={{display:"flex", justifyContent:"center", width:"100%", overflow:"clip"}}>
-                    <Typography.Title level={2}>Grocery List</Typography.Title>
-                    <Button icon={<SettingsOutlined/>} style={{ margin:"auto 3rem", right:"1rem", top:"2rem", position:"absolute"}} onClick={()=>dispatch(setModal({viewingGroceryRecipes:true}))}></Button>
+            elevation={12}>
+                <div id="title-bar" >
+                    <Typography.Title id="grocery-title" level={2}>Grocery List</Typography.Title>
+                    <Button id="grocery-settings" icon={<SettingsOutlined/>} onClick={()=>dispatch(setModal({viewingGroceryRecipes:true}))}></Button>
                 </div>
                 <Divider/>
-                <div style={{display:"flex", flexDirection:"column", overflow:"none", justifyContent:"space-between"}}>
+                <div id="ingredients">
                     {
                         Object.keys(ingredients).map(ingredient => {
                             let prefix;
@@ -64,15 +56,15 @@ function GroceryList() {
                                 bodyStyle={{padding:5, height:100, display:"flex", alignContent:"center",justifyContent:"left"}}
                             >
                                 <img style={{maxWidth:100}} alt={name} src={image}/> 
-                                <Typography.Title level={4} style={{marginLeft: "1rem"}}>{name}</Typography.Title>
+                                <Typography.Title ellipsis level={4} style={{margin: "auto 0 auto 1rem"}}>{name}</Typography.Title>
                                 <div className="quantity-input">
-                                    <button className="quantity-input__modifier quantity-input__modifier--left" onClick={()=>{dispatch(decreaseQuantity(recipe))}}>
-                                    &mdash;
-                                    </button>
-                                    <input className="quantity-input__screen" type="text" value={recipes[recipe]} readOnly />
-                                    <button className="quantity-input__modifier quantity-input__modifier--right" onClick={()=>{dispatch(increaseQuantity(recipe))}}>
-                                    &#xff0b;
-                                    </button>  
+                                    <Button className="quantity-input__modifier quantity-input__modifier--left" onClick={()=>{dispatch(decreaseQuantity(recipe))}}>
+                                    <MinusOutlined/>
+                                    </Button>
+                                    <input className="quantity-input__screen" type="text" value={recipes[recipe]} readOnly/>
+                                    <Button className="quantity-input__modifier quantity-input__modifier--right" onClick={()=>{dispatch(increaseQuantity(recipe))}}>
+                                     <PlusOutlined/>
+                                    </Button>  
                                 </div> 
                                 </Card>)  
                         }
