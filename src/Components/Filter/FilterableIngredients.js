@@ -16,7 +16,7 @@ function FilterableIngredients() {
     return ( 
         filterableIngredients.map(ingredient => {
             return (
-              <Tag key={ingredient} color={selectedIngredients.includes(ingredient) ? "green" : ""} style={{ cursor: "pointer", height:"min-content", margin:"3px"}} onClick={() => handleIngredientChange(ingredient)}>{ingredient}</Tag>
+              <Tag className='filter-tag' key={ingredient} color={selectedIngredients.includes(ingredient) ? "green" : ""} onClick={() => handleIngredientChange(ingredient)}>{ingredient}</Tag>
             )
           })
      );
