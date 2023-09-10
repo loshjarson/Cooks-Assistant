@@ -9,17 +9,17 @@ import FilterableTags from './FilterableTags';
 function Filter() {
 
   return (
-    <div style={{ width: "30rem", display: "flex" }}>
-      <Box sx={{ width: "15rem", margin: "auto" }}>
+    <div id="filter-container">
+      <Box id="slider-container">
         <PrepSlider/>
         <CookSlider/>
         <TotalSlider/>
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-evenly" }}>
-        <Box sx={{ display: "flex", flexWrap:"wrap", alignContent:"flex-start", border: "1px solid grey", height: "45%", width: "12.5rem", borderRadius: "10px"}}>
+      <Box className="filter-selections">
+        <Box className="filter-selection-container">
           <FilterableTags/>
         </Box>
-        <Box sx={{ display: "flex", flexWrap:"wrap", alignContent:"flex-start", border: "1px solid grey", height: "45%", width: "12.5rem", borderRadius: "10px"}}>
+        <Box className="filter-selection-container">
           <FilterableIngredients/>
         </Box>
       </Box>
