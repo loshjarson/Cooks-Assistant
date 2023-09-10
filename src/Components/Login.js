@@ -27,11 +27,11 @@ function Login() {
     }
 
     return (
-        <div style={{textAlign:"center"}}>
-            <header style={{textAlign:"center", borderBottom:"1px solid grey", margin:"0 10px"}}><h1>Login</h1></header>
+        <div className="landing-form-container" >
+            <header className='landing-header'><h1>Login</h1></header>
             <Form
                 form={form}
-                style={{margin:"25px"}}
+                className='landing-form'
                 onFinish={handleSubmit}
             >
                 <Form.Item

@@ -1,16 +1,22 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Form, Button, Input } from "antd";
+import { Form, Button, Input, Alert } from "antd";
 import axios from 'axios';
 import { useState } from "react";
 import history from '../App/history';
+import { Typography } from '@mui/material';
 
 function Signup() {
     const [user, setUser] = useState({username:"",password:""})
     const [form] = Form.useForm();
+    const [error, setError] = useState(false)
 
     const handleChange = (e) => {
         const {id, value} = e.target
         setUser({...user, [id]:value})
+    }
+
+    const handleClose = () => {
+        setError(false)
     }
 
     const handleSubmit = () => {
@@ -22,18 +28,20 @@ function Signup() {
                 history.go("/home")
             })
             .catch(e => {
+                setError(true)
                 console.log(e)
             })
     }
 
     return (
-        <div style={{textAlign:"center"}}>
-            <header style={{textAlign:"center", borderBottom:"1px solid grey", margin:"0 10px"}}><h1>Signup</h1></header>
+        <div className="landing-form-container">
+            <header className='landing-header'><Typography variant='h3'>Signup</Typography></header>
             <Form
                 form={form}
-                style={{margin:"25px"}}
+                className='landing-form'
                 onFinish={handleSubmit}
             >
+                {error && (<Alert message="Username is taken" type="error" closable afterClose={handleClose} style={{margin:"10px"}}/>)}
                 <Form.Item
                     name={"username"}
                     rules={[{
