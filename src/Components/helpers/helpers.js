@@ -2,7 +2,6 @@ export const recipeToFormData = (edits) => {
     const recipeFormData = new FormData()
     Object.entries(edits).forEach(([key, value]) => {
         //stringify objects and arrays to store in database
-        console.log(key,value)
         if(key === "instructions" || key === "ingredients" || key === "tags"){
             recipeFormData.append(key, JSON.stringify(value))
         } else if (key === "image" && typeof value !== "string"){
