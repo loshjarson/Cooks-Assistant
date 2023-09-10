@@ -14,6 +14,7 @@ import { bindTrigger } from 'material-ui-popup-state';
 import { bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { setModal } from './slices/modalsSlice';
+import history from '../App/history';
 
 
 
@@ -29,8 +30,15 @@ function ListCard ({list}) {
         dispatch(setFocusedList(list._id))
         if(focusedUser){
             dispatch(setFocusedUser(null))
-            dispatch(fetchRecipes()) 
+            dispatch(fetchRecipes())
+        
         }
+        if(history.location.pathname !== "/home"){
+            dispatch(setModal({sidebarOpen:false}))
+            history.push("/home")
+            history.go("/home")
+        }
+        
     }
 
     
@@ -49,7 +57,8 @@ function ListCard ({list}) {
             title={
                 <Typography.Title
                     level={5}
-                    style={{color: list._id === hovering ? "purple" : "#1976d2", margin:"auto 0", insetInlineStart:0}}
+                    ellipsis
+                    style={{color: list._id === hovering ? "purple" : "black", margin:"auto 0", insetInlineStart:0}}
                     editable={{
                         editing: list._id === editingList,
                         icon:<Edit style={{display:"none"}}/>,
