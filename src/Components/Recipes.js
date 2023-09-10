@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { Divider, IconButton, Paper, Typography } from "@mui/material";
 import { FilterOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Input, Modal, Popover } from "antd";
+import { Button, Modal, Popover } from "antd";
 
 
 import NewRecipe from "./RecipeForm";
@@ -15,7 +15,7 @@ import { useSelector, useDispatch, batch } from "react-redux";
 import { deleteRecipe, fetchFilteredRecipes, selectFocusedRecipeObj, selectRecipeIds, selectRecipesStatus, setFocusedRecipe } from "./slices/recipesSlice";
 import { selectFilterStatus } from "./slices/filterSlice";
 import { selectModalByName, setModal } from "./slices/modalsSlice";
-import { addList, deleteList, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
+import { deleteList, selectFocusedListName, selectListsStatus } from "./slices/listsSlice";
 import { selectFocusedUser } from "./slices/usersSlice";
 import { debounce } from "lodash";
 
@@ -32,7 +32,6 @@ function Recipes() {
     const editingRecipe = useSelector(state =>selectModalByName(state,"editingRecipe"))
     const deletingRecipe = useSelector(state =>selectModalByName(state,"deletingRecipe"))
     const viewingRecipe = useSelector(state => selectModalByName(state, "viewingRecipe"))
-    const creatingList = useSelector(state => selectModalByName(state, "creatingList"))
     const deletingList = useSelector(state => selectModalByName(state, "deletingList"))
 
     const recipesStatus = useSelector(selectRecipesStatus)
@@ -46,7 +45,6 @@ function Recipes() {
 
     const recipeIds = useSelector(selectRecipeIds)
 
-    const [ newListName, setNewListName ] = useState("")
     
     
     useEffect(() => {
@@ -55,11 +53,6 @@ function Recipes() {
         }
     },[dispatch,listStatus,filterStatus,recipesStatus,focusedUserId,debouncedFilter])
 
-    const handleCreateList = () => {
-        dispatch(addList({name:newListName}))
-        dispatch(setModal({creatingList:false}))
-        setNewListName("")
-    }
     const handleDeleteList = () => {
         batch(()=>{
             dispatch(setModal({deletingList:false}))
@@ -126,9 +119,7 @@ function Recipes() {
             <Modal open={viewingRecipe} onCancel={()=>{dispatch(setModal({viewingRecipe:false}))}} footer={null} style={{minWidth:"80vw"}}>
                 <RecipeView/>
             </Modal>
-            <Modal open={creatingList} onCancel={()=>{dispatch(setModal({creatingList:false}))}} title="New List" okText={"Create"} onOk={()=>handleCreateList()}>
-                <Input placeholder="List Name" value={newListName} onChange={(e)=>setNewListName(e.target.value)}/>
-            </Modal>
+            
             <Modal open={deletingList} onCancel={()=>{dispatch(setModal({deletingList:false}))}} title="Delete List" okText="Delete" onOk={()=>handleDeleteList()}>
                 <p>Are you sure you want to delete {focusedListName}?</p>
             </Modal>

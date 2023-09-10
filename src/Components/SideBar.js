@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Button, Divider, Drawer } from '@mui/material';
 import { HomeOutlined, LogoutOutlined, PlusOutlined } from "@ant-design/icons";
-import { Modal } from "antd";
+import { Input, Modal } from "antd";
 import history from '../App/history';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { selectModalByName, setModal } from './slices/modalsSlice';
-import {  selectAllLists, setFocusedList } from './slices/listsSlice';
+import {  addList, selectAllLists, setFocusedList } from './slices/listsSlice';
 import { selectFocusedUserId, setFocusedUser } from './slices/usersSlice';
 import { fetchRecipes, setFocusedRecipe } from './slices/recipesSlice';
 import ListCard from './ListCard';
@@ -21,8 +21,10 @@ function SideBar() {
     const dispatch = useDispatch()
     const sidebarOpen = useSelector(state => selectModalByName(state,"sidebarOpen"))
     const loggingOut = useSelector(state => selectModalByName(state,"loggingOut"))
+    const creatingList = useSelector(state => selectModalByName(state, "creatingList"))
     const lists = useSelector(selectAllLists)
     const focusedUser = useSelector(selectFocusedUserId)
+    const [ newListName, setNewListName ] = useState("")
 
 
     const logout = () => {
@@ -40,6 +42,12 @@ function SideBar() {
             history.push("/home")
             history.go("/home")
         }
+    }
+
+    const handleCreateList = () => {
+        dispatch(addList({name:newListName}))
+        dispatch(setModal({creatingList:false}))
+        setNewListName("")
     }
 
     const handleGoToGroceries = () => {
@@ -106,6 +114,9 @@ function SideBar() {
                 <Divider/>
                 <Button icon={<LogoutOutlined/>} type="text" style={{width:"100%",color:"black"}} onClick={() => dispatch(setModal({loggingOut:true}))}>Logout</Button>
                 <Modal open={loggingOut} onCancel={()=>dispatch(setModal({loggingOut: false}))} title="Logout?" okText="Logout" cancelText="Nevermind" onOk={()=>logout()}><p>Are you sure you want to logout</p></Modal>
+                <Modal open={creatingList} onCancel={()=>{dispatch(setModal({creatingList:false}))}} title="New List" okText={"Create"} onOk={()=>handleCreateList()}>
+                    <Input placeholder="List Name" value={newListName} onChange={(e)=>setNewListName(e.target.value)}/>
+                </Modal>
             </div>
         </Drawer> 
     );
