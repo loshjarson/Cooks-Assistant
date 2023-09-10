@@ -204,6 +204,13 @@
   margin: auto
 }
 
+.filter-tag {
+  border: 1px solid rgb(183 201 216);
+  cursor: pointer;
+  height:min-content;
+  margin:3px
+}
+
 /* recipe cards */
 .recipe-card {
   width: 345px;
