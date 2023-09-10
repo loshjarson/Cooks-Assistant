@@ -1,13 +1,11 @@
 import React from 'react';
 
 import { Typography } from '@mui/material';
-import { Tag, List } from 'antd';
-import VirtualList from "rc-virtual-list";
+import { Tag, Divider } from 'antd';
 import { colorTag, colorText } from './helpers/helpers';
 
 import { useSelector } from 'react-redux';
 import { selectFocusedRecipe, selectRecipeById } from './slices/recipesSlice';
-
 
 
 function RecipeView () {
@@ -16,9 +14,9 @@ function RecipeView () {
 
     //conditional render to address bug of error if focused recipe is empty
     if(recipe){
-    return ( <div>
+    return ( <div id="recipe-view">
             <Typography variant='h2' align='center'>{recipe.name}</Typography>
-            <div style={{width:"fit-content", margin:"auto", display:"flex", flexFlow:"row wrap", justifyContent:"center"}}>
+            <div id="tags-container">
                 {recipe.tags.map((tag) => {
                     return(
                     <Tag color={colorTag(tag)} key={tag} style={{color:colorText(colorTag(tag)), margin:"auto .5rem 1rem .5rem"}}>
@@ -27,18 +25,18 @@ function RecipeView () {
                     )
                 })}
             </div>
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
-                <div style={{width:"60%", margin:"auto 0", height:"100%" }}>
-                    <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around", margin:"0 auto auto auto", width:"60%"}}>
-                        <Typography id="prep-time" name="prepTime" >Prep time: {recipe.prepTime} min</Typography>
-
-                        <Typography id="cook-time" name="cookTime" >Cook time: {recipe.cookTime} min</Typography>
-
-                        <Typography id="total-time" name="totalTime">Total time: {recipe.totalTime} min</Typography>
-
-                        <Typography id="servings" name="servings">Servings: {recipe.servings}</Typography> 
+            <div id="top-section">
+                <div id="time-servings-and-description">
+                    <div id="time-and-servings">
+                        <Typography id="prep-time" className='amount' name="prepTime" >Prep: <br/>{recipe.prepTime} min</Typography>
+                        <Divider type="vertical" style={{height:"auto"}}/>
+                        <Typography id="cook-time" className='amount' name="cookTime" >Cook: <br/>{recipe.cookTime} min</Typography>
+                        <Divider type="vertical" style={{height:"auto"}}/>
+                        <Typography id="total-time" className='amount' name="totalTime">Total: <br/>{recipe.totalTime} min</Typography>
+                        <Divider type="vertical" style={{height:"auto"}}/>
+                        <Typography id="servings" className='amount' name="servings">Servings: <p>{recipe.servings}</p></Typography> 
                     </div>
-                   <div style={{height:"14rem", overflow:"auto", margin:"4rem auto"}} label="Description">
+                   <div id="description-container" label="Description">
                     
                         <Typography id="description" name="description">
                             {recipe.description}
@@ -46,53 +44,35 @@ function RecipeView () {
                     </div> 
                 </div>
                 
-                <div label="Recipe Image" style={{width:"30%"}}>
-                    <img src={recipe.image} alt="recipe preview" style={{width:"80%", maxHeight:"20rem", objectFit:"cover"}} />
+                <div label="Recipe Image" id="recipe-image-container">
+                    <img src={recipe.image} id="recipe-image" alt="recipe preview"/>
                 </div>
             </div>
             
-            <div style={{display:"flex", flexDirection:"row", justifyContent:"space-around", marginTop:"1rem"}}>
-                <div style={{width:"45%"}}>
-                    <div label="Ingredients" style={{width:"100%"}}>
-                        <List style={{border:"1px solid grey", padding:"0 1rem", borderRadius:"10px"}} rowKey={(t)=> recipe.ingredients[t].name}>
-                            <VirtualList
-                                id="ingredients" 
-                                name="ingredients" 
-                                data={recipe.ingredients}
-                                height={200}
-                            >
-                                {(ingredient) => (
-                                    <List.Item rowKey={ingredient.name}>
-                                        <List.Item.Meta
-                                            avatar={ingredient.amount + " " + ingredient.unit}
-                                            title={ingredient.name}
-                                            />
-                                    </List.Item>
-                                )}
-                            </VirtualList>
-                        </List>
-                    </div>
+            <div id="ingredients-and-instructions">
+                <Typography variant='h2' align='center'>Ingredients</Typography>
+                <Divider/>
+                <div id="ingredients-list-container" name="ingredients" >
+                    {
+                        recipe.ingredients.map((ingredient) => (
+                            <div className='list-item'>
+                                {ingredient.amount + " " + ((ingredient.amount < 2 || ingredient.unit.length === 0) ? ingredient.unit:ingredient.unit+"s")}
+                                <span style={{marginRight:"25px"}}/>
+                                {ingredient.name}
+                            </div>))
+                    }
                 </div>
-                <div style={{width:"45%"}}>
-                    <div label="Instructions" style={{width:"100%"}}>
-                        <List style={{border:"1px solid grey", padding:"0 1rem", borderRadius:"10px"}} rowKey={(t)=> t}>
-                            <VirtualList
-                                id="instructions-list" 
-                                name="instructions" 
-                                data={Object.keys(recipe.instructions)}
-                                height={200}
-                            >
-                                {(stepNumber) => (
-                                    <List.Item >
-                                        <List.Item.Meta
-                                            avatar={stepNumber}
-                                            description={recipe.instructions[stepNumber]}
-                                            />
-                                    </List.Item>
-                                )}
-                            </VirtualList>
-                        </List>
-                    </div>
+                <Typography variant='h2' align='center'>Instructions</Typography>
+                <Divider/>
+                <div id="instructions-list-container" name="instructions" >
+                    {
+                        Object.keys(recipe.instructions).map((stepNumber) => (
+                            <div className='list-item' style={{width:"100%"}}>
+                                {stepNumber}
+                                <span style={{marginRight:"25px"}}/>
+                                {recipe.instructions[stepNumber]}
+                            </div>))
+                    }
                 </div>
             </div>
             
