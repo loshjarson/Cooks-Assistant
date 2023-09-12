@@ -34,7 +34,7 @@ function RecipeView () {
                         <Divider type="vertical" style={{height:"auto"}}/>
                         <Typography id="total-time" className='amount' name="totalTime">Total: <br/>{recipe.totalTime} min</Typography>
                         <Divider type="vertical" style={{height:"auto"}}/>
-                        <Typography id="servings" className='amount' name="servings">Servings: <p>{recipe.servings}</p></Typography> 
+                        <Typography id="servings" className='amount' name="servings">Servings: <br/>{recipe.servings}</Typography> 
                     </div>
                    <div id="description-container" label="Description">
                     
@@ -55,7 +55,7 @@ function RecipeView () {
                 <div id="ingredients-list-container" name="ingredients" >
                     {
                         recipe.ingredients.map((ingredient) => (
-                            <div className='list-item'>
+                            <div className='list-item' key={ingredient.name}>
                                 {ingredient.amount + " " + ((ingredient.amount < 2 || ingredient.unit.length === 0) ? ingredient.unit:ingredient.unit+"s")}
                                 <span style={{marginRight:"25px"}}/>
                                 {ingredient.name}
@@ -68,7 +68,7 @@ function RecipeView () {
                     {
                         recipe.instructions ?
                         Object.keys(recipe.instructions).map((stepNumber) => (
-                            <div className='list-item' style={{width:"100%"}}>
+                            <div className='list-item' style={{width:"100%"}} key={stepNumber}>
                                 {stepNumber}
                                 <span style={{marginRight:"25px"}}/>
                                 {recipe.instructions[stepNumber]}
