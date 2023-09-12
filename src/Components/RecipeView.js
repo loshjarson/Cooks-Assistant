@@ -66,12 +66,14 @@ function RecipeView () {
                 <Divider/>
                 <div id="instructions-list-container" name="instructions" >
                     {
+                        recipe.instructions ?
                         Object.keys(recipe.instructions).map((stepNumber) => (
                             <div className='list-item' style={{width:"100%"}}>
                                 {stepNumber}
                                 <span style={{marginRight:"25px"}}/>
                                 {recipe.instructions[stepNumber]}
                             </div>))
+                        : null
                     }
                 </div>
             </div>
