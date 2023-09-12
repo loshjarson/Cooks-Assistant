@@ -41,7 +41,7 @@ const unitsOfMeasurement = [
         label:"Quart"
     },
     {
-        value:"g",
+        value:"gal",
         label:"Gallon"
     },
 ]
