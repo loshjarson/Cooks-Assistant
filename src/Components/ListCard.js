@@ -57,7 +57,6 @@ function ListCard ({list}) {
             title={
                 <Typography.Title
                     level={5}
-                    ellipsis
                     style={{color: list._id === hovering ? "purple" : "black", margin:"auto 0", insetInlineStart:0}}
                     editable={{
                         editing: list._id === editingList,
@@ -66,7 +65,7 @@ function ListCard ({list}) {
                         onEnd:()=>{setEditingList("")}
                     }}
                 >
-                    {list.name.length > 24 ? list.name.slice(0,20) + "..." : list.name}
+                    {list.name.length > 15 ? list.name.slice(0,15) + "..." : list.name}
                 </Typography.Title>} 
             style={{textAlign:"center"}}
             onClick={()=>handleList(list)}
