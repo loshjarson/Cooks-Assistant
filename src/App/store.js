@@ -29,7 +29,7 @@ const reducers = combineReducers({
 const persistConfig = {
     key: 'root',
     storage,
-    blacklist: ['filter','recipes','modals','groceries'],
+    blacklist: ['filter','recipes','modals','groceries', 'users'],
   };
 
   const persistedReducer = persistReducer(persistConfig, reducers);
