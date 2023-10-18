@@ -77,7 +77,7 @@ function Navbar() {
     return (
         <Paper elevation={13} square id="navbar" >
             <Button icon={<PaletteOutlined/>} id="color-cycle" onClick={()=>{dispatch(cycleStep())}}/>
-            {history.location.pathname === "/home" ?
+            {/* {history.location.pathname === "/home" ?
                 <AutoComplete 
                     className="user-search"
                     options={userOptions} 
@@ -89,7 +89,7 @@ function Navbar() {
                 >
                     <Input.Search onChange={(e)=>handleChange(e)}/>
                 </AutoComplete> : null
-            }
+            } */}
             
             <Button icon={sidebarOpen? <RightOutlined />:<MenuOutlined/>} type="text" id="sidebar-toggle" onClick={toggleSideBar}/>
         </Paper>
